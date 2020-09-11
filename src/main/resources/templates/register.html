@@ -19,7 +19,7 @@
                         <h3>Register</h3>
                     </div>
                     <div class="card-body">
-                        <form action="#" th:action="@{/register}" method="post">
+                        <form action="#" th:action="@{/register}" method="post" th:object="${formUser}">
                             <div th:if="${errorMsgs}" class="alert alert-danger">
                                 <ul th:each="errorMsg: ${errorMsgs}">
                                     <li th:text="${errorMsg}"></li>
@@ -27,23 +27,20 @@
                             </div>
                             <div class="form-group row">
                                 <label for="name" class="col-form-label col-3">Nickname: </label>
-                                <input id="name" type="text" name="name" class="form-control col-9">
+                                <input id="name" type="text" th:field="*{name}" class="form-control col-9">
                             </div>
                             <div class="form-group row">
                                 <label for="email" class="col-form-label col-3">Email: </label>
-                                <input id="email" type="email" name="email" class="form-control col-9">
+                                <input id="email" type="email" th:field="*{email}" class="form-control col-9">
                             </div>
                             <div class="form-group row">
                                 <label for="password" class="col-form-label col-3">Password: </label>
-                                <input id="password" type="password" name="password" class="form-control col-9">
+                                <input id="password" type="password" th:field="*{password}" class="form-control col-9">
                             </div>
                             <div class="form-group row">
                                 <label for="password-r" class="col-form-label col-3">Password (again): </label>
-                                <input id="password-r" type="password" name="password_repeated" class="form-control col-9">
+                                <input id="password-r" type="password" th:field="*{password_repeated}" class="form-control col-9">
                             </div>
-    <!--                        <div class="row align-items-center remember">-->
-    <!--                            <input type="checkbox">Remember Me-->
-    <!--                        </div>-->
                             <div class="form-group">
                                 <input type="submit" value="Register" class="btn btn-primary float-right login_btn">
                             </div>

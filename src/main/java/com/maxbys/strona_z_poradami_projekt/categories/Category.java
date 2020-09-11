@@ -2,8 +2,6 @@ package com.maxbys.strona_z_poradami_projekt.categories;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-
 import javax.persistence.*;
 
 @Entity
@@ -20,6 +18,4 @@ public class Category {
     @EqualsAndHashCode.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     private Category category;
-
-
 }

@@ -46,19 +46,19 @@ public class CommentsController {
         this.questionViewRepository = questionViewRepository;
     }
 
-    @PostMapping("/categories/{categoryName}/questions/{questionId}/answers/{answerId}")
+    @PostMapping("/answer/{answerId}/comments")
     public RedirectView addComment(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest
-            , @ModelAttribute Comment commentForm, @PathVariable String categoryName, Principal principal
-            , @PathVariable Long questionId, @PathVariable Long answerId) {
+            , @ModelAttribute Comment commentForm, Principal principal
+            , @PathVariable Long answerId) {
         User user = getUser(principal);
-        checkQuestionInUrl(categoryName, questionId);
-        Answer answer = getAnswer(questionId, answerId);
+        Answer answer = getAnswer(answerId);
+        Long questionId = answer.getQuestion().getId();
         if(isCommentsLengthLowerThan8(commentForm)) {
             addErrorMessagesToRedirectAttributes(redirectAttributes, answerId);
-            return getRedirectViewToQuestionPage(httpServletRequest);
+            return new RedirectView("/question/" + questionId + "?" + httpServletRequest.getQueryString());
         }
         saveCommentToRepository(commentForm, user, answer);
-        return getRedirectViewToQuestionPage(httpServletRequest);
+        return new RedirectView("/question/" + questionId + "?" + httpServletRequest.getQueryString());
     }
 
     private User getUser(Principal principal) {
@@ -67,16 +67,10 @@ public class CommentsController {
         return userOptional.orElseThrow(() -> new RuntimeException("User with email " + principalName + "doesn't exist"));
     }
 
-    private void checkQuestionInUrl(String categoryName, Long questionId) {
-        Optional<Question> questionOptional = questionsService.findByIdAndCategoryName(questionId, categoryName);
-        questionOptional.orElseThrow(() ->
-                new RuntimeException("There is no question with" + questionId + " id with " + categoryName + " category name"));
-    }
-
-    private Answer getAnswer(Long questionId, Long answerId) {
-        Optional<Answer> answerOptional = answersService.findByIdAndQuestionId(answerId, questionId);
+    private Answer getAnswer(Long answerId) {
+        Optional<Answer> answerOptional = answersService.findById(answerId);
         return answerOptional.orElseThrow(() ->
-                new RuntimeException("There is no answer with" + answerId + " id with " + questionId + " question id"));
+                new RuntimeException("There is no answer with" + answerId + " id"));
     }
 
     private boolean isCommentsLengthLowerThan8(Comment commentForm) {
@@ -97,15 +91,9 @@ public class CommentsController {
         commentsService.save(comment);
     }
 
-    private RedirectView getRedirectViewToQuestionPage(HttpServletRequest httpServletRequest) {
-        return new RedirectView(httpServletRequest.getRequestURI().replaceFirst("/answers/\\d+$", "") + "?" + httpServletRequest.getQueryString(), true);
-    }
-
-    @PostMapping("/categories/{categoryName}/questions/{questionId}/answers/{answerId}/comments/{commentId}/delete")
-    public RedirectView deleteComment(Principal principal, @PathVariable String categoryName
-            , @PathVariable Long questionId, @PathVariable Long answerId, @PathVariable Long commentId) {
-        checkQuestionInUrl(categoryName, questionId);
-        getAnswer(questionId, answerId);
+    @PostMapping("/comment/{commentId}/delete")
+    public RedirectView deleteComment(Principal principal
+            , @PathVariable Long commentId) {
         Comment comment = getComment(commentId);
         if(checkIfUserIsAllowedToDeleteComment(principal, comment)){
             commentsService.deleteById(commentId);
@@ -125,7 +113,7 @@ public class CommentsController {
     }
 
     @ResponseBody
-    @GetMapping("/answers/{answerId}/comments")
+    @GetMapping("/answer/{answerId}/comments")
     public Page<Comment> restGetComments(@PathVariable Long answerId, Pageable pageable) {
         Page<Comment> comments = commentsService.findAllByAnswerId(answerId, pageable);
         return comments;
@@ -134,8 +122,8 @@ public class CommentsController {
     @GetMapping("/profile/comments")
     String seeAllCommentsOfLoggedUser(Model model, Principal principal, Pageable pageable) {
         String userEmail = principal.getName();
-        Page<Object[]> answersWithLinks = commentsService.findAllWithLinksByUserEmailIs(userEmail, pageable);
-        model.addAttribute("commentsWithLinks", answersWithLinks);
+        Page<Comment> answersWithLinks = commentsService.findAllByUser_Email(userEmail, pageable);
+        model.addAttribute("comments", answersWithLinks);
         List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), answersWithLinks.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);
         return "comments-of-user";
@@ -223,5 +211,4 @@ public class CommentsController {
         questionView.setCreationTime(Date.valueOf(LocalDate.now().minusDays(4)));
         questionViewRepository.save(questionView);
     }
-
 }

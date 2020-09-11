@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -24,9 +23,9 @@ public class Comment {
     @JsonIgnore
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Answer answer;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private User user;
     private String value;
     @CreationTimestamp

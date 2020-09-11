@@ -15,8 +15,8 @@
         <div th:each="category: ${categories}" class="row mb-2">
             <div th:text="${category.name}" class="h3 col-md-8 bg-primary m-0 p-2 text-center text-white">
             </div>
-            <a th:href="@{/categories/{id}(id=${category.name})}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-warning rounded-0">See sub-categories</a>
-            <a th:href="@{/categories/{id}/questions(id=${category.name}, page=0, size=5, sort=name)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0">See questions</a>
+            <a th:href="@{/category/{id}(id=${category.name})}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-warning rounded-0">See sub-categories</a>
+            <a th:href="@{/category/{id}/questions(id=${category.name}, page=0, size=5, sort=name)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0">See questions</a>
         </div>
         <nav  th:if="${categories.totalPages > 1}">
             <ul class="pagination justify-content-center" >

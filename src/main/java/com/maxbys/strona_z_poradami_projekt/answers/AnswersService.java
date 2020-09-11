@@ -1,12 +1,9 @@
 package com.maxbys.strona_z_poradami_projekt.answers;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +41,7 @@ public class AnswersService {
         return answersRepository.findAllByQuestionId(id, pageable);
     }
 
-    public Page<Object[]> findAllWithLinksByUserEmailIs(@Param("email") String email, Pageable pageable) {
-        return answersRepository.findAllWithLinksByUserEmailIs(email, pageable);
+    public Page<Answer> findAllByUser_Email(String email, Pageable pageable) {
+        return answersRepository.findAllByUser_Email(email, pageable);
     }
 }

@@ -1,5 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head lang="en" xmlns:th="http://www.thymeleaf.org">
     <title>Categories</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,40 +19,40 @@
 <!--        <a th:href="@{/categories/{id}/questions(id=${category.name}, page=0, size=5)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0">See questions</a>-->
 
         <h1 class="text-center">Your comments:<comments></comments>:</h1>
-        <div th:each="commentWithLinks: ${commentsWithLinks}" class="row mb-4 justify-content-center">
-            <a th:href="@{/{link}(link=${commentWithLinks[1]}, page=0, size=5)}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
-                <div th:text="${commentWithLinks[0].value}"></div>
-                <div class="text-right" th:text="'Author: ' + ${commentWithLinks[0].user.name}"></div>
-                <div class="text-right" th:text="'Creation date: ' + ${commentWithLinks[0].creationDate}"></div>
+        <div th:each="comment: ${comments}" class="row mb-4 justify-content-center">
+            <a th:href="@{/question/{questionId}(questionId=${comment.answer.question.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
+                <div th:text="${comment.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${comment.user.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${comment.creationDate}"></div>
             </a>
         </div>
-        <nav  th:if="${commentsWithLinks.totalPages > 1}">
+        <nav  th:if="${comments.totalPages > 1}">
             <ul class="pagination  justify-content-center">
-                <li class="page-item" th:classappend="${commentsWithLinks.pageable.pageNumber == 0}? 'disabled': ''">
+                <li class="page-item" th:classappend="${comments.pageable.pageNumber == 0}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
                        , page=0, size=5)}">First
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${commentsWithLinks.pageable.pageNumber == 0}? 'disabled': ''">
+                <li class="page-item" th:classappend="${comments.pageable.pageNumber == 0}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${commentsWithLinks.pageable.pageNumber - 1}, size=5)}">Previous
+                       , page=${comments.pageable.pageNumber - 1}, size=5)}">Previous
                     </a>
                 </li>
                 <li th:each="paginationNumber: ${paginationNumbers}" class="page-item"
-                    th:classappend="${commentsWithLinks.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
+                    th:classappend="${comments.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
                     <a class="page-link" th:text="${paginationNumber}"
                        th:href="@{{link}(link=${#httpServletRequest.requestURI}
                        , page=${paginationNumber - 1}, size=5)}">
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${commentsWithLinks.pageable.pageNumber + 1 == commentsWithLinks.totalPages}? 'disabled': ''">
+                <li class="page-item" th:classappend="${comments.pageable.pageNumber + 1 == comments.totalPages}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${commentsWithLinks.pageable.pageNumber + 1}, size=5)}">Next
+                       , page=${comments.pageable.pageNumber + 1}, size=5)}">Next
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${commentsWithLinks.pageable.pageNumber + 1 == commentsWithLinks.totalPages}? 'disabled': ''">
+                <li class="page-item" th:classappend="${comments.pageable.pageNumber + 1 == comments.totalPages}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${commentsWithLinks.totalPages - 1}, size=5)}">Last
+                       , page=${comments.totalPages - 1}, size=5)}">Last
                     </a>
                 </li>
             </ul>

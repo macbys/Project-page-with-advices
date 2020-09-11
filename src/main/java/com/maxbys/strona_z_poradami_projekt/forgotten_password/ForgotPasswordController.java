@@ -7,8 +7,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
-
 import javax.mail.MessagingException;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -39,10 +37,27 @@ public class ForgotPasswordController {
         String email = emailForm.getEmail();
         Optional<User> optionalUser = usersService.findByEmail(email);
         if(!optionalUser.isPresent()) {
-            String wrongEmailMsg = "There is no user with this email";
-            model.addAttribute("errorMsg", wrongEmailMsg);
-            return goToForgotPasswordForm(model);
+            return goToForgotPasswordPageWithError(model);
         }
+        String randomPathEnding = saveForgottenPasswordToken(email);
+        boolean canSendMail = checkIfCanSendMail(email, randomPathEnding);
+        if (canSendMail) {
+            return goToErrorPage(model, "There are some problems with our mailing service, we are sorry.");
+        }
+        return "successfully-sent-password";
+    }
+
+    private boolean checkIfCanSendMail(String email, String randomPathEnding) {
+        try {
+            mailService.sendMail(email, "Forgotten password", generateMessage(randomPathEnding, email),
+                    true);
+        } catch (MessagingException messagingException) {
+            return true;
+        }
+        return false;
+    }
+
+    private String saveForgottenPasswordToken(String email) {
         LocalDateTime expiryDate = LocalDateTime.now().plusMinutes(10);
         String randomPathEnding = UUID.randomUUID().toString();
         ForgottenPasswordToken forgottenPasswordToken = ForgottenPasswordToken.builder()
@@ -51,15 +66,18 @@ public class ForgotPasswordController {
                 .randomPathEnding(randomPathEnding)
                 .build();
         forgottenPasswordTokenService.save(forgottenPasswordToken);
-        try {
-            mailService.sendMail(email, "Forgotten password", generateMessage(randomPathEnding, email),
-                    true);
-        } catch (MessagingException messagingException) {
-            String errorMsg = "There are some problems with our mailing service, we are sorry.";
-            model.addAttribute("errorMsg", errorMsg);
-            return "error-page";
-        }
-        return "successfully-sent-password";
+        return randomPathEnding;
+    }
+
+    private String goToErrorPage(Model model, String errorMsg) {
+        model.addAttribute("errorMsg", errorMsg);
+        return "error-page";
+    }
+
+    private String goToForgotPasswordPageWithError(Model model) {
+        String wrongEmailMsg = "There is no user with this email";
+        model.addAttribute("errorMsg", wrongEmailMsg);
+        return goToForgotPasswordForm(model);
     }
 
     private String generateMessage(String randomPathEnding, String email) {
@@ -68,57 +86,30 @@ public class ForgotPasswordController {
                 "<a href='" + link + "'>" + link + "</a>";
     }
 
-
-
     @GetMapping("/change-password/{randomPathEnding}")
     private String changePasswordPage(Model model, @PathVariable String randomPathEnding,
                                       @RequestParam String email) {
-//        Optional<ForgottenPasswordToken> forgottenPasswordTokenOptional =
-//                forgottenPasswordTokenService.findById(email);
-//        String errorMsg;
-//        errorMsg = checkToken(forgottenPasswordTokenOptional, randomPathEnding);
-//        if(errorMsg != null) {
-//            model.addAttribute("errorMsg", errorMsg);
-//            return "error-page";
-//        }
-
         model.addAttribute("passwordChangeForm", new FormPasswordChange());
-//        ForgottenPasswordToken forgottenPasswordToken = forgottenPasswordTokenOptional
-//                .orElseThrow(() -> new IllegalArgumentException());
         return "change-password";
     }
 
-
-
     @PostMapping("/change-password/{randomPathEnding}")
-    public String changePassword(Model model, @PathVariable String randomPathEnding,
-                                 @RequestParam String email, @ModelAttribute
-                                 FormPasswordChange formPasswordChange) {
-        Optional<ForgottenPasswordToken> forgottenPasswordTokenOptional =
-                forgottenPasswordTokenService.findById(email);
-        String errorMsg;
-        errorMsg = checkToken(forgottenPasswordTokenOptional, randomPathEnding);
+    public String changePassword(Model model, @PathVariable String randomPathEnding, @RequestParam String email
+            , @ModelAttribute FormPasswordChange formPasswordChange) {
+        Optional<ForgottenPasswordToken> forgottenPasswordTokenOptional = forgottenPasswordTokenService.findById(email);
+        String errorMsg = checkToken(forgottenPasswordTokenOptional, randomPathEnding);
         if(errorMsg != null) {
-            model.addAttribute("errorMsg", errorMsg);
-            return "error-page";
+            goToErrorPage(model, errorMsg);
         }
-        String wrongPasswordMsg;
-        wrongPasswordMsg = checkPassword(formPasswordChange);
+        String wrongPasswordMsg = checkPassword(formPasswordChange);
         if(wrongPasswordMsg != null) {
             model.addAttribute("wrongPasswordMsg", wrongPasswordMsg);
             return changePasswordPage(model, randomPathEnding, email);
         }
-        Optional<User> userOptional = usersService.findByEmail(email);
-        User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        user.setPassword(formPasswordChange.getPassword());
-        usersService.save(user);
-        ForgottenPasswordToken forgottenPasswordToken = forgottenPasswordTokenOptional.get();
-        forgottenPasswordToken.setExpiryDate(LocalDateTime.now());
-        forgottenPasswordTokenService.save(forgottenPasswordToken);
-        return "redirect:/";
+        saveUserWithChangedPassword(email, formPasswordChange);
+        return goBackToHomePage(forgottenPasswordTokenOptional);
     }
 
-    //todo nie wiem czy podawać inny powód przy trzecim if'ie
     private String checkToken(Optional<ForgottenPasswordToken> forgottenPasswordTokenOptional, String randomPathEnding) {
         if(!forgottenPasswordTokenOptional.isPresent()) {
             return "There is no password change link for this email";
@@ -148,5 +139,23 @@ public class ForgotPasswordController {
                     " at least one digit and at least one special sign";
         }
         return null;
+    }
+
+    private void saveUserWithChangedPassword(@RequestParam String email, @ModelAttribute FormPasswordChange formPasswordChange) {
+        Optional<User> userOptional = usersService.findByEmail(email);
+        User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        user.setPassword(formPasswordChange.getPassword());
+        usersService.save(user);
+    }
+
+    private String goBackToHomePage(Optional<ForgottenPasswordToken> forgottenPasswordTokenOptional) {
+        settingForgottenPasswordTokenToExpired(forgottenPasswordTokenOptional);
+        return "redirect:/";
+    }
+
+    private void settingForgottenPasswordTokenToExpired(Optional<ForgottenPasswordToken> forgottenPasswordTokenOptional) {
+        ForgottenPasswordToken forgottenPasswordToken = forgottenPasswordTokenOptional.get();
+        forgottenPasswordToken.setExpiryDate(LocalDateTime.now());
+        forgottenPasswordTokenService.save(forgottenPasswordToken);
     }
 }

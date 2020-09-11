@@ -95,7 +95,7 @@ public class QuestionsController {
         questionsService.save(question);
     }
 
-    @GetMapping("/categories/{categoryName}/questions")
+    @GetMapping("/category/{categoryName}/questions")
     public String showQuestionsOfThisCategory(@PathVariable String categoryName, Model model, Pageable pageable) {
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5);
         Page<Question> questions = questionsService.findAllByCategoryIs(categoryName, pageRequest);
@@ -114,13 +114,13 @@ public class QuestionsController {
         return paginationNumbers;
     }
 
-    @GetMapping("/categories/{categoryName}/questions/{questionId}")
-    public String goToQuestionPage(@PathVariable Long questionId, @PathVariable("categoryName") String categoryId,
+    @GetMapping("/question/{questionId}")
+    public String goToQuestionPage(@PathVariable Long questionId,
                                    Model model, Pageable pageable) {
         addAllNecessaryFormTemplatesToModel(model);
-        Question question = findQuestion(questionId, categoryId);
+        Question question = findQuestion(questionId);
         model.addAttribute("question", question);
-        addCategoryToModel(categoryId, model);
+        addCategoryToModel(question.getCategory().getName(), model);
         Page<Answer> answers = answersService.findAllByQuestionId(questionId, pageable);
         model.addAttribute("answers", answers);
         List<Integer> paginationNumbers = getPaginationNumbersList(pageable, answers);
@@ -135,10 +135,10 @@ public class QuestionsController {
         model.addAttribute("editedQuestionForm", new Question());
     }
 
-    private Question findQuestion(Long questionId, String categoryName) {
-        Optional<Question> questionOptional = questionsService.findByIdAndCategoryName(questionId, categoryName);
+    private Question findQuestion(Long questionId) {
+        Optional<Question> questionOptional = questionsService.findById(questionId);
         return questionOptional.orElseThrow(() ->
-                new RuntimeException("There is no question with" + questionId + " id with " + categoryName + " category name"));
+                new RuntimeException("There is no question with" + questionId + " id"));
     }
 
     private void addCategoryToModel(String categoryName, Model model) {
@@ -165,8 +165,6 @@ public class QuestionsController {
     private List<AnswerWithComments> getAnswerWithCommentsList(Page<Answer> answers) {
         List<AnswerWithComments> answersWithComments = new ArrayList<>();
         for (Answer answer : answers) {
-            //todo sprawdzić czy to potrzebne
-            answer.getUser().setPassword("");
             Page<Comment> comments = commentsService.findAllByAnswerId(answer.getId(), PageRequest.of(0, 5));
             AnswerWithComments answerWithCommentsAdded = new AnswerWithComments(answer, comments);
             answersWithComments.add(answerWithCommentsAdded);
@@ -174,9 +172,9 @@ public class QuestionsController {
         return answersWithComments;
     }
 
-    @PostMapping("/categories/{categoryName}/questions/{questionId}/delete")
-    public RedirectView deleteQuestion(Principal principal, @PathVariable String categoryName, @PathVariable Long questionId) {
-        Question question = findQuestion(questionId, categoryName);
+    @PostMapping("/question/{questionId}/delete")
+    public RedirectView deleteQuestion(Principal principal, @PathVariable Long questionId) {
+        Question question = findQuestion(questionId);
         if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, question)) {
             questionsService.deleteById(questionId);
             return new RedirectView("/");
@@ -188,10 +186,10 @@ public class QuestionsController {
         return question.getUser().getEmail().equals(principal.getName());
     }
 
-    @PostMapping("/categories/{categoryName}/questions/{questionId}/update")
-    public RedirectView updateQuestion(RedirectAttributes redirectAttributes, @ModelAttribute Question questionForm, Principal principal, @PathVariable String categoryName, @PathVariable Long questionId, HttpServletRequest httpServletRequest) {
+    @PostMapping("/question/{questionId}/update")
+    public RedirectView updateQuestion(RedirectAttributes redirectAttributes, @ModelAttribute Question questionForm, Principal principal, @PathVariable Long questionId, HttpServletRequest httpServletRequest) {
         throwExceptionIfThereAreAnswersToEditedQuestion(questionId);
-        Question question = findQuestion(questionId, categoryName);
+        Question question = findQuestion(questionId);
         String questionValue = questionForm.getValue();
         boolean isQuestionShorterThan8Characters = checkQuestionsLength(questionValue);
         if(isQuestionShorterThan8Characters) {
@@ -199,7 +197,7 @@ public class QuestionsController {
         }
         if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, question)) {
             saveQuestionToRepository(questionForm, question);
-            return getRedirectViewToQuestionPage(httpServletRequest);
+            return new RedirectView(httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString());
         }
         return throwExceptionUserIsNotAllowedToEditThisQuestion(principal, questionId);
     }
@@ -212,13 +210,9 @@ public class QuestionsController {
     }
 
     private RedirectView getRedirectView(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
-        RedirectView redirectView = getRedirectViewToQuestionPage(httpServletRequest);
+        RedirectView redirectView = new RedirectView(httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString());
         redirectAttributes.addFlashAttribute("errorMsg", "Question must be at least 8 characters long");
         return redirectView;
-    }
-
-    private RedirectView getRedirectViewToQuestionPage(HttpServletRequest httpServletRequest) {
-        return new RedirectView(httpServletRequest.getRequestURI().replaceFirst("/update$", "") + "?page=0&size=5&sort=rating,desc", true);
     }
 
     private void saveQuestionToRepository(Question questionForm, Question question) {

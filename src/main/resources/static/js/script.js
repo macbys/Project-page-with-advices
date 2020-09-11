@@ -38,12 +38,11 @@ $(document).ready(function() {
         let pageNumber = Number($(this).attr("page"));
         $(this).attr("page", pageNumber + 1);
         $.ajax({
-            url: "http://localhost:8080/answers/" + answerId + "/comments",
+            url: "http://localhost:8080/answer/" + answerId + "/comments",
             data: {page: pageNumber, size: 5}
         }).then(function(data) {
             for(i = 0; i < data.content.length; i++) {
                 let comment = data.content[i];
-                console.log(principal);
                 if(principal == 'anonymousUser' || principal.email != comment.user.email) {
                     $("#comments" + answerId).append("<hr><div>" + comment.value + "</div><div> - " + comment.user.name + " created: "
                         + comment.creationDate +"</div>");
@@ -55,7 +54,6 @@ $(document).ready(function() {
             if(data.last) {
                 $("#clickToGetMoreComments" + answerId).remove();
             }
-            alert(JSON.stringify(data, undefined, 4))
         });
     });
 });

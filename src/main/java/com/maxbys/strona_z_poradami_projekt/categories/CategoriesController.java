@@ -33,7 +33,7 @@ public class CategoriesController {
         return "categories";
     }
 
-    @GetMapping("/categories/{id}")
+    @GetMapping("/category/{id}")
     public String showSubcategoriesOfCategory(@PathVariable String id, Model model, Pageable pageable) {
         Page<Category> subCategories = categoriesService.findAllByCategoryNameIs(id, pageable);
         model.addAttribute("categories", subCategories);
@@ -51,10 +51,10 @@ public class CategoriesController {
             return "add-question";
         }
         savingQuestionValueWhileAddingCategory(formQuestionTemplate, formQuestionTemplateModel);
-        return goToAddPage(model, formQuestionTemplate);
+        return goToAddQuestionPage(model, formQuestionTemplate);
     }
 
-    private String goToAddPage(Model model, FormQuestionTemplate formQuestionTemplate) {
+    private String goToAddQuestionPage(Model model, FormQuestionTemplate formQuestionTemplate) {
         saveCategoryToRepository(formQuestionTemplate);
         List<Category> categories = categoriesService.findAll();
         model.addAttribute("categories", categories);

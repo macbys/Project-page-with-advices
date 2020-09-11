@@ -33,16 +33,17 @@ public class AnswersController {
         this.answersService = answersService;
     }
 
-    @PostMapping("/categories/{categoryName}/questions/{questionId}")
-    public RedirectView addAnswer(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest, @ModelAttribute Answer answerForm,
-                                  @PathVariable String categoryName, @PathVariable Long questionId, Principal principal) {
+    @PostMapping("/question/{questionId}/answers")
+    public RedirectView addAnswer(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest, @ModelAttribute Answer answerForm
+                                  , @PathVariable Long questionId, Principal principal) {
         User user = getUser(principal);
-        Question question = getQuestion(categoryName, questionId);
+        Question question = getQuestion(questionId);
         if(answerForm.getValue().trim().length() < 8) {
-            return getRedirectViewToQuestionPageWithErrorMessage(redirectAttributes, httpServletRequest);
+            redirectAttributes.addFlashAttribute("errorMsg", "Answer must be at least 8 characters long");
+            return new RedirectView("/question/" + questionId + "?" + httpServletRequest.getQueryString());
         }
         saveAnswerInRepository(answerForm, user, question);
-        return new RedirectView(httpServletRequest.getRequestURI() + "?page=0&size=5");
+        return new RedirectView("/question/" + questionId + "?" + httpServletRequest.getQueryString());
     }
 
     private User getUser(Principal principal) {
@@ -51,14 +52,9 @@ public class AnswersController {
         return userOptional.orElseThrow(() -> new RuntimeException("User with email " + principalName + "doesn't exist"));
     }
 
-    private Question getQuestion(String categoryName, Long questionId) {
-        Optional<Question> questionOptional = questionsService.findByIdAndCategoryName(questionId, categoryName);
-        return questionOptional.orElseThrow(() -> new RuntimeException("There is no question with" + questionId + " id with " + categoryName + " category name"));
-    }
-
-    private RedirectView getRedirectViewToQuestionPageWithErrorMessage(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
-        redirectAttributes.addFlashAttribute("errorMsg", "Answer must be at least 8 characters long");
-        return new RedirectView(httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString());
+    private Question getQuestion(Long questionId) {
+        Optional<Question> questionOptional = questionsService.findById(questionId);
+        return questionOptional.orElseThrow(() -> new RuntimeException("There is no question with" + questionId + " id"));
     }
 
     private void saveAnswerInRepository(Answer answerForm, User user, Question question) {
@@ -71,9 +67,8 @@ public class AnswersController {
         answersService.save(answer);
     }
 
-    @PostMapping("/categories/{categoryName}/questions/{questionId}/answers/{answerId}/delete")
-    public RedirectView deleteQuestion(Principal principal, @PathVariable String categoryName, @PathVariable Long questionId, @PathVariable Long answerId) {
-        getQuestion(categoryName, questionId);
+    @PostMapping("/answer/{answerId}/delete")
+    public RedirectView deleteAnswer(Principal principal,  @PathVariable Long answerId) {
         Answer answer = getAnswer(answerId);
         if(answer.getUser().getEmail().equals(principal.getName())){
             answersService.deleteById(answerId);
@@ -90,13 +85,11 @@ public class AnswersController {
     @GetMapping("/profile/answers")
     String seeAllAnswersOfLoggedUser(Model model, Principal principal, Pageable pageable) {
         String userEmail = principal.getName();
-        Page<Object[]> answersWithLinks = answersService.findAllWithLinksByUserEmailIs(userEmail, pageable);
-        model.addAttribute("answersWithLinks", answersWithLinks);
+        Page<Answer> answersWithLinks = answersService.findAllByUser_Email(userEmail, pageable);
+        model.addAttribute("answers", answersWithLinks);
         List<Integer> paginationNumbers;
         paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), answersWithLinks.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);
         return "answers-of-user";
     }
-
-
 }

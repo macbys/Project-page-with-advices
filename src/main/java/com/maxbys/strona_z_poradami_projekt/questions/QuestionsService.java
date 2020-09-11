@@ -1,6 +1,5 @@
 package com.maxbys.strona_z_poradami_projekt.questions;
 
-import com.maxbys.strona_z_poradami_projekt.categories.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +15,6 @@ public class QuestionsService {
     @Autowired
     public QuestionsService(QuestionsRepository questionsRepository) {
         this.questionsRepository = questionsRepository;
-    }
-
-    public List<Question> findAll(){
-        return questionsRepository.findAll();
     }
 
     public Optional<Question> findById(Long id){
@@ -38,14 +33,6 @@ public class QuestionsService {
         return questionsRepository.findAllByCategoryNameIs(categoryId, pageable);
     }
 
-    public Optional<Question> findByIdAndCategoryName(Long id, String categoryId) {
-        return questionsRepository.findByIdAndCategoryName(id, categoryId);
-    }
-
-    public Optional<Category> getCategoryFromQuestionById(Long id) {
-        return questionsRepository.getCategoryFromQuestionById(id);
-    }
-
     public List<Question> findTop5ByOrderByIdDesc() {
         return questionsRepository.findTop5ByOrderByIdDesc();
     }
@@ -53,5 +40,4 @@ public class QuestionsService {
     public Page<Question> findAllByUserEmailIs(String email, Pageable pageable) {
         return questionsRepository.findAllByUserEmailIs(email, pageable);
     }
-
 }

@@ -52,7 +52,7 @@
                                 Answer
                             </a>
                         </div>
-                        <form class="collapse mt-3" th:classappend="${errorMsg == 'Answer must be at least 8 characters long'}? ' show' : ''" id="answer-form" action="#" th:action="@{#}" method="post" th:object="${answerForm}">
+                        <form class="collapse mt-3" th:classappend="${errorMsg == 'Answer must be at least 8 characters long'}? ' show' : ''" id="answer-form" action="#" th:action="@{{link}/answers(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${answerForm}">
                             <div th:if="${errorMsg == 'Answer must be at least 8 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
                             <div class="form-group">
                                 <textarea class="form-control" th:field="*{value}"></textarea>
@@ -112,13 +112,13 @@
                 <div th:each="answerWithCommnets: ${answersWithComments}" class="card bg-secondary text-white mb-3">
                     <div class="card-body row justify-content-between" >
                         <div class="col-1 d-flex flex-column align-items-center justify-content-center">
-                            <form class="mb-0" action="#" method="post" th:action="@{{questionId}/answers/{answerId}/rateUp(answerId=${answerWithCommnets.answer.id}, questionId=${question.id})}">
+                            <form class="mb-0" action="#" method="post" th:action="@{/answer/{answerId}/rateUp(answerId=${answerWithCommnets.answer.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
                                 <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-up-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="this.closest('form').submit();return false;">
                                     <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 8.354a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 6.207V11a.5.5 0 0 1-1 0V6.207L5.354 8.354z"/>
                                 </svg>
                             </form>
                             <div class="my-1" th:text="${answerWithCommnets.answer.rating}"></div>
-                            <form class="mb-0" action="#" method="post" th:action="@{{questionId}/answers/{answerId}/rateDown(answerId=${answerWithCommnets.answer.id}, questionId=${question.id})}">
+                            <form class="mb-0" action="#" method="post" th:action="@{/answer/{answerId}/rateDown(answerId=${answerWithCommnets.answer.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
                                 <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-down-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="this.closest('form').submit();return false;">
                                     <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 5a.5.5 0 0 0-1 0v4.793L5.354 7.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 9.793V5z"/>
                                 </svg>
@@ -152,7 +152,7 @@
                         </div>
                         <div>
                             <form th:id="'comment-form' + ${answerWithCommnets.answer.id}" class="collapse mt-3" th:classappend="${commentAnswerIdError == answerWithCommnets.answer.id}? ' show' : ''"
-                                  id="comment-form" action="#" th:action="@{{originalAdress}/answers/{answerId}(originalAdress=${#httpServletRequest.requestURI}, answerId=${answerWithCommnets.answer.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${commentForm}">
+                                  id="comment-form" action="#" th:action="@{/answer/{answerId}/comments(answerId=${answerWithCommnets.answer.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${commentForm}">
                                 <div th:if="${commentAnswerIdError == answerWithCommnets.answer.id}" th:text="${errorMsg}" class="alert alert-danger"></div>
                                 <div class="form-group">
                                     <textarea class="form-control" th:field="*{value}"></textarea>
@@ -196,7 +196,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form method="post" action="#" th:action="@{{link}/answers/{answerId}/delete(link=${#httpServletRequest.requestURI}, answerId=${answerWithCommnets.answer.id})}">
+                                    <form method="post" action="#" th:action="@{/answer/{answerId}/delete(answerId=${answerWithCommnets.answer.id})}">
 <!--                                        <input type="hidden" name="answerId" id="answerId" th:value="${answerWithCommnets.answer.id}">-->
                                         <div class="row justify-content-around">
                                             <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
@@ -217,7 +217,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="deleting-comment-form" method="post" action="#" th:action="@{{link}/answers/{answerId}/comments(link=${#httpServletRequest.requestURI}, answerId=${answerWithCommnets.answer.id})}">
+                                    <form id="deleting-comment-form" method="post" action="#" th:action="@{/comment}">
                                         <div class="row justify-content-around">
                                             <button type="button" role="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
                                             <input type="submit" class="btn btn-primary col-3" value="yes">
@@ -232,29 +232,29 @@
                     <ul class="pagination  justify-content-center" th:if="${answers.totalPages > 1}">
                         <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
                             <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=0, size=5)}">First
+                       , page=0, size=5, sort=${param.sort})}">First
                             </a>
                         </li>
                         <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
                             <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answers.pageable.pageNumber - 1}, size=5)}">Previous
+                       , page=${answers.pageable.pageNumber - 1}, size=5, sort=${param.sort})}">Previous
                             </a>
                         </li>
                         <li th:each="paginationNumber: ${paginationNumbers}" class="page-item"
                             th:classappend="${answers.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
                             <a class="page-link" th:text="${paginationNumber}"
                                th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${paginationNumber - 1}, size=5)}">
+                       , page=${paginationNumber - 1}, size=5, sort=${param.sort})}">
                             </a>
                         </li>
                         <li class="page-item" th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
                             <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answers.pageable.pageNumber + 1}, size=5)}">Next
+                       , page=${answers.pageable.pageNumber + 1}, size=5, sort=${param.sort})}">Next
                             </a>
                         </li>
                         <li class="page-item" th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
                             <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answers.totalPages - 1}, size=5)}">Last
+                       , page=${answers.totalPages - 1}, size=5, sort=${param.sort})}">Last
                             </a>
                         </li>
                     </ul>

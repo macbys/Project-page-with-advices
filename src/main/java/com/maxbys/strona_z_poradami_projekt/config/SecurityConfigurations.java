@@ -2,14 +2,11 @@ package com.maxbys.strona_z_poradami_projekt.config;
 
 import com.maxbys.strona_z_poradami_projekt.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
@@ -25,7 +22,6 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(usersService);
     }
 
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -40,7 +36,9 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers("/forgot-password").permitAll()
                 .antMatchers("/change-password/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/categories/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/answers/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/category/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/question/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/answer/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

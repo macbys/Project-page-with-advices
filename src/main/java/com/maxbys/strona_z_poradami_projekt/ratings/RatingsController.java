@@ -2,6 +2,7 @@ package com.maxbys.strona_z_poradami_projekt.ratings;
 
 import com.maxbys.strona_z_poradami_projekt.answers.Answer;
 import com.maxbys.strona_z_poradami_projekt.answers.AnswersService;
+import com.maxbys.strona_z_poradami_projekt.questions.Question;
 import com.maxbys.strona_z_poradami_projekt.users.User;
 import com.maxbys.strona_z_poradami_projekt.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.view.RedirectView;
-
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 public class RatingsController {
-
 
     private final AnswersService answersService;
     private final UsersService usersService;
@@ -31,62 +28,86 @@ public class RatingsController {
         this.ratingsService = ratingsService;
     }
 
-    @PostMapping("categories/{categoryId}/questions/{questionId}/answers/{answerId}/rateUp")
-    public RedirectView rateAnswerUp(Principal principal, HttpServletRequest httpServletRequest, @PathVariable Long answerId, @PathVariable String categoryId, @PathVariable String questionId) {
+    @PostMapping("/answer/{answerId}/rateUp")
+    public RedirectView rateAnswerUp(Principal principal, HttpServletRequest httpServletRequest, @PathVariable Long answerId) {
         RatingInfo ratingInfo = new RatingInfo(principal, answerId).invoke();
-        Answer answer = ratingInfo.getAnswer();
-        RatingId ratingId = ratingInfo.getRatingId();
         Optional<Rating> ratingOptional = ratingInfo.getRatingOptional();
-        Integer ratingValue = ratingInfo.getRatingValue();
         if(ratingOptional.isPresent()) {
-            Rating rating = ratingOptional.get();
-            if(rating.getValue() == -1) {
-                answer.setRating(ratingValue + 2);
-                rating.setValue((byte) 1);
-                ratingsService.save(rating);
-            } else {
-                ratingsService.deleteById(ratingId);
-                answer.setRating(ratingValue - 1);
-            }
+            setUpRatingUpIfExist(ratingInfo, ratingOptional);
         } else {
-            Rating rating = new Rating(ratingId, (byte) 1);
-            ratingsService.save(rating);
-            answer.setRating(ratingValue + 1);
+            setUpRatingUpIfDoesntExist(ratingInfo);
         }
-        answersService.save(answer);
-        String uri = Arrays.stream(httpServletRequest.getRequestURI().split("/")).limit(5).collect(Collectors.joining("/"));
-        return new RedirectView( uri + "?page=0&size=5&sort=rating");
+        return getRedirectViewToQuestionPage(httpServletRequest, ratingInfo);
     }
 
-    @PostMapping("categories/{categoryId}/questions/{questionId}/answers/{answerId}/rateDown")
-    public RedirectView rateAnswerDown(Principal principal, HttpServletRequest httpServletRequest, @PathVariable Long answerId, @PathVariable String categoryId, @PathVariable String questionId) { 
-        RatingInfo ratingInfo = new RatingInfo(principal, answerId).invoke();
-        Answer answer = ratingInfo.getAnswer();
-        RatingId ratingId = ratingInfo.getRatingId();
-        Optional<Rating> ratingOptional = ratingInfo.getRatingOptional();
+    private void setUpRatingUpIfExist(RatingInfo ratingInfo, Optional<Rating> ratingOptional) {
+        Rating rating = ratingOptional.get();
         Integer ratingValue = ratingInfo.getRatingValue();
-        if(ratingOptional.isPresent()) {
-            Rating rating = ratingOptional.get();
-            if(rating.getValue() == 1) {
-                answer.setRating(ratingValue - 2);
-                rating.setValue((byte) -1);
-                ratingsService.save(rating);
-            } else {
-                ratingsService.deleteById(ratingId);
-                answer.setRating(ratingValue + 1);
-            }
-
+        Answer answer = ratingInfo.getAnswer();
+        if(rating.getValue() == -1) {
+            answer.setRating(ratingValue + 2);
+            saveRatingWithValue(rating, 1);
         } else {
-            Rating rating = new Rating(ratingId, (byte) -1);
-            ratingsService.save(rating);
+            RatingId ratingId = rating.getRatingId();
+            ratingsService.deleteById(ratingId);
             answer.setRating(ratingValue - 1);
         }
-        answersService.save(answer);
-        String uri = Arrays.stream(httpServletRequest.getRequestURI().split("/")).limit(5).collect(Collectors.joining("/"));
-        return new RedirectView( uri + "?page=0&size=5&sort=rating");
     }
 
+    private void saveRatingWithValue(Rating rating, int value) {
+        rating.setValue((byte) value);
+        ratingsService.save(rating);
+    }
 
+    private void setUpRatingUpIfDoesntExist(RatingInfo ratingInfo) {
+        RatingId ratingId = ratingInfo.getRatingId();
+        Rating rating = new Rating(ratingId, (byte) 1);
+        ratingsService.save(rating);
+        Integer ratingValue = ratingInfo.getRatingValue();
+        ratingInfo.getAnswer().setRating(ratingValue + 1);
+    }
+
+    private RedirectView getRedirectViewToQuestionPage(HttpServletRequest httpServletRequest, RatingInfo ratingInfo) {
+        Answer answer = ratingInfo.getAnswer();
+        answersService.save(answer);
+        Question question = answer.getQuestion();
+        Long questionId = question.getId();
+        return new RedirectView("/question/" + questionId + "?" + httpServletRequest.getQueryString());
+    }
+
+    @PostMapping("/answer/{answerId}/rateDown")
+    public RedirectView rateAnswerDown(Principal principal, HttpServletRequest httpServletRequest, @PathVariable Long answerId) {
+        RatingInfo ratingInfo = new RatingInfo(principal, answerId).invoke();
+        Optional<Rating> ratingOptional = ratingInfo.getRatingOptional();
+        if(ratingOptional.isPresent()) {
+            setDownRatingUpIfExist(ratingInfo, ratingOptional);
+        } else {
+            setUpRatingDownIfDoesntExist(ratingInfo);
+        }
+        return getRedirectViewToQuestionPage(httpServletRequest, ratingInfo);
+    }
+
+    private void setDownRatingUpIfExist(RatingInfo ratingInfo, Optional<Rating> ratingOptional) {
+        Rating rating = ratingOptional.get();
+        Integer ratingValue = ratingInfo.getRatingValue();
+        Answer answer = ratingInfo.getAnswer();
+        if(rating.getValue() == 1) {
+            answer.setRating(ratingValue - 2);
+            saveRatingWithValue(rating, -1);
+        } else {
+            RatingId ratingId = rating.getRatingId();
+            ratingsService.deleteById(ratingId);
+            answer.setRating(ratingValue + 1);
+        }
+    }
+
+    private void setUpRatingDownIfDoesntExist(RatingInfo ratingInfo) {
+        RatingId ratingId = ratingInfo.getRatingId();
+        Rating rating = new Rating(ratingId, (byte) -1);
+        ratingsService.save(rating);
+        Integer ratingValue = ratingInfo.getRatingValue();
+        ratingInfo.getAnswer().setRating(ratingValue - 1);
+    }
 
     private class RatingInfo {
         private Principal principal;

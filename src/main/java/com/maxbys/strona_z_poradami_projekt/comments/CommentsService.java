@@ -1,12 +1,9 @@
 package com.maxbys.strona_z_poradami_projekt.comments;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,10 +14,6 @@ public class CommentsService {
     @Autowired
     public CommentsService(CommentsRepository commentsRepository) {
         this.commentsRepository = commentsRepository;
-    }
-
-    public List<Comment> findAll(){
-        return commentsRepository.findAll();
     }
 
     public Optional<Comment> findById(Long id){
@@ -39,11 +32,7 @@ public class CommentsService {
         return commentsRepository.findAllByAnswerId(id, pageable);
     }
 
-    public List<Comment> findAllByAnswerId(Long id) {
-        return commentsRepository.findAllByAnswerId(id);
-    }
-
-    public Page<Object[]> findAllWithLinksByUserEmailIs(String email, Pageable pageable) {
-        return commentsRepository.findAllWithLinksByUserEmailIs(email, pageable);
+    public Page<Comment> findAllByUser_Email(String email, Pageable pageable) {
+        return commentsRepository.findAllByUser_Email(email, pageable);
     }
 }

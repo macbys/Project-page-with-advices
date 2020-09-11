@@ -1,5 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head lang="en" xmlns:th="http://www.thymeleaf.org">
     <title>Categories</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,40 +19,40 @@
 <!--        <a th:href="@{/categories/{id}/questions(id=${category.name}, page=0, size=5)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0">See questions</a>-->
 
         <h1 class="text-center">Your answers:</h1>
-        <div th:each="answerWithLinks: ${answersWithLinks}" class="row mb-4 justify-content-center">
-            <a th:href="@{/{link}(link=${answerWithLinks[1]}, page=0, size=5)}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
-                <div th:text="${answerWithLinks[0].value}"></div>
-                <div class="text-right" th:text="'Author: ' + ${answerWithLinks[0].user.name}"></div>
-                <div class="text-right" th:text="'Creation date: ' + ${answerWithLinks[0].creationDate}"></div>
+        <div th:each="answer: ${answers}" class="row mb-4 justify-content-center">
+            <a th:href="@{/question/{questionId}(questionId=${answer.question.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
+                <div th:text="${answer.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${answer.user.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${answer.creationDate}"></div>
             </a>
         </div>
-        <nav  th:if="${answersWithLinks.totalPages > 1}">
+        <nav  th:if="${answers.totalPages > 1}">
             <ul class="pagination  justify-content-center">
-                <li class="page-item" th:classappend="${answersWithLinks.pageable.pageNumber == 0}? 'disabled': ''">
+                <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
                        , page=0, size=5)}">First
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${answersWithLinks.pageable.pageNumber == 0}? 'disabled': ''">
+                <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answersWithLinks.pageable.pageNumber - 1}, size=5)}">Previous
+                       , page=${answers.pageable.pageNumber - 1}, size=5)}">Previous
                     </a>
                 </li>
                 <li th:each="paginationNumber: ${paginationNumbers}" class="page-item"
-                    th:classappend="${answersWithLinks.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
+                    th:classappend="${answers.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
                     <a class="page-link" th:text="${paginationNumber}"
                        th:href="@{{link}(link=${#httpServletRequest.requestURI}
                        , page=${paginationNumber - 1}, size=5)}">
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${answersWithLinks.pageable.pageNumber + 1 == answersWithLinks.totalPages}? 'disabled': ''">
+                <li class="page-item" th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answersWithLinks.pageable.pageNumber + 1}, size=5)}">Next
+                       , page=${answers.pageable.pageNumber + 1}, size=5)}">Next
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${answersWithLinks.pageable.pageNumber + 1 == answersWithLinks.totalPages}? 'disabled': ''">
+                <li class="page-item" th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answersWithLinks.totalPages - 1}, size=5)}">Last
+                       , page=${answers.totalPages - 1}, size=5)}">Last
                     </a>
                 </li>
             </ul>
