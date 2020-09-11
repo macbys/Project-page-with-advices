@@ -1,0 +1,282 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <title>Question</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+
+
+
+
+</head>
+<body class="bg-dark">
+<nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
+<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-user'"></nav>
+<div class="wrapper">
+    <div class="container m-t-86">
+        <div class="row justify-content-center">
+            <div id="questions-answers-comments" class="col-10 justify-content-center">
+
+                <div class="card bg-warning mb-3">
+<!--                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser'}">aaaaaaaaaa</div>-->
+                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.user.email}" class="card-body" th:text="${question.value}">
+                    </div>
+<!--                    <div th:text="${#authentication.getPrincipal().name}"></div>-->
+                    <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == question.user.email}" class="card-body row justify-content-between" >
+                        <div th:text="${question.value}" class="col-md-11" ></div>
+                        <div  class="col-md-1 row mr-0 justify-content-end">
+                            <div>
+                                <a class="d-block btn btn-danger w-100 text-white" role="button" type="button" data-toggle="modal" data-target="#deleteQuestion">Delete</a>
+                                <a th:if="${answersWithComments.size() == 0}" class="d-block btn btn-info w-100 text-white" role="button" type="button" data-toggle="modal" data-target="#editQuestion">Edit</a>
+                                <a th:if="${answersWithComments.size() != 0}" class="d-block btn btn-info w-100 text-white popover-dismiss" type="button" title="" role="button" data-toggle="popover" data-trigger="focus"  href="#" data-placement="top" data-content="Question must have zero answers to be editable">Edit</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row justify-content-between">
+                            <div class="col-lg-3">
+                                Author: <span th:text="${question.user.name}"></span>
+                            </div>
+                            <div class="col-lg-3">
+                                Category: <span th:text="${category.name}"></span>
+                            </div>
+                            <div class="col-lg-3">
+                                Creation date: <span th:text="${question.creationDate}"></span>
+                            </div>
+                            <a class="col-lg-3 btn btn-primary" data-toggle="collapse"
+                            href="#answer-form" role="button" type="button" aria-expanded="false" aria-controls="answer-form">
+                                Answer
+                            </a>
+                        </div>
+                        <form class="collapse mt-3" th:classappend="${errorMsg == 'Answer must be at least 8 characters long'}? ' show' : ''" id="answer-form" action="#" th:action="@{#}" method="post" th:object="${answerForm}">
+                            <div th:if="${errorMsg == 'Answer must be at least 8 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
+                            <div class="form-group">
+                                <textarea class="form-control" th:field="*{value}"></textarea>
+                            </div>
+                            <input type="submit"  class="btn btn-primary float-right" value="Answer">
+                        </form>
+                    </div>
+                </div>
+                <div class="modal " id="deleteQuestion" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content bg-secondary">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-white">Are u sure?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span class="text-white" aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="post" action="#" th:action="@{{link}/delete(link=${#httpServletRequest.requestURI})}" >
+                                    <!--                                        <input type="hidden" name="questionId" id="questionId" th:value="${question.id}">-->
+                                    <div class="row justify-content-around">
+                                        <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
+                                        <input type="submit" class="btn btn-primary col-3" value="yes">
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal " id="editQuestion" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content bg-secondary">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-white">Edit question</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span class="text-white" aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <form th:object="${editedQuestionForm}" method="post" action="#" th:action="@{{link}/update(link=${#httpServletRequest.requestURI})}">
+                            <div class="modal-body">
+                                <div th:if="${errorMsg == 'Question must be at least 8 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
+                                <div class="form-group row">
+
+                                    <textarea id="questionEdited" class="form-control col-12" name="value" th:text="${question.value}">
+                                    </textarea>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                                    <input type="submit" class="btn btn-primary" value="Edit">
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div th:each="answerWithCommnets: ${answersWithComments}" class="card bg-secondary text-white mb-3">
+                    <div class="card-body row justify-content-between" >
+                        <div class="col-1 d-flex flex-column align-items-center justify-content-center">
+                            <form class="mb-0" action="#" method="post" th:action="@{{questionId}/answers/{answerId}/rateUp(answerId=${answerWithCommnets.answer.id}, questionId=${question.id})}">
+                                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-up-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="this.closest('form').submit();return false;">
+                                    <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 8.354a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 6.207V11a.5.5 0 0 1-1 0V6.207L5.354 8.354z"/>
+                                </svg>
+                            </form>
+                            <div class="my-1" th:text="${answerWithCommnets.answer.rating}"></div>
+                            <form class="mb-0" action="#" method="post" th:action="@{{questionId}/answers/{answerId}/rateDown(answerId=${answerWithCommnets.answer.id}, questionId=${question.id})}">
+                                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-down-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="this.closest('form').submit();return false;">
+                                    <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 5a.5.5 0 0 0-1 0v4.793L5.354 7.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 9.793V5z"/>
+                                </svg>
+                            </form>
+                        </div>
+
+                        <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != answerWithCommnets.answer.user.email}" class="col-lg-11" th:text="${answerWithCommnets.answer.value}"></div>
+                        <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == answerWithCommnets.answer.user.email}"  class="ml-0 col-lg-11 row justify-content-between">
+                            <div class="col-lg-10" th:text="${answerWithCommnets.answer.value}"></div>
+                            <div class="col-lg-2">
+                                <div>
+                                    <a class="btn-danger btn" role="button" type="button" data-toggle="modal" data-target="#deleteAnswer">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-footer">
+                        <div class="row justify-content-between">
+                            <div class="col-lg-3">
+                                Author: <span th:text="${answerWithCommnets.answer.user.name}"></span>
+                            </div>
+                            <div class="col-lg-3">
+                                Creation date: <span th:text="${answerWithCommnets.answer.creationDate}"></span>
+                            </div>
+                            <a class="col-lg-3 btn btn-primary" data-toggle="collapse" type="button"
+                               th:href="'#comment-form' + ${answerWithCommnets.answer.id}" th:attr="aria-controls='comment-form' + ${answerWithCommnets.answer.id}"
+                               aria-expanded="false">
+                                Comment
+                            </a>
+                        </div>
+                        <div>
+                            <form th:id="'comment-form' + ${answerWithCommnets.answer.id}" class="collapse mt-3" th:classappend="${commentAnswerIdError == answerWithCommnets.answer.id}? ' show' : ''"
+                                  id="comment-form" action="#" th:action="@{{originalAdress}/answers/{answerId}(originalAdress=${#httpServletRequest.requestURI}, answerId=${answerWithCommnets.answer.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${commentForm}">
+                                <div th:if="${commentAnswerIdError == answerWithCommnets.answer.id}" th:text="${errorMsg}" class="alert alert-danger"></div>
+                                <div class="form-group">
+                                    <textarea class="form-control" th:field="*{value}"></textarea>
+                                </div>
+                                <div class="form-group d-flex justify-content-end">
+                                    <input type="submit" class="btn btn-primary" value="Comment">
+                                </div>
+                            </form>
+                        </div>
+                        <div th:id="'comments' + ${answerWithCommnets.answer.id}">
+                            <div th:each="comment: ${answerWithCommnets.comments}">
+                                <hr>
+                                <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != comment.user.email}">
+                                    <div th:text="${comment.value}"></div>
+                                    <div th:text="' - ' + ${comment.user.name} +
+                                        ' created: ' + ${comment.creationDate}">
+                                    </div>
+                                </div>
+                                <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == comment.user.email}" class="row">
+
+                                    <div class="col-11" th:text="${comment.value}">
+                                    </div>
+                                    <a th:attr="comment-id = ${comment.id}" class="btn btn-danger col-1 delete-comment-button" role="button" type="button" data-toggle="modal" data-target="#deleteComment">Delete</a>
+                                    <div class="col-12" th:text="' - ' + ${comment.user.name} +
+                                        ' created: ' + ${comment.creationDate}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a class="text-primary d-flex justify-content-center" th:if="${answerWithCommnets.comments.totalPages > 1}" th:id="'clickToGetMoreComments' + ${answerWithCommnets.answer.id}" th:value="${answerWithCommnets.answer.id}"
+                           page="1">Show more comments</a>
+                    </div>
+
+                    <div class="modal " id="deleteAnswer" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content bg-secondary">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Are u sure?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span class="text-white" aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" action="#" th:action="@{{link}/answers/{answerId}/delete(link=${#httpServletRequest.requestURI}, answerId=${answerWithCommnets.answer.id})}">
+<!--                                        <input type="hidden" name="answerId" id="answerId" th:value="${answerWithCommnets.answer.id}">-->
+                                        <div class="row justify-content-around">
+                                            <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
+                                            <input type="submit" class="btn btn-primary col-3" value="yes">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal" id="deleteComment" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content bg-secondary">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Are u sure?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span class="text-white" aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="deleting-comment-form" method="post" action="#" th:action="@{{link}/answers/{answerId}/comments(link=${#httpServletRequest.requestURI}, answerId=${answerWithCommnets.answer.id})}">
+                                        <div class="row justify-content-around">
+                                            <button type="button" role="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
+                                            <input type="submit" class="btn btn-primary col-3" value="yes">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <nav>
+                    <ul class="pagination  justify-content-center" th:if="${answers.totalPages > 1}">
+                        <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
+                            <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=0, size=5)}">First
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
+                            <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answers.pageable.pageNumber - 1}, size=5)}">Previous
+                            </a>
+                        </li>
+                        <li th:each="paginationNumber: ${paginationNumbers}" class="page-item"
+                            th:classappend="${answers.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
+                            <a class="page-link" th:text="${paginationNumber}"
+                               th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${paginationNumber - 1}, size=5)}">
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
+                            <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answers.pageable.pageNumber + 1}, size=5)}">Next
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
+                            <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answers.totalPages - 1}, size=5)}">Last
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <input type="hidden" value="1" id="shownPagesInput">
+
+    </div>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    let answersWithComments = /*[[${answersWithComments}]]*/ "Test";
+    let question = /*[[${question}]]*/ "Test";
+    let principal = /*[[${#authentication.getPrincipal()}]]*/ "Test";
+    let errorMsg = /*[[${errorMsg}]]*/ "Test";
+
+    /*]]>*/
+</script>
+<script src="/js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+</body>
+</html>

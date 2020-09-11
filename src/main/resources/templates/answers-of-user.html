@@ -1,0 +1,66 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <title>Categories</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+
+</head>
+<body class="bg-dark">
+<nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
+<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-user'"></nav>
+<div class="wrapper">
+    <div class="container m-t-86 text-white">
+<!--        <div th:text="${category.name}" class="h3 col-md-8 bg-primary m-0 p-2 text-center text-white">-->
+<!--        </div>-->
+<!--        <a th:href="@{/categories/{id}(id=${category.name})}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-warning rounded-0">See sub-categories</a>-->
+<!--        <a th:href="@{/categories/{id}/questions(id=${category.name}, page=0, size=5)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0">See questions</a>-->
+
+        <h1 class="text-center">Your answers:</h1>
+        <div th:each="answerWithLinks: ${answersWithLinks}" class="row mb-4 justify-content-center">
+            <a th:href="@{/{link}(link=${answerWithLinks[1]}, page=0, size=5)}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
+                <div th:text="${answerWithLinks[0].value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${answerWithLinks[0].user.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${answerWithLinks[0].creationDate}"></div>
+            </a>
+        </div>
+        <nav  th:if="${answersWithLinks.totalPages > 1}">
+            <ul class="pagination  justify-content-center">
+                <li class="page-item" th:classappend="${answersWithLinks.pageable.pageNumber == 0}? 'disabled': ''">
+                    <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=0, size=5)}">First
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${answersWithLinks.pageable.pageNumber == 0}? 'disabled': ''">
+                    <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answersWithLinks.pageable.pageNumber - 1}, size=5)}">Previous
+                    </a>
+                </li>
+                <li th:each="paginationNumber: ${paginationNumbers}" class="page-item"
+                    th:classappend="${answersWithLinks.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
+                    <a class="page-link" th:text="${paginationNumber}"
+                       th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${paginationNumber - 1}, size=5)}">
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${answersWithLinks.pageable.pageNumber + 1 == answersWithLinks.totalPages}? 'disabled': ''">
+                    <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answersWithLinks.pageable.pageNumber + 1}, size=5)}">Next
+                    </a>
+                </li>
+                <li class="page-item" th:classappend="${answersWithLinks.pageable.pageNumber + 1 == answersWithLinks.totalPages}? 'disabled': ''">
+                    <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answersWithLinks.totalPages - 1}, size=5)}">Last
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+</body>
+</html>

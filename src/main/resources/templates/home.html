@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Please Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+</head>
+<body class="bg-dark">
+<nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
+<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-user'"></nav>
+<div class="wrapper">
+    <div class="container m-t-86 text-white">
+        <h1 class="text-center">Newest questions:</h1>
+        <div th:each="question: ${newestQuestions}" class="row mb-4 justify-content-center">
+            <a th:href="@{/categories/{categoryId}/questions/{id}(categoryId=${question.category.name}, id=${question.id}, page=0, size=5, sort='rating,desc')}" role="button" class="btn btn-warning col-md-8  text-left p-2 d-block question-card-link">
+                <div th:text="${question.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${question.user.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${question.creationDate}"></div>
+<!--                <div class="text-right" th:text="'Creation date: ' + ${#temporals.format(question.creationDate,'dd-MM-yyyy')}"></div>-->
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+</body>
+</html>

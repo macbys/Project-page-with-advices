@@ -1,0 +1,89 @@
+<html  xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <title>Please Login</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
+</head>
+<body class="bg-dark">
+<div class="wrapper">
+    <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
+    <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-user'"></nav>
+    <div class="container m-t-86">
+        <div class="card bg-secondary text-white">
+            <div class="card-header">
+                <h3>Ask question</h3>
+
+            </div>
+            <div class="card-body">
+                <form action="#" th:action="@{/add-question}" method="post" th:object="${question}">
+                    <div class="alert alert-danger" th:if="${errorMsg}" th:text="${errorMsg}"></div>
+                    <div class="form-group row">
+                        <label for="question" class="col-form-label col-2">Question:</label>
+
+                        <textarea id="question" class="form-control col-10"  th:field="*{questionValue}">
+                        </textarea>
+
+                    </div>
+                    <div class="form-group row d-flex align-items-center">
+                        <label for="question" class="col-form-label col-2">Choose category or create new :</label>
+                        <select th:field="*{category}" class="form-control col-3">
+                            <option th:each="categorySelect: ${categories}" th:value="${categorySelect.name}"
+                                    th:text="${categorySelect.name}">
+                            </option>
+                        </select>
+                        <button class="btn btn-warning ml-4" type="button" data-toggle="modal" data-target="#addCategory">
+                            Create new
+                        </button>
+                    </div>
+                    <input type="submit" value="Ask question" class="btn btn-primary float-right">
+                    <div class="modal " id="addCategory" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content bg-secondary">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Create new category</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span class="text-white" aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group row d-flex align-items-center">
+                                        <label for="question" class="col-form-label col-3">Choose sub-category:</label>
+                                        <select th:field="*{superiorCategory}" class="form-control col-8">
+                                            <option th:value="''"></option>
+                                            <option th:each="categorySelect: ${categories}" th:value="${categorySelect.name}"
+                                                    th:text="${categorySelect.name}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label for="question" class="col-form-label col-3">Category name:</label>
+                                        <input th:field="*{createdCategory}" class="form-control col-8">
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
+                                    <input type="submit" value="Create new" class="btn btn-primary" th:formaction="@{/add-category}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+        integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+</body>
+</html>
