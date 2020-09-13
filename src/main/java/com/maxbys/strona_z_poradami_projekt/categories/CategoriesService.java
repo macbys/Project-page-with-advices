@@ -2,10 +2,12 @@ package com.maxbys.strona_z_poradami_projekt.categories;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoriesService {
@@ -17,27 +19,56 @@ public class CategoriesService {
         this.categoriesRepository = categoriesRepository;
     }
 
-    public List<Category> findAll(){
-        return categoriesRepository.findAll();
+    public List<CategoryDTO> findAllByOrOrderByName(){
+        List<CategoryEntity> categoryEntities = categoriesRepository.findAllByOrderByName();
+        List<CategoryDTO> categoryDTOS = categoryEntities.stream()
+                .map(ce -> CategoryDTO.apply(ce))
+                .collect(Collectors.toList());
+        return categoryDTOS;
     }
 
-    public Optional<Category> findById(String id){
-        return categoriesRepository.findById(id);
+    public CategoryDTO findById(String categoryName){
+        Optional<CategoryEntity> categoryEntityOptional = categoriesRepository.findById(categoryName);
+        CategoryEntity categoryEntity = categoryEntityOptional.orElseThrow(() ->
+                new RuntimeException("Category with name " + categoryName + " doesn't exist"));
+        CategoryDTO categoryDTO = CategoryDTO.apply(categoryEntity);
+        return categoryDTO;
     }
 
-    public void save(Category category){
-        categoriesRepository.save(category);
+    public void save(CategoryDTO categoryDTO){
+        CategoryEntity superiorCategory;
+        CategoryDTO superiorCategoryDTO = categoryDTO.getSuperiorCategory();
+        if(superiorCategoryDTO == null) {
+            superiorCategory = null;
+        } else {
+            String superiorCategoryName = superiorCategoryDTO.getName();
+            Optional<CategoryEntity> superiorCategoryOptional = categoriesRepository.findById(superiorCategoryName);
+            superiorCategory = superiorCategoryOptional.orElseThrow(() ->
+                    new RuntimeException("Category with name " + superiorCategoryName + " doesn't exist"));
+        }
+        CategoryEntity categoryEntity = CategoryEntity.apply(categoryDTO, superiorCategory);
+        categoriesRepository.save(categoryEntity);
     }
 
     public void deleteById(String id){
         categoriesRepository.deleteById(id);
     }
 
-    public Page<Category> findAllByCategoryIsNull(Pageable pageable) {
-        return categoriesRepository.findAllByCategoryIsNull(pageable);
+    public Page<CategoryDTO> findAllByCategoryIsNull(Pageable pageable) {
+        Page<CategoryEntity> allByCategoryIsNull = categoriesRepository.findAllBySuperiorCategoryIsNull(pageable);
+        return getCategoryDTOS(pageable, allByCategoryIsNull);
     }
 
-    public Page<Category> findAllByCategoryNameIs(String id, Pageable pageable) {
-        return categoriesRepository.findAllByCategoryNameIs(id, pageable);
+    private Page<CategoryDTO> getCategoryDTOS(Pageable pageable, Page<CategoryEntity> allByCategoryIsNull) {
+        List<CategoryDTO> categoryDTOList = allByCategoryIsNull.stream()
+                .map(ce -> CategoryDTO.apply(ce))
+                .collect(Collectors.toList());
+        PageImpl<CategoryDTO> categoryDTOS = new PageImpl<>(categoryDTOList, pageable, allByCategoryIsNull.getTotalElements());
+        return categoryDTOS;
+    }
+
+    public Page<CategoryDTO> findAllByCategoryNameIs(String id, Pageable pageable) {
+        Page<CategoryEntity> allByCategoryIsNull = categoriesRepository.findAllBySuperiorCategoryNameIs(id, pageable);
+        return getCategoryDTOS(pageable, allByCategoryIsNull);
     }
 }

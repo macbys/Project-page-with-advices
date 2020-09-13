@@ -1,4 +1,4 @@
-package com.maxbys.strona_z_poradami_projekt.config;
+package com.maxbys.strona_z_poradami_projekt.configurations;
 
 import com.maxbys.strona_z_poradami_projekt.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-//                .csrf().disable()
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/css/**").permitAll()
@@ -48,6 +48,6 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .logout().permitAll();
-//        http.headers().frameOptions().disable();
+        http.headers().frameOptions().disable();
     }
 }

@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.maxbys</groupId>
-    <artifactId>strona_z_poradami_projekt</artifactId>
+    <artifactId>page_with_tips_project</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>strona_z_poradami_projekt</name>
+    <name>page_with_tips_project</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

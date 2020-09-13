@@ -24,45 +24,50 @@ public class UserController {
 
     @GetMapping("/register")
     public String goToRegisterPage(Model model) {
-        FormUserTemplate formUserTemplate = new FormUserTemplate();
-        model.addAttribute("formUser", formUserTemplate);
+        FormUserTemplateDTO formUserTemplateDTO = new FormUserTemplateDTO();
+        model.addAttribute("formUser", formUserTemplateDTO);
         return "register";
     }
 
     @PostMapping("/register")
-    public String postRegisterData(Model model, @ModelAttribute FormUserTemplate userData) {
+    public String postRegisterData(Model model, @ModelAttribute FormUserTemplateDTO userData) {
         List<String> errorMsgs = new ArrayList<>();
         checkUserParams(userData, errorMsgs);
         if(!errorMsgs.isEmpty()) {
             model.addAttribute("errorMsgs", errorMsgs);
             return goToRegisterPage(model);
         }
-        saveUserIntoRepository(userData);
+        usersService.save(userData);
         return "/login";
     }
 
-    private void checkUserParams(FormUserTemplate userData, List<String> errorMsg) {
+    private void checkUserParams(FormUserTemplateDTO userData, List<String> errorMsg) {
         validatingEmail(userData, errorMsg);
         validatingVisibleName(userData, errorMsg);
         validatingPassword(userData, errorMsg);
     }
 
-    private void validatingEmail(FormUserTemplate userData, List<String> errorMsg) {
-        if(usersService.findByEmail(userData.getEmail()).isPresent()){
-            errorMsg.add("There already is user with this email");
+    private void validatingEmail(FormUserTemplateDTO userData, List<String> errorMsg) {
+        UserDTO userDTO = null;
+        try {
+            userDTO = usersService.findByEmail(userData.getEmail());
+        } catch(RuntimeException ex) {
+        }
+        if(userDTO != null) {
+            errorMsg.add("User with email " + userData.getEmail() + " already exist");
         }
         if(!userData.getEmail().matches(".+@.+\\..+")){
             errorMsg.add("Wrong email form");
         }
     }
 
-    private void validatingVisibleName(FormUserTemplate userData, List<String> errorMsg) {
+    private void validatingVisibleName(FormUserTemplateDTO userData, List<String> errorMsg) {
         if(!userData.getName().matches("[a-zA-Z\\d]{6,16}")){
             errorMsg.add("Nickname can't have special characters and must have between 6 and 16 characters");
         }
     }
 
-    private void validatingPassword(FormUserTemplate userData, List<String> errorMsg) {
+    private void validatingPassword(FormUserTemplateDTO userData, List<String> errorMsg) {
         if(!userData.getPassword().equals(userData.getPassword_repeated())){
             errorMsg.add("Repeated password doesn't match first password");
         }
@@ -73,47 +78,41 @@ public class UserController {
         }
     }
 
-    private void saveUserIntoRepository(@ModelAttribute FormUserTemplate userData) {
-        User newUser = User.builder()
-                .name(userData.getName())
-                .email(userData.getEmail())
-                .password(userData.getPassword())
-                .build();
-        usersService.save(newUser);
-    }
+
 
     @GetMapping("/profile/edit")
     public String goToEditProfilePage(Principal principal, Model model) {
-        User user = getUser(principal);
-        FormUserTemplate formUserTemplate = new FormUserTemplate();
-        formUserTemplate.setName(user.getName());
-        model.addAttribute("formUser", formUserTemplate);
+        UserDTO userDTO = getUser(principal);
+        FormUserTemplateDTO formUserTemplateDTO = new FormUserTemplateDTO();
+        formUserTemplateDTO.setName(userDTO.getName());
+        model.addAttribute("formUser", formUserTemplateDTO);
         return "edit-profile";
     }
 
-    private User getUser(Principal principal) {
+    private UserDTO getUser(Principal principal) {
         String principalName = principal.getName();
-        Optional<User> userOptional = usersService.findByEmail(principalName);
-        return userOptional.orElseThrow(() -> new RuntimeException("User with email " + principalName + "doesn't exist"));
+        UserDTO userOptional = usersService.findByEmail(principalName);
+        return userOptional;
     }
 
     @PostMapping("/profile/edit")
-    public RedirectView editProfile(HttpServletRequest request, Principal principal, RedirectAttributes redirectAttributes, @ModelAttribute FormUserTemplate editedUserData) {
-        User user = getUser(principal);
+    public RedirectView editProfile(HttpServletRequest request, Principal principal, RedirectAttributes redirectAttributes, @ModelAttribute FormUserTemplateDTO editedUserData) {
+        UserDTO userDTO = getUser(principal);
+        editedUserData.setEmail(userDTO.getEmail());
         boolean isEditProfileFormInvalid = checkFormForErrors(redirectAttributes, editedUserData);
         if (isEditProfileFormInvalid) {
             return new RedirectView("/profile/edit");
         }
         request.setAttribute(
                 View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
-        boolean isPasswordEdited = editProfileWithPassword(editedUserData, user);
+        boolean isPasswordEdited = editProfileWithPassword(editedUserData, userDTO);
         if (isPasswordEdited) {
             return new RedirectView("/logout");
         }
-        return editProfileWithoutPassword(user);
+        return editProfileWithoutPassword(editedUserData);
     }
 
-    private boolean checkFormForErrors(RedirectAttributes redirectAttributes, @ModelAttribute FormUserTemplate editedUserData) {
+    private boolean checkFormForErrors(RedirectAttributes redirectAttributes, FormUserTemplateDTO editedUserData) {
         List<String> errorMsgs = new ArrayList<>();
         checkEditedUserParams(editedUserData, errorMsgs);
         if(!errorMsgs.isEmpty()) {
@@ -123,23 +122,22 @@ public class UserController {
         return false;
     }
 
-    private void checkEditedUserParams(FormUserTemplate userData, List<String> errorMsg) {
+    private void checkEditedUserParams(FormUserTemplateDTO userData, List<String> errorMsg) {
         validatingVisibleName(userData, errorMsg);
         validatingPassword(userData, errorMsg);
     }
 
-    private boolean editProfileWithPassword(@ModelAttribute FormUserTemplate editedUserData, User user) {
-        user.setName(editedUserData.getName());
+    private boolean editProfileWithPassword(FormUserTemplateDTO editedUserData, UserDTO userDTO) {
+        userDTO.setName(editedUserData.getName());
         if(!(editedUserData.getPassword().isEmpty() && editedUserData.getPassword_repeated().isEmpty())) {
-            user.setPassword(editedUserData.getPassword());
-            usersService.save(user);
+            usersService.save(editedUserData);
             return true;
         }
         return false;
     }
 
-    private RedirectView editProfileWithoutPassword(User user) {
-        usersService.saveWithoutEncoding(user);
+    private RedirectView editProfileWithoutPassword(FormUserTemplateDTO formUserTemplateDTO) {
+        usersService.saveWithoutEncoding(formUserTemplateDTO);
         return new RedirectView("/logout");
     }
 }

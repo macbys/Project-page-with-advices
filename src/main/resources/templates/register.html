@@ -9,7 +9,7 @@
 </head>
 <body>
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
-<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-user'"></nav>
+<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper bg-dark h-100 d-flex align-items-center">
     <div class="container">
         <div class="row justify-content-center">

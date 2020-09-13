@@ -4,7 +4,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CategoriesRepository extends JpaRepository<Category, String> {
-    Page<Category> findAllByCategoryIsNull(Pageable pageable);
-    Page<Category> findAllByCategoryNameIs(String category, Pageable pageable);
+import java.util.List;
+
+public interface CategoriesRepository extends JpaRepository<CategoryEntity, String> {
+    List<CategoryEntity> findAllByOrderByName();
+    Page<CategoryEntity> findAllBySuperiorCategoryIsNull(Pageable pageable);
+    Page<CategoryEntity> findAllBySuperiorCategoryNameIs(String category, Pageable pageable);
 }

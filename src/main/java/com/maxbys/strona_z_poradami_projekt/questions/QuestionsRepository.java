@@ -6,8 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
 
-public interface QuestionsRepository extends JpaRepository<Question, Long> {
-    Page<Question> findAllByCategoryNameIs(String category, Pageable pageable);
-    Page<Question> findAllByUserEmailIs(@Param("email") String email, Pageable pageable);
-    List<Question> findTop5ByOrderByIdDesc();
+public interface QuestionsRepository extends JpaRepository<QuestionEntity, Long> {
+    Page<QuestionEntity> findAllByCategoryEntityNameIs(String category, Pageable pageable);
+    Page<QuestionEntity> findAllByUserEntityEmailIs(@Param("email") String email, Pageable pageable);
+    List<QuestionEntity> findTop5ByOrderByIdDesc();
 }
+

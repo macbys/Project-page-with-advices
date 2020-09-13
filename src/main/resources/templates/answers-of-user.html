@@ -10,7 +10,7 @@
 </head>
 <body class="bg-dark">
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
-<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-user'"></nav>
+<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
 <!--        <div th:text="${category.name}" class="h3 col-md-8 bg-primary m-0 p-2 text-center text-white">-->
@@ -19,11 +19,11 @@
 <!--        <a th:href="@{/categories/{id}/questions(id=${category.name}, page=0, size=5)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0">See questions</a>-->
 
         <h1 class="text-center">Your answers:</h1>
-        <div th:each="answer: ${answers}" class="row mb-4 justify-content-center">
-            <a th:href="@{/question/{questionId}(questionId=${answer.question.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
-                <div th:text="${answer.value}"></div>
-                <div class="text-right" th:text="'Author: ' + ${answer.user.name}"></div>
-                <div class="text-right" th:text="'Creation date: ' + ${answer.creationDate}"></div>
+        <div th:each="answerDTO: ${answers}" class="row mb-4 justify-content-center">
+            <a th:href="@{/question/{questionId}(questionId=${answerDTO.questionDTO.id}, page=0, size=5, sort='ratingDTO,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
+                <div class="white-space-pre-wrap" th:text="${answerDTO.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${answerDTO.userDTO.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${answerDTO.creationDate}"></div>
             </a>
         </div>
         <nav  th:if="${answers.totalPages > 1}">

@@ -1,6 +1,6 @@
 package com.maxbys.strona_z_poradami_projekt.main_page;
 
-import com.maxbys.strona_z_poradami_projekt.questions.Question;
+import com.maxbys.strona_z_poradami_projekt.questions.QuestionDTO;
 import com.maxbys.strona_z_poradami_projekt.questions.QuestionsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +18,8 @@ public class MainPageController {
 
     @GetMapping("/")
     public String goToMainPage(Model model) {
-        List<Question> questions = questionsService.findTop5ByOrderByIdDesc();
-        model.addAttribute("newestQuestions", questions);
+        List<QuestionDTO> questionDTOS = questionsService.findTop5ByOrderByIdDesc();
+        model.addAttribute("newestQuestions", questionDTOS);
         return "home";
     }
 }

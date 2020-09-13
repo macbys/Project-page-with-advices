@@ -1,11 +1,9 @@
 package com.maxbys.strona_z_poradami_projekt.paginagtion;
 
-import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Service
 public class PaginationGenerator{
 
     public static List<Integer> createPaginationList(int currentPage, int totalPages) {

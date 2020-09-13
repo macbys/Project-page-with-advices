@@ -6,20 +6,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-
 @SpringBootApplication
-public class StronaZPoradamiProjektApplication {
+public class PageWithTipsProjectApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(StronaZPoradamiProjektApplication.class, args);
+        SpringApplication.run(PageWithTipsProjectApplication.class, args);
     }
 
     @Bean
     PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(5);
+        return new BCryptPasswordEncoder(10);
     }
-//    @Bean
-//    public SpringSecurityDialect springSecurityDialect() {
-//        return new SpringSecurityDialect();
-//    }
 }

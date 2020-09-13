@@ -1,7 +1,7 @@
 package com.maxbys.strona_z_poradami_projekt.questions;
 
-import com.maxbys.strona_z_poradami_projekt.answers.Answer;
-import com.maxbys.strona_z_poradami_projekt.comments.Comment;
+import com.maxbys.strona_z_poradami_projekt.answers.AnswerDTO;
+import com.maxbys.strona_z_poradami_projekt.comments.CommentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +13,6 @@ import org.springframework.data.domain.Page;
 @AllArgsConstructor
 @Builder
 public class AnswerWithComments {
-    private Answer answer;
-    private Page<Comment> comments;
+    private AnswerDTO answerDTO;
+    private Page<CommentDTO> comments;
 }

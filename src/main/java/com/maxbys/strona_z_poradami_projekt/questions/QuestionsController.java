@@ -1,13 +1,13 @@
 package com.maxbys.strona_z_poradami_projekt.questions;
 
-import com.maxbys.strona_z_poradami_projekt.answers.Answer;
+import com.maxbys.strona_z_poradami_projekt.answers.AnswerDTO;
 import com.maxbys.strona_z_poradami_projekt.answers.AnswersService;
 import com.maxbys.strona_z_poradami_projekt.categories.CategoriesService;
-import com.maxbys.strona_z_poradami_projekt.categories.Category;
-import com.maxbys.strona_z_poradami_projekt.comments.Comment;
+import com.maxbys.strona_z_poradami_projekt.categories.CategoryDTO;
+import com.maxbys.strona_z_poradami_projekt.comments.CommentDTO;
 import com.maxbys.strona_z_poradami_projekt.comments.CommentsService;
 import com.maxbys.strona_z_poradami_projekt.paginagtion.PaginationGenerator;
-import com.maxbys.strona_z_poradami_projekt.users.User;
+import com.maxbys.strona_z_poradami_projekt.users.UserDTO;
 import com.maxbys.strona_z_poradami_projekt.users.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class QuestionsController {
@@ -44,7 +43,7 @@ public class QuestionsController {
 
     @GetMapping("/add-question")
     public String goToAddQuestionPage(Model model) {
-        List<Category> categories = categoriesService.findAll();
+        List<CategoryDTO> categories = categoriesService.findAllByOrOrderByName();
         model.addAttribute("categories", categories);
         model.addAttribute("question", new FormQuestionTemplate());
         return "add-question";
@@ -57,9 +56,8 @@ public class QuestionsController {
         if (isQuestionShorterThan8Characters) {
             return getRedirectViewToAddQuestionPageWithErrorMessage(redirectAttributes);
         }
-        Category category = findCategory(formQuestionTemplate);
-        User user = findUser(principal);
-        saveQuestionToRepository(formQuestionTemplate, category, user);
+        UserDTO userDTO = findUser(principal);
+        questionsService.save(formQuestionTemplate, userDTO);
         return new RedirectView("/");
     }
 
@@ -72,40 +70,22 @@ public class QuestionsController {
         return new RedirectView("/add-question");
     }
 
-    private Category findCategory(FormQuestionTemplate formQuestionTemplate) {
-        String formTemplateCategory = formQuestionTemplate.getCategory();
-        Optional<Category> categoryOptional = categoriesService.findById(formTemplateCategory);
-        return categoryOptional.orElseThrow(() ->
-                new RuntimeException("Category " + formTemplateCategory + " doesn't exist"));
-    }
-
-    private User findUser(Principal principal) {
+    private UserDTO findUser(Principal principal) {
         String principalName = principal.getName();
-        Optional<User> userOptional = usersService.findByEmail(principalName);
-        return userOptional.orElseThrow(() ->
-                new RuntimeException("User with email " + principalName + "doesn't exist"));
-    }
-
-    private void saveQuestionToRepository(FormQuestionTemplate formQuestionTemplate, Category category, User user) {
-        Question question = Question.builder()
-                .value(formQuestionTemplate.getQuestionValue())
-                .category(category)
-                .user(user)
-                .build();
-        questionsService.save(question);
+        return usersService.findByEmail(principalName);
     }
 
     @GetMapping("/category/{categoryName}/questions")
     public String showQuestionsOfThisCategory(@PathVariable String categoryName, Model model, Pageable pageable) {
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5);
-        Page<Question> questions = questionsService.findAllByCategoryIs(categoryName, pageRequest);
+        Page<QuestionDTO> questions = questionsService.findAllByCategoryIs(categoryName, pageRequest);
         model.addAttribute("questions", questions);
         List<Integer> paginationNumbers = getPaginationNumbers(model, pageable, questions);
         model.addAttribute("paginationNumbers", paginationNumbers);
         return "questions";
     }
 
-    private List<Integer> getPaginationNumbers(Model model, Pageable pageable, Page<Question> questions) {
+    private List<Integer> getPaginationNumbers(Model model, Pageable pageable, Page<QuestionDTO> questions) {
         int currentPage = pageable.getPageNumber() + 1;
         model.addAttribute("currentPage", currentPage);
         int totalPages = questions.getTotalPages();
@@ -118,10 +98,10 @@ public class QuestionsController {
     public String goToQuestionPage(@PathVariable Long questionId,
                                    Model model, Pageable pageable) {
         addAllNecessaryFormTemplatesToModel(model);
-        Question question = findQuestion(questionId);
-        model.addAttribute("question", question);
-        addCategoryToModel(question.getCategory().getName(), model);
-        Page<Answer> answers = answersService.findAllByQuestionId(questionId, pageable);
+        QuestionDTO questionDTO = findQuestion(questionId);
+        model.addAttribute("question", questionDTO);
+        addCategoryToModel(questionDTO.getCategoryDTO().getName(), model);
+        Page<AnswerDTO> answers = answersService.findAllByQuestionId(questionId, pageable);
         model.addAttribute("answers", answers);
         List<Integer> paginationNumbers = getPaginationNumbersList(pageable, answers);
         model.addAttribute("paginationNumbers", paginationNumbers);
@@ -130,43 +110,40 @@ public class QuestionsController {
     }
 
     private void addAllNecessaryFormTemplatesToModel(Model model) {
-        model.addAttribute("answerForm", new Answer());
-        model.addAttribute("commentForm", new Comment());
-        model.addAttribute("editedQuestionForm", new Question());
+        model.addAttribute("answerForm", new AnswerDTO());
+        model.addAttribute("commentForm", new CommentDTO());
+        model.addAttribute("editedQuestionForm", new FormQuestionTemplate());
     }
 
-    private Question findQuestion(Long questionId) {
-        Optional<Question> questionOptional = questionsService.findById(questionId);
-        return questionOptional.orElseThrow(() ->
-                new RuntimeException("There is no question with" + questionId + " id"));
+    private QuestionDTO findQuestion(Long questionId) {
+        return questionsService.findById(questionId);
     }
 
     private void addCategoryToModel(String categoryName, Model model) {
-        Category category = getCategory(categoryName);
-        model.addAttribute("category", category);
+        CategoryDTO categoryDTO = getCategory(categoryName);
+        model.addAttribute("category", categoryDTO);
     }
 
-    private Category getCategory( String categoryName) {
-        Optional<Category> categoryOptional = categoriesService.findById(categoryName);
-        return categoryOptional.get();
+    private CategoryDTO getCategory(String categoryName) {
+        return categoriesService.findById(categoryName);
     }
 
-    private List<Integer> getPaginationNumbersList(Pageable pageable, Page<Answer> answers) {
+    private List<Integer> getPaginationNumbersList(Pageable pageable, Page<AnswerDTO> answers) {
         int currentPageStartingFrom1 = pageable.getPageNumber() + 1;
         int totalPages = answers.getTotalPages();
         return PaginationGenerator.createPaginationList(currentPageStartingFrom1, totalPages);
     }
 
-    private void addAnswersWithCommentsToModel(Model model, Page<Answer> answers) {
+    private void addAnswersWithCommentsToModel(Model model, Page<AnswerDTO> answers) {
         List<AnswerWithComments> answersWithComments = getAnswerWithCommentsList(answers);
         model.addAttribute("answersWithComments", answersWithComments);
     }
 
-    private List<AnswerWithComments> getAnswerWithCommentsList(Page<Answer> answers) {
+    private List<AnswerWithComments> getAnswerWithCommentsList(Page<AnswerDTO> answers) {
         List<AnswerWithComments> answersWithComments = new ArrayList<>();
-        for (Answer answer : answers) {
-            Page<Comment> comments = commentsService.findAllByAnswerId(answer.getId(), PageRequest.of(0, 5));
-            AnswerWithComments answerWithCommentsAdded = new AnswerWithComments(answer, comments);
+        for (AnswerDTO answerDTO : answers) {
+            Page<CommentDTO> comments = commentsService.findAllByAnswerId(answerDTO.getId(), PageRequest.of(0, 5));
+            AnswerWithComments answerWithCommentsAdded = new AnswerWithComments(answerDTO, comments);
             answersWithComments.add(answerWithCommentsAdded);
         }
         return answersWithComments;
@@ -174,30 +151,30 @@ public class QuestionsController {
 
     @PostMapping("/question/{questionId}/delete")
     public RedirectView deleteQuestion(Principal principal, @PathVariable Long questionId) {
-        Question question = findQuestion(questionId);
-        if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, question)) {
+        QuestionDTO questionDTO = findQuestion(questionId);
+        if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, questionDTO)) {
             questionsService.deleteById(questionId);
             return new RedirectView("/");
         }
         throw new RuntimeException("User with email " + principal.getName() + " isn't allowed to delete question with " + questionId + " id");
     }
 
-    private boolean checkIfLoggedUserIsAllowedToEditThisQuestion(Principal principal, Question question) {
-        return question.getUser().getEmail().equals(principal.getName());
+    private boolean checkIfLoggedUserIsAllowedToEditThisQuestion(Principal principal, QuestionDTO questionDTO) {
+        return questionDTO.getUserDTO().getEmail().equals(principal.getName());
     }
 
     @PostMapping("/question/{questionId}/update")
-    public RedirectView updateQuestion(RedirectAttributes redirectAttributes, @ModelAttribute Question questionForm, Principal principal, @PathVariable Long questionId, HttpServletRequest httpServletRequest) {
+    public RedirectView updateQuestion(RedirectAttributes redirectAttributes, @ModelAttribute FormQuestionTemplate formQuestionTemplate, Principal principal, @PathVariable Long questionId, HttpServletRequest httpServletRequest) {
         throwExceptionIfThereAreAnswersToEditedQuestion(questionId);
-        Question question = findQuestion(questionId);
-        String questionValue = questionForm.getValue();
+        QuestionDTO questionDTO = findQuestion(questionId);
+        String questionValue = formQuestionTemplate.getQuestionValue();
         boolean isQuestionShorterThan8Characters = checkQuestionsLength(questionValue);
         if(isQuestionShorterThan8Characters) {
             return getRedirectView(redirectAttributes, httpServletRequest);
         }
-        if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, question)) {
-            saveQuestionToRepository(questionForm, question);
-            return new RedirectView(httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString());
+        if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, questionDTO)) {
+            questionsService.update(formQuestionTemplate, questionId);
+            return new RedirectView(httpServletRequest.getRequestURI().replaceFirst("/update$", "") + "?" + httpServletRequest.getQueryString());
         }
         return throwExceptionUserIsNotAllowedToEditThisQuestion(principal, questionId);
     }
@@ -210,14 +187,9 @@ public class QuestionsController {
     }
 
     private RedirectView getRedirectView(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
-        RedirectView redirectView = new RedirectView(httpServletRequest.getRequestURI() + "?" + httpServletRequest.getQueryString());
+        RedirectView redirectView = new RedirectView(httpServletRequest.getRequestURI().replaceFirst("/update$", "") + "?" + httpServletRequest.getQueryString());
         redirectAttributes.addFlashAttribute("errorMsg", "Question must be at least 8 characters long");
         return redirectView;
-    }
-
-    private void saveQuestionToRepository(Question questionForm, Question question) {
-        question.setValue(questionForm.getValue());
-        questionsService.save(question);
     }
 
     private RedirectView throwExceptionUserIsNotAllowedToEditThisQuestion(Principal principal, Long questionId) {
@@ -228,7 +200,7 @@ public class QuestionsController {
     @GetMapping("/profile/questions")
     String seeAllQuestionsOfLoggedUser(Model model, Principal principal, Pageable pageable) {
         String userEmail = principal.getName();
-        Page<Question> questions = questionsService.findAllByUserEmailIs(userEmail, pageable);
+        Page<QuestionDTO> questions = questionsService.findAllByUserEmailIs(userEmail, pageable);
         model.addAttribute("questions", questions);
         List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), questions.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);

@@ -12,40 +12,41 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-        <div class="navbar-nav">
+        <div class="navbar-nav mr-auto">
             <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/'}? 'active' : ''" th:href="@{/}">Home <span class="sr-only">(current)</span></a></a>
             <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/categories'}? 'active' : ''" th:href="@{/categories(page=0,size=5,sort='name')}">Categories</a>
-            <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/login'}? 'active' : ''" th:href="@{/login}">Login</a>
         </div>
+        <a class="btn btn-light text-primary" th:classappend="${#httpServletRequest.requestURI == '/login'}? 'active' : ''" th:href="@{/login}"><b>Login</b></a>
     </div>
 </nav>
-<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary" th:fragment="navbar-user">
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary" th:fragment="navbar-userDTO">
     <img class="navbar-brand" src="/images/logo.png" >
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkupUser" aria-controls="navbarNavAltMarkupUser" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkupUser">
-        <div class="navbar-nav">
+        <div class="navbar-nav mr-auto">
             <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/'}? 'active' : ''" th:href="@{/}">Home</a>
             <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/categories'}? 'active' : ''" th:href="@{/categories(page=0,size=5,sort='name')}">Categories</a>
-            <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/add-question'}? 'active' : ''" th:href="@{/add-question}">Add question</a>
-            <div class="nav-item dropdown"  th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/profile')}? 'active' : ''">
-                <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Profile
-                </a>
+            <a class="nav-item nav-link mr-auto" th:classappend="${#httpServletRequest.requestURI == '/add-question'}? 'active' : ''" th:href="@{/add-question}">Add question</a>
+        </div>
+        <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+            <div class="btn-group"  th:classappend="${#strings.startsWith(#httpServletRequest.requestURI,'/profile')}? 'active' : ''">
+                <button class="btn-light btn text-primary" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <b>Profile</b>
+                </button>
                 <div class="dropdown-menu bg-primary" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item bg-primary text-white" href="/profile/edit">Edit profile</a>
+                    <a class="dropdown-item bg-primary text-white" href="/profile/edit">Edit profile</a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item bg-primary text-white" href="/profile/questions">My questions</a>
                     <a class="dropdown-item bg-primary text-white" href="/profile/answers">My answers</a>
                     <a class="dropdown-item bg-primary text-white" href="/profile/comments">My comments</a>
                 </div>
             </div>
-<!--            <a class="nav-item nav-link"  th:href="@{/profile}">Profile</a>-->
-            <form class="mb-0"  th:action="@{/logout}" method="post">
-                <input class="nav-item nav-link btn-link btn m-0 border-0" type="submit" value="Logout">
+            <!--            <a class="nav-item nav-link"  th:href="@{/profile}">Profile</a>-->
+            <form class="mb-0 btn-group"  th:action="@{/logout}" method="post">
+                <input class="btn-light btn text-primary font-weight-bold" type="submit" value="Logout">
             </form>
-<!--            <a class="nav-item nav-link" th:href="@{/logout}">Logout</a>-->
         </div>
     </div>
 </nav>

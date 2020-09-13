@@ -1,5 +1,5 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head lang="en" xmlns:th="http://www.thymeleaf.org">
     <title>Question</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -15,7 +15,7 @@
 </head>
 <body class="bg-dark">
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
-<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-user'"></nav>
+<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86">
         <div class="row justify-content-center">
@@ -23,11 +23,11 @@
 
                 <div class="card bg-warning mb-3">
 <!--                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser'}">aaaaaaaaaa</div>-->
-                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.user.email}" class="card-body" th:text="${question.value}">
+                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.userDTO.email}" class="card-body white-space-pre-wrap" th:text="${question.value}">
                     </div>
 <!--                    <div th:text="${#authentication.getPrincipal().name}"></div>-->
-                    <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == question.user.email}" class="card-body row justify-content-between" >
-                        <div th:text="${question.value}" class="col-md-11" ></div>
+                    <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == question.userDTO.email}" class="card-body row justify-content-between" >
+                        <div th:text="${question.value}" class="col-md-11 white-space-pre-wrap" ></div>
                         <div  class="col-md-1 row mr-0 justify-content-end">
                             <div>
                                 <a class="d-block btn btn-danger w-100 text-white" role="button" type="button" data-toggle="modal" data-target="#deleteQuestion">Delete</a>
@@ -39,7 +39,7 @@
                     <div class="card-footer">
                         <div class="row justify-content-between">
                             <div class="col-lg-3">
-                                Author: <span th:text="${question.user.name}"></span>
+                                Author: <span th:text="${question.userDTO.name}"></span>
                             </div>
                             <div class="col-lg-3">
                                 Category: <span th:text="${category.name}"></span>
@@ -48,11 +48,11 @@
                                 Creation date: <span th:text="${question.creationDate}"></span>
                             </div>
                             <a class="col-lg-3 btn btn-primary" data-toggle="collapse"
-                            href="#answer-form" role="button" type="button" aria-expanded="false" aria-controls="answer-form">
+                            href="#answerDTO-form" role="button" type="button" aria-expanded="false" aria-controls="answerDTO-form">
                                 Answer
                             </a>
                         </div>
-                        <form class="collapse mt-3" th:classappend="${errorMsg == 'Answer must be at least 8 characters long'}? ' show' : ''" id="answer-form" action="#" th:action="@{{link}/answers(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${answerForm}">
+                        <form class="collapse mt-3" th:classappend="${errorMsg == 'Answer must be at least 8 characters long'}? ' show' : ''" id="answerDTO-form" action="#" th:action="@{{link}/answers(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${answerForm}">
                             <div th:if="${errorMsg == 'Answer must be at least 8 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
                             <div class="form-group">
                                 <textarea class="form-control" th:field="*{value}"></textarea>
@@ -91,12 +91,11 @@
                                     <span class="text-white" aria-hidden="true">×</span>
                                 </button>
                             </div>
-                            <form th:object="${editedQuestionForm}" method="post" action="#" th:action="@{{link}/update(link=${#httpServletRequest.requestURI})}">
+                            <form th:object="${editedQuestionForm}" method="post" action="#" th:action="@{{link}/update(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
                             <div class="modal-body">
                                 <div th:if="${errorMsg == 'Question must be at least 8 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
                                 <div class="form-group row">
-
-                                    <textarea id="questionEdited" class="form-control col-12" name="value" th:text="${question.value}">
+                                    <textarea id="questionEdited" class="form-control col-12 white-space-pre-wrap" name="questionValue" th:text="${question.value}">
                                     </textarea>
                                 </div>
 
@@ -112,48 +111,47 @@
                 <div th:each="answerWithCommnets: ${answersWithComments}" class="card bg-secondary text-white mb-3">
                     <div class="card-body row justify-content-between" >
                         <div class="col-1 d-flex flex-column align-items-center justify-content-center">
-                            <form class="mb-0" action="#" method="post" th:action="@{/answer/{answerId}/rateUp(answerId=${answerWithCommnets.answer.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
+                            <form class="mb-0" action="#" method="post" th:action="@{/answer/{answerId}/rateUp(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
                                 <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-up-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="this.closest('form').submit();return false;">
                                     <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 8.354a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 6.207V11a.5.5 0 0 1-1 0V6.207L5.354 8.354z"/>
                                 </svg>
                             </form>
-                            <div class="my-1" th:text="${answerWithCommnets.answer.rating}"></div>
-                            <form class="mb-0" action="#" method="post" th:action="@{/answer/{answerId}/rateDown(answerId=${answerWithCommnets.answer.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
+                            <div class="my-1" th:text="${answerWithCommnets.answerDTO.rating}"></div>
+                            <form class="mb-0" action="#" method="post" th:action="@{/answer/{answerId}/rateDown(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
                                 <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-down-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="this.closest('form').submit();return false;">
                                     <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 5a.5.5 0 0 0-1 0v4.793L5.354 7.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 9.793V5z"/>
                                 </svg>
                             </form>
                         </div>
 
-                        <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != answerWithCommnets.answer.user.email}" class="col-lg-11" th:text="${answerWithCommnets.answer.value}"></div>
-                        <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == answerWithCommnets.answer.user.email}"  class="ml-0 col-lg-11 row justify-content-between">
-                            <div class="col-lg-10" th:text="${answerWithCommnets.answer.value}"></div>
+                        <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != answerWithCommnets.answerDTO.userDTO.email}" class="col-lg-11 white-space-pre-wrap"  th:text="${answerWithCommnets.answerDTO.value}"></div>
+                        <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == answerWithCommnets.answerDTO.userDTO.email}" class="ml-0 col-lg-11 row justify-content-between">
+                            <div class="col-lg-10 white-space-pre-wrap" th:text="${answerWithCommnets.answerDTO.value}"></div>
                             <div class="col-lg-2">
                                 <div>
                                     <a class="btn-danger btn" role="button" type="button" data-toggle="modal" data-target="#deleteAnswer">Delete</a>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="card-footer">
                         <div class="row justify-content-between">
                             <div class="col-lg-3">
-                                Author: <span th:text="${answerWithCommnets.answer.user.name}"></span>
+                                Author: <span th:text="${answerWithCommnets.answerDTO.userDTO.name}"></span>
                             </div>
                             <div class="col-lg-3">
-                                Creation date: <span th:text="${answerWithCommnets.answer.creationDate}"></span>
+                                Creation date: <span th:text="${answerWithCommnets.answerDTO.creationDate}"></span>
                             </div>
                             <a class="col-lg-3 btn btn-primary" data-toggle="collapse" type="button"
-                               th:href="'#comment-form' + ${answerWithCommnets.answer.id}" th:attr="aria-controls='comment-form' + ${answerWithCommnets.answer.id}"
+                               th:href="'#commentDTO-form' + ${answerWithCommnets.answerDTO.id}" th:attr="aria-controls='commentDTO-form' + ${answerWithCommnets.answerDTO.id}"
                                aria-expanded="false">
                                 Comment
                             </a>
                         </div>
                         <div>
-                            <form th:id="'comment-form' + ${answerWithCommnets.answer.id}" class="collapse mt-3" th:classappend="${commentAnswerIdError == answerWithCommnets.answer.id}? ' show' : ''"
-                                  id="comment-form" action="#" th:action="@{/answer/{answerId}/comments(answerId=${answerWithCommnets.answer.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${commentForm}">
-                                <div th:if="${commentAnswerIdError == answerWithCommnets.answer.id}" th:text="${errorMsg}" class="alert alert-danger"></div>
+                            <form th:id="'commentDTO-form' + ${answerWithCommnets.answerDTO.id}" class="collapse mt-3" th:classappend="${commentAnswerIdError == answerWithCommnets.answerDTO.id}? ' show' : ''"
+                                  id="commentDTO-form" action="#" th:action="@{/answer/{answerId}/comments(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${commentForm}">
+                                <div th:if="${commentAnswerIdError == answerWithCommnets.answerDTO.id}" th:text="${errorMsg}" class="alert alert-danger"></div>
                                 <div class="form-group">
                                     <textarea class="form-control" th:field="*{value}"></textarea>
                                 </div>
@@ -162,27 +160,27 @@
                                 </div>
                             </form>
                         </div>
-                        <div th:id="'comments' + ${answerWithCommnets.answer.id}">
-                            <div th:each="comment: ${answerWithCommnets.comments}">
+                        <div th:id="'comments' + ${answerWithCommnets.answerDTO.id}">
+                            <div th:each="commentDTO: ${answerWithCommnets.comments}">
                                 <hr>
-                                <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != comment.user.email}">
-                                    <div th:text="${comment.value}"></div>
-                                    <div th:text="' - ' + ${comment.user.name} +
-                                        ' created: ' + ${comment.creationDate}">
+                                <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != commentDTO.userDTO.email}">
+                                    <div class="white-space-pre-wrap" th:text="${commentDTO.value}"></div>
+                                    <div th:text="' - ' + ${commentDTO.userDTO.name} +
+                                        ' created: ' + ${commentDTO.creationDate}">
                                     </div>
                                 </div>
-                                <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == comment.user.email}" class="row">
+                                <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == commentDTO.userDTO.email}" class="row">
 
-                                    <div class="col-11" th:text="${comment.value}">
+                                    <div class="col-11 white-space-pre-wrap" th:text="${commentDTO.value}">
                                     </div>
-                                    <a th:attr="comment-id = ${comment.id}" class="btn btn-danger col-1 delete-comment-button" role="button" type="button" data-toggle="modal" data-target="#deleteComment">Delete</a>
-                                    <div class="col-12" th:text="' - ' + ${comment.user.name} +
-                                        ' created: ' + ${comment.creationDate}">
+                                    <a th:attr="commentDTO-id = ${commentDTO.id}" class="btn btn-danger col-1 delete-commentDTO-button" role="button" type="button" data-toggle="modal" data-target="#deleteComment">Delete</a>
+                                    <div class="col-12" th:text="' - ' + ${commentDTO.userDTO.name} +
+                                        ' created: ' + ${commentDTO.creationDate}">
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <a class="text-primary d-flex justify-content-center" th:if="${answerWithCommnets.comments.totalPages > 1}" th:id="'clickToGetMoreComments' + ${answerWithCommnets.answer.id}" th:value="${answerWithCommnets.answer.id}"
+                        <a class="text-primary d-flex justify-content-center" th:if="${answerWithCommnets.comments.totalPages > 1}" th:id="'clickToGetMoreComments' + ${answerWithCommnets.answerDTO.id}" th:value="${answerWithCommnets.answerDTO.id}"
                            page="1">Show more comments</a>
                     </div>
 
@@ -196,8 +194,8 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form method="post" action="#" th:action="@{/answer/{answerId}/delete(answerId=${answerWithCommnets.answer.id})}">
-<!--                                        <input type="hidden" name="answerId" id="answerId" th:value="${answerWithCommnets.answer.id}">-->
+                                    <form method="post" action="#" th:action="@{/answer/{answerId}/delete(answerId=${answerWithCommnets.answerDTO.id})}">
+<!--                                        <input type="hidden" name="answerId" id="answerId" th:value="${answerWithCommnets.answerDTO.id}">-->
                                         <div class="row justify-content-around">
                                             <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
                                             <input type="submit" class="btn btn-primary col-3" value="yes">
@@ -217,7 +215,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="deleting-comment-form" method="post" action="#" th:action="@{/comment}">
+                                    <form id="deleting-commentDTO-form" method="post" action="#" th:action="@{/comment}">
                                         <div class="row justify-content-around">
                                             <button type="button" role="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
                                             <input type="submit" class="btn btn-primary col-3" value="yes">

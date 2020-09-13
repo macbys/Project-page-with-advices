@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 public class CategoriesController {
@@ -26,7 +25,7 @@ public class CategoriesController {
 
     @GetMapping("/categories")
     public String showAllSuperiorCategories(Model model, Pageable pageable) {
-        Page<Category> categoriesWithoutUpperCategory = categoriesService.findAllByCategoryIsNull(pageable);
+        Page<CategoryDTO> categoriesWithoutUpperCategory = categoriesService.findAllByCategoryIsNull(pageable);
         model.addAttribute("categories", categoriesWithoutUpperCategory);
         List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), categoriesWithoutUpperCategory.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);
@@ -35,7 +34,7 @@ public class CategoriesController {
 
     @GetMapping("/category/{id}")
     public String showSubcategoriesOfCategory(@PathVariable String id, Model model, Pageable pageable) {
-        Page<Category> subCategories = categoriesService.findAllByCategoryNameIs(id, pageable);
+        Page<CategoryDTO> subCategories = categoriesService.findAllByCategoryNameIs(id, pageable);
         model.addAttribute("categories", subCategories);
         List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), subCategories.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);
@@ -56,24 +55,27 @@ public class CategoriesController {
 
     private String goToAddQuestionPage(Model model, FormQuestionTemplate formQuestionTemplate) {
         saveCategoryToRepository(formQuestionTemplate);
-        List<Category> categories = categoriesService.findAll();
+        List<CategoryDTO> categories = categoriesService.findAllByOrOrderByName();
         model.addAttribute("categories", categories);
         return "add-question";
     }
 
     private void saveCategoryToRepository(FormQuestionTemplate formQuestionTemplate) {
-        Category subcategory = findSubcategory(formQuestionTemplate);
-        Category category = Category.builder()
+        CategoryDTO subcategory = findSubcategory(formQuestionTemplate);
+        CategoryDTO categoryDTO = CategoryDTO.builder()
                 .name(formQuestionTemplate.getCreatedCategory())
-                .category(subcategory)
+                .superiorCategory(subcategory)
                 .build();
-        categoriesService.save(category);
+        categoriesService.save(categoryDTO);
     }
 
-    private Category findSubcategory(FormQuestionTemplate formQuestionTemplate) {
+    private CategoryDTO findSubcategory(FormQuestionTemplate formQuestionTemplate) {
         String superiorCategory = formQuestionTemplate.getSuperiorCategory();
-        Optional<Category> subcategoryOptional = categoriesService.findById(superiorCategory);
-        return subcategoryOptional.orElse(null);
+        if(superiorCategory == "") {
+            return null;
+        }
+        CategoryDTO subcategoryOptional = categoriesService.findById(superiorCategory);
+        return subcategoryOptional;
     }
 
     private void savingQuestionValueWhileAddingCategory(FormQuestionTemplate formQuestionTemplate
@@ -83,8 +85,8 @@ public class CategoriesController {
 
     private boolean checkQuestionFormForErrors(Model model, FormQuestionTemplate formQuestionTemplate) {
         boolean doesFormHaveErrors = checkForErrors(model, formQuestionTemplate);
-        if (doesFormHaveErrors){
-            List<Category> categories = categoriesService.findAll();
+        if (doesFormHaveErrors) {
+            List<CategoryDTO> categories = categoriesService.findAllByOrOrderByName();
             model.addAttribute("categories", categories);
             return true;
         }
@@ -97,7 +99,12 @@ public class CategoriesController {
                     "Invalid category name, category name must have between 3 and 30 characters and only use -, special characters");
             return true;
         }
-        if(categoriesService.findById(formQuestionTemplate.getCreatedCategory()).isPresent()) {
+        CategoryDTO categoryDTO = null;
+        try {
+            categoryDTO = categoriesService.findById(formQuestionTemplate.getCreatedCategory());
+        } catch (RuntimeException ex) {
+        }
+        if(categoryDTO != null) {
             model.addAttribute("errorMsg", "There already is category with this name");
             return true;
         }

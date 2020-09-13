@@ -1,5 +1,6 @@
 package com.maxbys.strona_z_poradami_projekt.users;
 
+import com.maxbys.strona_z_poradami_projekt.forgotten_password.FormPasswordChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,18 +22,26 @@ public class UsersService implements UserDetailsService {
 
     }
 
-    public Optional<User> findByEmail(String email){
-        return usersRepository.findByEmail(email);
+    public UserDTO findByEmail(String email){
+        Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
+        UserEntity userEntity = userEntityOptional.orElseThrow(() -> new RuntimeException());
+        UserDTO userDTO = UserDTO.apply(userEntity);
+        return userDTO;
     }
 
-    public void save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        usersRepository.save(user);
+    public void save(FormUserTemplateDTO formUserTemplateDTO) {
+        formUserTemplateDTO.setPassword(passwordEncoder.encode(formUserTemplateDTO.getPassword()));
+        UserEntity userEntity = UserEntity.apply(formUserTemplateDTO);
+        usersRepository.save(userEntity);
     }
 
-    public void saveWithoutEncoding(User user) {
-        usersRepository.save(user);
+    public void saveWithoutEncoding(FormUserTemplateDTO formUserTemplateDTO) {
+        Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(formUserTemplateDTO.getEmail());
+        UserEntity userEntity = userEntityOptional.orElseThrow(() -> new RuntimeException());
+        userEntity = UserEntity.updateWithoutPassword(userEntity, formUserTemplateDTO);
+        usersRepository.save(userEntity);
     }
+
 
     public void deleteByName(String email){
         usersRepository.deleteByEmail(email);
@@ -40,9 +49,18 @@ public class UsersService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = usersRepository.findByEmail(email);
-
+        Optional<UserEntity> optionalUser = usersRepository.findByEmail(email);
         return optionalUser
                 .orElseThrow(() ->new UsernameNotFoundException("There is no user with this email."));
+    }
+
+    public void changePasswordOfUser(FormPasswordChange formPasswordChange, String email) {
+        Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
+        UserEntity userEntity = userEntityOptional.orElseThrow(() ->
+                new RuntimeException("User with email " + email + " doesn't exist"));
+        String encodedPassword = passwordEncoder.encode(formPasswordChange.getPassword());
+        formPasswordChange.setPassword(encodedPassword);
+        UserEntity.changeUserPassword(userEntity, formPasswordChange);
+        usersRepository.save(userEntity);
     }
 }

@@ -1,23 +1,24 @@
 package com.maxbys.strona_z_poradami_projekt.users;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.maxbys.strona_z_poradami_projekt.forgotten_password.FormPasswordChange;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 
-@Data
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class User implements UserDetails {
+public class UserEntity implements UserDetails, Serializable {
 
+    @Getter
     @Id
     private String email;
+    @Getter
     private String name;
     @JsonIgnore
     private String password;
@@ -55,5 +56,24 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public static UserEntity apply(FormUserTemplateDTO formUserTemplateDTO) {
+        UserEntity userEntity = new UserEntity();
+        userEntity.email = formUserTemplateDTO.getEmail();
+        userEntity.name = formUserTemplateDTO.getName();
+        userEntity.password = formUserTemplateDTO.getPassword();
+        return userEntity;
+    }
+
+    public static UserEntity updateWithoutPassword(UserEntity userEntity, FormUserTemplateDTO formUserTemplateDTO) {
+        userEntity.name = formUserTemplateDTO.getName();
+        userEntity.email = formUserTemplateDTO.getEmail();
+        return userEntity;
+    }
+
+    public static UserEntity changeUserPassword(UserEntity userEntity, FormPasswordChange formPasswordChange) {
+        userEntity.password = formPasswordChange.getPassword();
+        return userEntity;
     }
 }

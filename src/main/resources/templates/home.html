@@ -11,16 +11,15 @@
 </head>
 <body class="bg-dark">
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
-<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-user'"></nav>
+<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-        <h1 class="text-center">Newest questions:</h1>
-        <div th:each="question: ${newestQuestions}" class="row mb-4 justify-content-center">
-            <a th:href="@{/question/{questionId}(questionId=${question.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8  text-left p-2 d-block question-card-link">
-                <div th:text="${question.value}"></div>
-                <div class="text-right" th:text="'Author: ' + ${question.user.name}"></div>
-                <div class="text-right" th:text="'Creation date: ' + ${question.creationDate}"></div>
-<!--                <div class="text-right" th:text="'Creation date: ' + ${#temporals.format(question.creationDate,'dd-MM-yyyy')}"></div>-->
+        <h1 class="text-center mb-3">The newest questions:</h1>
+        <div th:each="questionDTO: ${newestQuestions}" class="row mb-4 justify-content-center">
+            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
+                <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
             </a>
         </div>
     </div>

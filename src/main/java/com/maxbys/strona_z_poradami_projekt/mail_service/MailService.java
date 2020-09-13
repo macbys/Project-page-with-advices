@@ -1,4 +1,4 @@
-package com.maxbys.strona_z_poradami_projekt.forgotten_password;
+package com.maxbys.strona_z_poradami_projekt.mail_service;
 
 import javax.mail.MessagingException;
 
