@@ -1,0 +1,71 @@
+[
+  {
+    "ratingId": {
+      "userEntity": {
+        "email": "testEmail1",
+        "name": "testName1",
+        "password": "testPassword1"
+      },
+      "answerEntity": {
+        "id": 1,
+        "userEntity": {
+          "email": "testEmail1",
+          "name": "testName1",
+          "password": "testPassword1"
+        },
+        "rating": 0,
+        "questionEntity": {
+          "id": 1,
+          "value": "testValue1",
+          "userEntity": {
+            "email": "testEmail2",
+            "name": "testName2",
+            "password": "testPassword2"
+          },
+          "categoryEntity": {
+            "name": "testName2",
+            "superiorCategory": null
+          }
+        },
+        "value": "testValue1"
+      }
+    },
+    "value": 1
+  },
+  {
+    "ratingId": {
+      "userEntity": {
+        "email": "testEmail2",
+        "name": "testName2",
+        "password": "testPassword2"
+      },
+      "answerEntity": {
+        "id": 2,
+        "userEntity": {
+          "email": "testEmail2",
+          "name": "testName2",
+          "password": "testPassword2"
+        },
+        "rating": 2,
+        "questionEntity": {
+          "id": 2,
+          "value": "testValue2",
+          "userEntity": {
+            "email": "testEmail1",
+            "name": "testName1",
+            "password": "testPassword1"
+          },
+          "categoryEntity": {
+            "name": "testName1",
+            "superiorCategory": {
+              "name": "testName2",
+              "superiorCategory": null
+            }
+          }
+        },
+        "value": "testValue2"
+      }
+    },
+    "value": -1
+  }
+]

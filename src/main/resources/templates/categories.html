@@ -3,7 +3,6 @@
     <title>Categories</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
 </head>
@@ -15,8 +14,8 @@
         <div th:each="categoryDTO: ${categories}" class="row mb-2">
             <div th:text="${categoryDTO.name}" class="h3 col-md-8 bg-primary m-0 p-2 text-center text-white">
             </div>
-            <a th:href="@{/category/{id}(id=${categoryDTO.name})}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-warning rounded-0">See sub-categories</a>
-            <a th:href="@{/category/{id}/questions(id=${categoryDTO.name}, page=0, size=5, sort=name)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0">See questions</a>
+            <a th:href="@{/category/{id}(id=${categoryDTO.name})}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-warning rounded-0"><b>See sub-categories</b></a>
+            <a th:href="@{/category/{id}/questions(id=${categoryDTO.name}, page=0, size=5, sort=name)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0"><b>See questions</b></a>
         </div>
         <nav  th:if="${categories.totalPages > 1}">
             <ul class="pagination justify-content-center" >

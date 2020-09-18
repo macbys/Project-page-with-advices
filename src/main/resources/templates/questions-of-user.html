@@ -3,21 +3,14 @@
     <title>Categories</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
     <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
-
 </head>
 <body class="bg-dark">
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-<!--        <div th:text="${category.name}" class="h3 col-md-8 bg-primary m-0 p-2 text-center text-white">-->
-<!--        </div>-->
-<!--        <a th:href="@{/categories/{id}(id=${category.name})}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-warning rounded-0">See sub-categories</a>-->
-<!--        <a th:href="@{/categories/{id}/questions(id=${category.name}, page=0, size=5)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0">See questions</a>-->
-
         <h1 class="text-center">Your questions:</h1>
         <div th:each="questionDTO: ${questions}" class="row mb-4 justify-content-center">
             <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='ratingDTO,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">

@@ -1,0 +1,13 @@
+[
+  {
+    "name": "testName2",
+    "superiorCategory": null
+  },
+  {
+    "name": "testName1",
+    "superiorCategory": {
+      "name": "testName2",
+      "superiorCategory": null
+    }
+  }
+]

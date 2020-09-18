@@ -7,7 +7,6 @@
 <body>
 <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary" th:fragment="navbar">
     <img class="navbar-brand" src="/images/logo.png" >
-<!--    <span class="navbar-brand">Navbar</span>-->
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -43,7 +42,6 @@
                     <a class="dropdown-item bg-primary text-white" href="/profile/comments">My comments</a>
                 </div>
             </div>
-            <!--            <a class="nav-item nav-link"  th:href="@{/profile}">Profile</a>-->
             <form class="mb-0 btn-group"  th:action="@{/logout}" method="post">
                 <input class="btn-light btn text-primary font-weight-bold" type="submit" value="Logout">
             </form>

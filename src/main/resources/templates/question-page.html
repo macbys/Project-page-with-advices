@@ -3,15 +3,9 @@
     <title>Question</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
     <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-
-
-
-
-
 </head>
 <body class="bg-dark">
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
@@ -22,10 +16,8 @@
             <div id="questions-answers-comments" class="col-10 justify-content-center">
 
                 <div class="card bg-warning mb-3">
-<!--                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser'}">aaaaaaaaaa</div>-->
                     <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.userDTO.email}" class="card-body white-space-pre-wrap" th:text="${question.value}">
                     </div>
-<!--                    <div th:text="${#authentication.getPrincipal().name}"></div>-->
                     <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == question.userDTO.email}" class="card-body row justify-content-between" >
                         <div th:text="${question.value}" class="col-md-11 white-space-pre-wrap" ></div>
                         <div  class="col-md-1 row mr-0 justify-content-end">
@@ -72,7 +64,6 @@
                             </div>
                             <div class="modal-body">
                                 <form method="post" action="#" th:action="@{{link}/delete(link=${#httpServletRequest.requestURI})}" >
-                                    <!--                                        <input type="hidden" name="questionId" id="questionId" th:value="${question.id}">-->
                                     <div class="row justify-content-around">
                                         <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
                                         <input type="submit" class="btn btn-primary col-3" value="yes">
@@ -98,7 +89,6 @@
                                     <textarea id="questionEdited" class="form-control col-12 white-space-pre-wrap" name="questionValue" th:text="${question.value}">
                                     </textarea>
                                 </div>
-
                             </div>
                             <div class="modal-footer">
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
@@ -123,7 +113,6 @@
                                 </svg>
                             </form>
                         </div>
-
                         <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != answerWithCommnets.answerDTO.userDTO.email}" class="col-lg-11 white-space-pre-wrap"  th:text="${answerWithCommnets.answerDTO.value}"></div>
                         <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == answerWithCommnets.answerDTO.userDTO.email}" class="ml-0 col-lg-11 row justify-content-between">
                             <div class="col-lg-10 white-space-pre-wrap" th:text="${answerWithCommnets.answerDTO.value}"></div>
@@ -183,7 +172,6 @@
                         <a class="text-primary d-flex justify-content-center" th:if="${answerWithCommnets.comments.totalPages > 1}" th:id="'clickToGetMoreComments' + ${answerWithCommnets.answerDTO.id}" th:value="${answerWithCommnets.answerDTO.id}"
                            page="1">Show more comments</a>
                     </div>
-
                     <div class="modal " id="deleteAnswer" tabindex="-1" role="dialog">
                         <div class="modal-dialog modal-dialog-centered" role="document">
                             <div class="modal-content bg-secondary">
@@ -195,7 +183,6 @@
                                 </div>
                                 <div class="modal-body">
                                     <form method="post" action="#" th:action="@{/answer/{answerId}/delete(answerId=${answerWithCommnets.answerDTO.id})}">
-<!--                                        <input type="hidden" name="answerId" id="answerId" th:value="${answerWithCommnets.answerDTO.id}">-->
                                         <div class="row justify-content-around">
                                             <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
                                             <input type="submit" class="btn btn-primary col-3" value="yes">
@@ -260,7 +247,6 @@
             </div>
         </div>
         <input type="hidden" value="1" id="shownPagesInput">
-
     </div>
 </div>
 <script th:inline="javascript">
