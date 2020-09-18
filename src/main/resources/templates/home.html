@@ -13,7 +13,7 @@
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-        <h1 class="text-center mb-3">The newest questions:</h1>
+        <h2 class="text-center mb-3">The newest questions:</h2>
         <div th:each="questionDTO: ${newestQuestions}" class="row mb-4 justify-content-center">
             <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
                 <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>

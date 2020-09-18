@@ -124,7 +124,9 @@ public class UserController {
 
     private void checkEditedUserParams(FormUserTemplateDTO userData, List<String> errorMsg) {
         validatingVisibleName(userData, errorMsg);
-        validatingPassword(userData, errorMsg);
+        if(!userData.getPassword().isEmpty()) {
+            validatingPassword(userData, errorMsg);
+        }
     }
 
     private boolean editProfileWithPassword(FormUserTemplateDTO editedUserData, UserDTO userDTO) {
