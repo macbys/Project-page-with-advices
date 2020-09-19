@@ -48,11 +48,11 @@
             <artifactId>thymeleaf-extras-java8time</artifactId>
             <version>3.0.1.RELEASE</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.16</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -80,6 +80,14 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.200</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -95,6 +103,7 @@
                     <source>9</source>
                     <target>9</target>
                 </configuration>
+
             </plugin>
         </plugins>
     </build>
