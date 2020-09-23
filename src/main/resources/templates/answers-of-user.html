@@ -12,7 +12,7 @@
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-        <h1 class="text-center">Your answers:</h1>
+        <h2 class="text-center mb-3">Your answers:</h2>
         <div th:each="answerDTO: ${answers}" class="row mb-4 justify-content-center">
             <a th:href="@{/question/{questionId}(questionId=${answerDTO.questionDTO.id}, page=0, size=5, sort='ratingDTO,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
                 <div class="white-space-pre-wrap" th:text="${answerDTO.value}"></div>

@@ -230,4 +230,22 @@ class QuestionsServiceTest {
         //Then
         assertThat(foundQuestions).isEqualTo(expectedQuestionsList);
     }
+    
+    @Test
+    @DisplayName("Find questions containing specified string")
+    public void testFindQuestionsContainingSpecifiedString() {
+        //Given
+        String searchedString = "test";
+        CategoryEntity categoryEntity = getCategoryEntity();
+        UserEntity userEntity = getUserEntity();
+        QuestionEntity questionEntity = getQuestionEntity(categoryEntity, userEntity);
+        PageRequest pageable = PageRequest.of(0, 5);
+        List<QuestionEntity> questionEntityList = List.of(questionEntity);
+        PageImpl<QuestionEntity> questionEntitiesPage = new PageImpl<>(questionEntityList, pageable, questionEntityList.size());
+        when(questionsRepository.findQuestionsContainingString(searchedString, pageable)).thenReturn(questionEntitiesPage);
+        //When
+        Page<QuestionDTO> questionsContainingString = questionsService.findQuestionsContainingString(searchedString, pageable);
+        //Then
+        assertThat(questionsContainingString.getTotalElements()).isEqualTo(1);
+    }
 }

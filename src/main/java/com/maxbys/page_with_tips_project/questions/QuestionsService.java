@@ -8,6 +8,7 @@ import com.maxbys.page_with_tips_project.users.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -83,5 +84,13 @@ public class QuestionsService {
                 .collect(Collectors.toList());
         PageImpl<QuestionDTO> questionDTOS = new PageImpl<>(questionDTOList, pageable, allByCategoryNameIs.getTotalPages());
         return questionDTOS;
+    }
+
+    public Page<QuestionDTO> findQuestionsContainingString(String searchedString, Pageable pageable) {
+        Page<QuestionEntity> questionEntityPage = questionsRepository.findQuestionsContainingString(searchedString, pageable);
+        List<QuestionDTO> questionDTOList = questionEntityPage.stream()
+                .map(QuestionDTO::apply)
+                .collect(Collectors.toList());
+        return new PageImpl<>(questionDTOList, pageable, questionEntityPage.getTotalElements());
     }
 }

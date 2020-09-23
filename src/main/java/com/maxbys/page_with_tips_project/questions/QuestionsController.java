@@ -198,12 +198,21 @@ public class QuestionsController {
     }
 
     @GetMapping("/profile/questions")
-    String seeAllQuestionsOfLoggedUser(Model model, Principal principal, Pageable pageable) {
+    public String seeAllQuestionsOfLoggedUser(Model model, Principal principal, Pageable pageable) {
         String userEmail = principal.getName();
         Page<QuestionDTO> questions = questionsService.findAllByUserEmailIs(userEmail, pageable);
         model.addAttribute("questions", questions);
         List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), questions.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);
         return "questions-of-user";
+    }
+
+    @GetMapping("/questions")
+    public String findQuestionsContainingString(Model model, @RequestParam("search") String search, Pageable pageable) {
+        Page<QuestionDTO> questionsContainingString = questionsService.findQuestionsContainingString(search, pageable);
+        model.addAttribute("questions", questionsContainingString);
+        List<Integer> paginationList = PaginationGenerator.createPaginationList(pageable.getPageNumber(), questionsContainingString.getTotalPages());
+        model.addAttribute("paginationNumbers", paginationList);
+        return "questions-with-specified-string";
     }
 }

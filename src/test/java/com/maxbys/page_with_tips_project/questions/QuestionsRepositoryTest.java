@@ -184,4 +184,34 @@ class QuestionsRepositoryTest {
         long secondIdIncreasedByOne = secondId + 1;
         assertThat(firstId == secondIdIncreasedByOne).isTrue();
     }
+
+    @Test
+    @DisplayName("Find questions which value contain specified string with correct order")
+    public void testFindQuestionsWhichValueContainSpecifiedStringWithCorrectOrder() {
+        //Given
+        String searchedWord = "value";
+        //When
+        Page<QuestionEntity> foundQuestions = questionsRepository.findQuestionsContainingString(searchedWord, PageRequest.of(0, 5));
+        //Then
+        assertThat(foundQuestions.getTotalElements()).isEqualTo(2);
+        List<QuestionEntity> foundQuestionsList = foundQuestions.getContent();
+        QuestionEntity foundFirstQuestion = foundQuestionsList.get(0);
+        String foundValueInFirstQuestion = foundFirstQuestion.getValue();
+        assertThat(foundValueInFirstQuestion.matches("^" + searchedWord + ".*"));
+    }
+
+    @Test
+    @DisplayName("Find one question which value contain specified string")
+    public void testOneQuestionWhichValueContainSpecifiedString() {
+        //Given
+        String searchedWord = "word";
+        //When
+        Page<QuestionEntity> foundQuestions = questionsRepository.findQuestionsContainingString(searchedWord, PageRequest.of(0, 5));
+        //Then
+        assertThat(foundQuestions.getTotalElements()).isEqualTo(1);
+        List<QuestionEntity> foundQuestionsList = foundQuestions.getContent();
+        QuestionEntity foundFirstQuestion = foundQuestionsList.get(0);
+        String foundValueInFirstQuestion = foundFirstQuestion.getValue();
+        assertThat(foundValueInFirstQuestion.matches("(?i).*" + searchedWord + ".*"));
+    }
 }

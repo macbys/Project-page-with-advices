@@ -14,7 +14,7 @@
   },
   {
     "id": 2,
-    "value": "testValue2",
+    "value": "valueWordTest2",
     "userEntity": {
       "email": "testEmail1",
       "name": "testName1",

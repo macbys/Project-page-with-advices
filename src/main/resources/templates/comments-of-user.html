@@ -11,7 +11,7 @@
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-        <h1 class="text-center">Your comments:</h1>
+        <h2 class="text-center mb-3">Your comments:</h2>
         <div th:each="commentDTO: ${comments}" class="row mb-4 justify-content-center">
             <a th:href="@{/question/{questionId}(questionId=${commentDTO.answerDTO.questionDTO.id}, page=0, size=5, sort='ratingDTO,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
                 <div class="white-space-pre-wrap" th:text="${commentDTO.value}"></div>
