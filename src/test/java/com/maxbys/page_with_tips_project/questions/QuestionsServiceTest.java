@@ -3,6 +3,7 @@ package com.maxbys.page_with_tips_project.questions;
 import com.maxbys.page_with_tips_project.categories.CategoriesRepository;
 import com.maxbys.page_with_tips_project.categories.CategoryDTO;
 import com.maxbys.page_with_tips_project.categories.CategoryEntity;
+import com.maxbys.page_with_tips_project.questions.question_view.QuestionViewService;
 import com.maxbys.page_with_tips_project.users.FormUserTemplateDTO;
 import com.maxbys.page_with_tips_project.users.UserDTO;
 import com.maxbys.page_with_tips_project.users.UserEntity;
@@ -36,10 +37,13 @@ class QuestionsServiceTest {
     private UsersRepository usersRepository;
     @Mock
     private CategoriesRepository categoriesRepository;
+    @Mock
+    private QuestionViewService questionViewService;
+
 
     @BeforeEach
     public void setUp() {
-        questionsService = new QuestionsService(questionsRepository, usersRepository, categoriesRepository);
+        questionsService = new QuestionsService(questionsRepository, usersRepository, categoriesRepository, questionViewService);
     }
 
     @Test

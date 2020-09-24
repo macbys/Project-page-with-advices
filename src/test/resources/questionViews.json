@@ -1,0 +1,35 @@
+[
+  {"id": 1,
+    "question": {
+      "id": 1,
+      "value": "testValue1",
+      "userEntity": {
+        "email": "testEmail2",
+        "name": "testName2",
+        "password": "testPassword2"
+      },
+      "categoryEntity": {
+        "name": "testName2",
+        "superiorCategory": null
+      }
+    }
+  },
+  {"id": 2,
+    "question": {
+      "id": 2,
+      "value": "valueWordTest2",
+      "userEntity": {
+        "email": "testEmail1",
+        "name": "testName1",
+        "password": "testPassword1"
+      },
+      "categoryEntity": {
+        "name": "testName1",
+        "superiorCategory": {
+          "name": "testName2",
+          "superiorCategory": null
+        }
+      }
+    }
+  }
+]

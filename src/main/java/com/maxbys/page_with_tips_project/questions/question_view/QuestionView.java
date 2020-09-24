@@ -1,33 +1,30 @@
-//package com.maxbys.strona_z_poradami_projekt.questions.question_view;
-//
-//import com.maxbys.strona_z_poradami_projekt.questions.QuestionDTO;
-//import com.maxbys.strona_z_poradami_projekt.users.UserDTO;
-//import lombok.AllArgsConstructor;
-//import lombok.Builder;
-//import lombok.Data;
-//import lombok.NoArgsConstructor;
-//import org.hibernate.annotations.CreationTimestamp;
-//import org.hibernate.annotations.OnDelete;
-//import org.hibernate.annotations.OnDeleteAction;
-//
-//import javax.persistence.*;
-//import java.util.Date;
-//
-//@Entity
-//@Data
-//@NoArgsConstructor
-//@AllArgsConstructor
-//@Builder
-//public class QuestionView {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
-//    @Temporal(TemporalType.DATE)
-//    @CreationTimestamp
-//    private Date creationTime;
-//    @OnDelete(action = OnDeleteAction.CASCADE)
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    private QuestionDTO questionDTO;
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private UserDTO userDTO;
-//}
+package com.maxbys.page_with_tips_project.questions.question_view;
+
+import com.maxbys.page_with_tips_project.questions.QuestionEntity;
+import com.maxbys.page_with_tips_project.users.UserEntity;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import javax.persistence.*;
+import java.util.Date;
+
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Getter
+public class QuestionView {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Setter
+    @Temporal(TemporalType.DATE)
+    private Date creationTime;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne
+    private QuestionEntity question;
+    @ManyToOne
+    private UserEntity userEntity;
+}

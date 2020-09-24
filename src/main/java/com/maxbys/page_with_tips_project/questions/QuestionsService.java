@@ -2,15 +2,19 @@ package com.maxbys.page_with_tips_project.questions;
 
 import com.maxbys.page_with_tips_project.categories.CategoriesRepository;
 import com.maxbys.page_with_tips_project.categories.CategoryEntity;
+import com.maxbys.page_with_tips_project.questions.question_view.QuestionView;
+import com.maxbys.page_with_tips_project.questions.question_view.QuestionViewService;
 import com.maxbys.page_with_tips_project.users.UserDTO;
 import com.maxbys.page_with_tips_project.users.UserEntity;
 import com.maxbys.page_with_tips_project.users.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,12 +25,14 @@ public class QuestionsService {
     private final QuestionsRepository questionsRepository;
     private final UsersRepository usersRepository;
     private final CategoriesRepository categoriesRepository;
+    private final QuestionViewService questionViewService;
 
     @Autowired
-    public QuestionsService(QuestionsRepository questionsRepository, UsersRepository usersRepository, CategoriesRepository categoriesRepository) {
+    public QuestionsService(QuestionsRepository questionsRepository, UsersRepository usersRepository, CategoriesRepository categoriesRepository, QuestionViewService questionViewService) {
         this.questionsRepository = questionsRepository;
         this.usersRepository = usersRepository;
         this.categoriesRepository = categoriesRepository;
+        this.questionViewService = questionViewService;
     }
 
     public QuestionDTO findById(Long questionId){
@@ -92,5 +98,34 @@ public class QuestionsService {
                 .map(QuestionDTO::apply)
                 .collect(Collectors.toList());
         return new PageImpl<>(questionDTOList, pageable, questionEntityPage.getTotalElements());
+    }
+
+    public void addQuestionView(String email, Long questionId) {
+        Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
+        UserEntity userEntity = null;
+        if(userEntityOptional.isPresent()) {
+            userEntity = userEntityOptional.get();
+        }
+        Optional<QuestionEntity> questionEntityOptional = questionsRepository.findById(questionId);
+        QuestionEntity questionEntity = questionEntityOptional.orElseThrow(() ->
+                new RuntimeException("Question with id " + questionId + " doesn't exist"));
+        QuestionView questionView = QuestionView.builder()
+                .userEntity(userEntity)
+                .question(questionEntity)
+                .creationTime(new Date())
+                .build();
+        questionViewService.save(questionView);
+    }
+
+    public Page<QuestionDTO> getMostPopularQuestionsToday() {
+        return questionViewService.getMostPopularQuestionsToday();
+    }
+
+    public Page<QuestionDTO> getMostPopularQuestionsInSevenDays() {
+        return questionViewService.getMostPopularQuestionsInSevenDays();
+    }
+
+    public Page<QuestionDTO> getMostPopularQuestionsInThirtyDays() {
+        return questionViewService.getMostPopularQuestionsInThirtyDays();
     }
 }

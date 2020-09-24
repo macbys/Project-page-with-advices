@@ -96,7 +96,7 @@ public class QuestionsController {
 
     @GetMapping("/question/{questionId}")
     public String goToQuestionPage(@PathVariable Long questionId,
-                                   Model model, Pageable pageable) {
+                                   Model model, Pageable pageable, Principal principal) {
         addAllNecessaryFormTemplatesToModel(model);
         QuestionDTO questionDTO = findQuestion(questionId);
         model.addAttribute("question", questionDTO);
@@ -106,6 +106,7 @@ public class QuestionsController {
         List<Integer> paginationNumbers = getPaginationNumbersList(pageable, answers);
         model.addAttribute("paginationNumbers", paginationNumbers);
         addAnswersWithCommentsToModel(model, answers);
+        questionsService.addQuestionView(principal == null? null : principal.getName(), questionId);
         return "question-page";
     }
 

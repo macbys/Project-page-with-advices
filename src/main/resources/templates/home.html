@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html  xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Ask Questions - main page</title>
     <meta charset="utf-8">
@@ -13,9 +13,50 @@
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-        <h2 class="text-center mb-3">The newest questions:</h2>
-        <div th:each="questionDTO: ${newestQuestions}" class="row mb-4 justify-content-center">
-            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
+        <div class="row mb-3 justify-content-center">
+            <div class="col-md-8 d-flex justify-content-end align-items-center">
+                <div class="h4">
+                    Show questions based on:&nbsp;
+                </div>
+                <select id="based-on" class="col-md-4 custom-select custom-select-lg bg-dark text-white">
+                    <option value="creation-date">creation date</option>
+                    <option value="popularity-today">popularity today</option>
+                    <option value="popularity-in-7-days">popularity in 7 days</option>
+                    <option value="popularity-in-30-days">popularity in 30 days</option>
+                </select>
+            </div>
+        </div>
+        <div id="creation-date" th:each="questionDTO: ${newestQuestions}"
+             class="row mb-4 justify-content-center hidden">
+            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link">
+                <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
+            </a>
+        </div>
+        <div style="display: none;" id="popularity-today" th:each="questionDTO: ${mostPopularQuestionsToday}"
+             class="row mb-4 justify-content-center hidden">
+            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link">
+                <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
+            </a>
+        </div>
+        <div style="display: none;" id="popularity-in-7-days" th:each="questionDTO: ${mostPopularQuestionsInSevenDays}"
+             class="row mb-4 justify-content-center hidden">
+            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link">
+                <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
+            </a>
+        </div>
+        <div style="display: none;"  id="popularity-in-30-days" th:each="questionDTO: ${mostPopularQuestionsInThirtyDays}"
+             class="row mb-4 justify-content-center hidden">
+            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link">
                 <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
                 <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
                 <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
@@ -23,7 +64,23 @@
         </div>
     </div>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+        integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        function hideAll() {
+            $(".hidden").hide();
+        };
+        $("#based-on").change(function () {
+            hideAll();
+            let value = $(this).val();
+            $(`#${value}`).show();
+        });
+    })
+</script>
 </body>
 </html>
