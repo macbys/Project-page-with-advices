@@ -28,6 +28,7 @@ public class QuestionEntity {
     private CategoryEntity categoryEntity;
     @CreationTimestamp
     private LocalDate creationDate;
+    private long allViewsOfThisQuestion;
 
     public static QuestionEntity apply(FormQuestionTemplate formQuestionTemplate, UserEntity userEntity, CategoryEntity categoryEntity) {
         QuestionEntity questionEntity = new QuestionEntity();
@@ -41,5 +42,9 @@ public class QuestionEntity {
     public static QuestionEntity update(FormQuestionTemplate formQuestionTemplate, QuestionEntity questionEntity) {
         questionEntity.value = formQuestionTemplate.getQuestionValue();
         return questionEntity;
+    }
+
+    public void incrementAllViews() {
+        ++this.allViewsOfThisQuestion;
     }
 }

@@ -1,6 +1,9 @@
 package com.maxbys.page_with_tips_project.users;
 
+import com.maxbys.page_with_tips_project.paginagtion.PaginationGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +12,7 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.print.Pageable;
 import java.security.Principal;
 import java.util.*;
 
@@ -77,9 +81,7 @@ public class UserController {
                     " at least one digit and at least one special sign");
         }
     }
-
-
-
+    
     @GetMapping("/profile/edit")
     public String goToEditProfilePage(Principal principal, Model model) {
         UserDTO userDTO = getUser(principal);
@@ -141,5 +143,12 @@ public class UserController {
     private RedirectView editProfileWithoutPassword(FormUserTemplateDTO formUserTemplateDTO) {
         usersService.saveWithoutEncoding(formUserTemplateDTO);
         return new RedirectView("/logout");
+    }
+    
+    @GetMapping("/users-ranking")
+    public String goToPageWithRankedUsers(Model model) {
+        Page<UserWithPointsDTO> ranking = usersService.getRanking(PageRequest.of(0, 100));
+        model.addAttribute("rankedUsers", ranking);
+        return "users-ranking";
     }
 }

@@ -12,8 +12,9 @@
     </button>
     <div class="collapse navbar-collapse justify-content-between" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/'}? 'active' : ''" th:href="@{/}">Home <span class="sr-only">(current)</span></a></a>
+            <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/'}? 'active' : ''" th:href="@{/}">Home</a>
             <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/categories'}? 'active' : ''" th:href="@{/categories(page=0,size=5,sort='name')}">Categories</a>
+            <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/users-ranking'}? 'active' : ''" th:href="@{/users-ranking}">Users ranking</a>
         </div>
         <div>
             <form class="form-inline my-2 my-lg-0" action="/questions" method="get">
@@ -36,6 +37,7 @@
             <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/'}? 'active' : ''" th:href="@{/}">Home</a>
             <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/categories'}? 'active' : ''" th:href="@{/categories(page=0,size=5,sort='name')}">Categories</a>
             <a class="nav-item nav-link mr-auto" th:classappend="${#httpServletRequest.requestURI == '/add-question'}? 'active' : ''" th:href="@{/add-question}">Add question</a>
+            <a class="nav-item nav-link" th:classappend="${#httpServletRequest.requestURI == '/users-ranking'}? 'active' : ''" th:href="@{/users-ranking}">Users ranking</a>
         </div>
         <div>
             <form class="form-inline my-2 my-lg-0" action="/questions" method="get">

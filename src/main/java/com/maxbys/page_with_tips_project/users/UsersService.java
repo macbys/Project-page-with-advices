@@ -2,12 +2,18 @@ package com.maxbys.page_with_tips_project.users;
 
 import com.maxbys.page_with_tips_project.forgotten_password.FormPasswordChange;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UsersService implements UserDetailsService {
@@ -46,7 +52,6 @@ public class UsersService implements UserDetailsService {
         usersRepository.save(userEntity);
     }
 
-
     public void deleteByName(String email){
         usersRepository.deleteByEmail(email);
     }
@@ -66,5 +71,14 @@ public class UsersService implements UserDetailsService {
         formPasswordChange.setPassword(encodedPassword);
         UserEntity.changeUserPassword(userEntity, formPasswordChange);
         usersRepository.save(userEntity);
+    }
+
+    public Page<UserWithPointsDTO> getRanking(Pageable pageable) {
+        Page<UserWithPoints> rankingEntities = usersRepository.getRanking(pageable);
+        List<UserWithPointsDTO> userWithPointsDTOS = rankingEntities.stream()
+                .map(UserWithPointsDTO::apply)
+                .collect(Collectors.toList());
+        PageImpl<UserWithPointsDTO> rankedUsersPage = new PageImpl<>(userWithPointsDTOS, pageable, userWithPointsDTOS.size());
+        return rankedUsersPage;
     }
 }

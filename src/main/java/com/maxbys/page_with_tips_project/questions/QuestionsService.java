@@ -109,6 +109,7 @@ public class QuestionsService {
         Optional<QuestionEntity> questionEntityOptional = questionsRepository.findById(questionId);
         QuestionEntity questionEntity = questionEntityOptional.orElseThrow(() ->
                 new RuntimeException("Question with id " + questionId + " doesn't exist"));
+        questionEntity.incrementAllViews();
         QuestionView questionView = QuestionView.builder()
                 .userEntity(userEntity)
                 .question(questionEntity)

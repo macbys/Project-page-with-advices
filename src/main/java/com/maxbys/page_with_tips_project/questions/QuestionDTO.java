@@ -16,6 +16,7 @@ public class QuestionDTO {
     private UserDTO userDTO;
     private CategoryDTO categoryDTO;
     private LocalDate creationDate;
+    private long allViewsOfThisQuestion;
 
     public static QuestionDTO apply(QuestionEntity questionEntity) {
         QuestionDTO questionDTO = QuestionDTO.builder()
@@ -24,6 +25,7 @@ public class QuestionDTO {
                 .userDTO(UserDTO.apply(questionEntity.getUserEntity()))
                 .categoryDTO(CategoryDTO.apply(questionEntity.getCategoryEntity()))
                 .creationDate(questionEntity.getCreationDate())
+                .allViewsOfThisQuestion(questionEntity.getAllViewsOfThisQuestion())
                 .build();
         return questionDTO;
     }

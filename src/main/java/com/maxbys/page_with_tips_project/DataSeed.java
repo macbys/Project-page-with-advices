@@ -9,6 +9,7 @@ import com.maxbys.page_with_tips_project.comments.CommentsService;
 import com.maxbys.page_with_tips_project.questions.QuestionsService;
 import com.maxbys.page_with_tips_project.users.FormUserTemplateDTO;
 import com.maxbys.page_with_tips_project.users.UserDTO;
+import com.maxbys.page_with_tips_project.users.UsersRepository;
 import com.maxbys.page_with_tips_project.users.UsersService;
 import com.maxbys.page_with_tips_project.questions.FormQuestionTemplate;
 import com.maxbys.page_with_tips_project.questions.QuestionDTO;
@@ -134,6 +135,4 @@ public class DataSeed implements InitializingBean {
                 .build();
         commentsService.save(fibonacciComment, 2L, roloUser.getEmail());
     }
-
-
 }
