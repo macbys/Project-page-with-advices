@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head lang="en" xmlns:th="http://www.thymeleaf.org">
-    <title>Your rankedUsers</title>
+    <title>Users ranking</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
@@ -22,7 +22,7 @@
             </thead>
             <tbody>
             <tr th:each="user: ${rankedUsers}">
-                <th scope="row" th:text="${userStat.index + 1}"></th>
+                <th scope="row" th:text="${user.rank}"></th>
                 <td th:text="${user.getUserDTO().name}"></td>
                 <td th:text="${user.getPoints()}"></td>
             </tr>

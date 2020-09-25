@@ -4,6 +4,7 @@ import com.maxbys.page_with_tips_project.forgotten_password.FormPasswordChange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,6 +12,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -73,12 +76,19 @@ public class UsersService implements UserDetailsService {
         usersRepository.save(userEntity);
     }
 
-    public Page<UserWithPointsDTO> getRanking(Pageable pageable) {
-        Page<UserWithPoints> rankingEntities = usersRepository.getRanking(pageable);
-        List<UserWithPointsDTO> userWithPointsDTOS = rankingEntities.stream()
-                .map(UserWithPointsDTO::apply)
+    public Page<UserWithPointsDTO> getRanking() {
+        List<Object[]> ranking = usersRepository.getRanking();
+        List<UserWithPointsDTO> userWithPointsDTOList = ranking.stream()
+                .map(objects -> {
+                    UserDTO userDTO = new UserDTO((String) objects[1], (String) objects[0]);
+                    return UserWithPointsDTO.builder()
+                            .userDTO(userDTO)
+                            .points((BigInteger) objects[2])
+                            .rank((BigInteger) objects[3])
+                            .build();
+                })
                 .collect(Collectors.toList());
-        PageImpl<UserWithPointsDTO> rankedUsersPage = new PageImpl<>(userWithPointsDTOS, pageable, userWithPointsDTOS.size());
+        PageImpl<UserWithPointsDTO> rankedUsersPage = new PageImpl<>(userWithPointsDTOList, PageRequest.of(0, 100), userWithPointsDTOList.size());
         return rankedUsersPage;
     }
 }

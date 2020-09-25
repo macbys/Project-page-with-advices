@@ -20,43 +20,53 @@
                 </div>
                 <select id="based-on" class="col-md-4 custom-select custom-select-lg bg-dark text-white">
                     <option value="creation-date">creation date</option>
-                    <option value="popularity-today">popularity today</option>
-                    <option value="popularity-in-7-days">popularity in 7 days</option>
-                    <option value="popularity-in-30-days">popularity in 30 days</option>
+                    <option value="popularity-today">popularity of today</option>
+                    <option value="popularity-in-7-days">popularity of 7 days</option>
+                    <option value="popularity-in-30-days">popularity of 30 days</option>
+                    <option value="popularity-in-all-time">popularity of all time</option>
                 </select>
             </div>
         </div>
-        <div id="creation-date" th:each="questionDTO: ${newestQuestions}"
+        <div id="creation-date"
              class="row mb-4 justify-content-center hidden">
-            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
-               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link">
+            <a th:each="questionDTO: ${newestQuestions}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link mb-4">
                 <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
                 <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
                 <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
             </a>
         </div>
-        <div style="display: none;" id="popularity-today" th:each="questionDTO: ${mostPopularQuestionsToday}"
+        <div style="display: none;" id="popularity-today"
              class="row mb-4 justify-content-center hidden">
-            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
-               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link">
+            <a th:each="questionDTO: ${mostPopularQuestionsToday}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link mb-4">
                 <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
                 <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
                 <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
             </a>
         </div>
-        <div style="display: none;" id="popularity-in-7-days" th:each="questionDTO: ${mostPopularQuestionsInSevenDays}"
+        <div style="display: none;" id="popularity-in-7-days"
              class="row mb-4 justify-content-center hidden">
-            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
-               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link">
+            <a th:each="questionDTO: ${mostPopularQuestionsInSevenDays}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link mb-4">
                 <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
                 <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
                 <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
             </a>
         </div>
-        <div style="display: none;"  id="popularity-in-30-days" th:each="questionDTO: ${mostPopularQuestionsInThirtyDays}"
+        <div style="display: none;"  id="popularity-in-30-days"
              class="row mb-4 justify-content-center hidden">
-            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
-               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link">
+            <a th:each="questionDTO: ${mostPopularQuestionsInThirtyDays}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link mb-4">
+                <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
+                <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
+            </a>
+        </div>
+        <div style="display: none;"  id="popularity-in-all-time"
+             class="row mb-4 justify-content-center hidden">
+            <a th:each="questionDTO: ${mostPopularQuestions}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
+               role="button" class="btn btn-warning col-md-8 text-left p-2 question-card-link mb-4">
                 <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
                 <div class="text-right" th:text="'Author: ' + ${questionDTO.userDTO.name}"></div>
                 <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>

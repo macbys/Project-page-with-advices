@@ -27,6 +27,8 @@ public class MainPageController {
         model.addAttribute("mostPopularQuestionsInSevenDays", mostPopularQuestionsInSevenDays);
         Page<QuestionDTO> mostPopularQuestionsInThirtyDays = questionsService.getMostPopularQuestionsInThirtyDays();
         model.addAttribute("mostPopularQuestionsInThirtyDays", mostPopularQuestionsInThirtyDays);
+        List<QuestionDTO> mostPopularQuestionsSincePageExists = questionsService.findTop5MostPopularQuestionsSincePageExists();
+        model.addAttribute("mostPopularQuestions", mostPopularQuestionsSincePageExists);
         return "home";
     }
 }

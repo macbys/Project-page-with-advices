@@ -147,7 +147,7 @@ public class UserController {
     
     @GetMapping("/users-ranking")
     public String goToPageWithRankedUsers(Model model) {
-        Page<UserWithPointsDTO> ranking = usersService.getRanking(PageRequest.of(0, 100));
+        Page<UserWithPointsDTO> ranking = usersService.getRanking();
         model.addAttribute("rankedUsers", ranking);
         return "users-ranking";
     }

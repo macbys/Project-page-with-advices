@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.Objects;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserEntity implements UserDetails, Serializable {
 
     @Getter

@@ -12,8 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -110,6 +108,7 @@ public class QuestionsService {
         QuestionEntity questionEntity = questionEntityOptional.orElseThrow(() ->
                 new RuntimeException("Question with id " + questionId + " doesn't exist"));
         questionEntity.incrementAllViews();
+        questionsRepository.save(questionEntity);
         QuestionView questionView = QuestionView.builder()
                 .userEntity(userEntity)
                 .question(questionEntity)
@@ -128,5 +127,13 @@ public class QuestionsService {
 
     public Page<QuestionDTO> getMostPopularQuestionsInThirtyDays() {
         return questionViewService.getMostPopularQuestionsInThirtyDays();
+    }
+
+    public List<QuestionDTO> findTop5MostPopularQuestionsSincePageExists() {
+        List<QuestionEntity> questionEntities = questionsRepository.findTop5ByOrderByAllViewsOfThisQuestionDesc();
+        List<QuestionDTO> questionDTOS = questionEntities.stream()
+                .map(QuestionDTO::apply)
+                .collect(Collectors.toList());
+        return questionDTOS;
     }
 }
