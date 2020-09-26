@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -31,6 +32,7 @@ public class UsersService implements UserDetailsService {
 
     }
 
+    @Transactional
     public UserDTO findByEmail(String email){
         Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
         UserEntity userEntity = userEntityOptional.orElseThrow(() ->
@@ -42,16 +44,25 @@ public class UsersService implements UserDetailsService {
     public void save(FormUserTemplateDTO formUserTemplateDTO) {
         formUserTemplateDTO.setPassword(passwordEncoder.encode(formUserTemplateDTO.getPassword()));
         UserEntity userEntity = UserEntity.apply(formUserTemplateDTO);
+        Optional<UserEntity> existingUserOptional = usersRepository.findByEmail(formUserTemplateDTO.getEmail());
+        boolean editingExistingUser = existingUserOptional.isPresent();
+        if(formUserTemplateDTO.getAvatar() == null && editingExistingUser) {
+            UserEntity existingUser = existingUserOptional.get();
+            if(existingUser.getAvatar() != null) {
+                userEntity.setAvatar(existingUser.getAvatar());
+            }
+        }
         usersRepository.save(userEntity);
     }
 
     public void saveWithoutEncoding(FormUserTemplateDTO formUserTemplateDTO) {
         String email = formUserTemplateDTO.getEmail();
-
         Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
         UserEntity userEntity = userEntityOptional.orElseThrow(() ->
                 new RuntimeException("User with email " + email + " doesn't exist"));
-        userEntity = UserEntity.updateWithoutPassword(userEntity, formUserTemplateDTO);
+        userEntity = formUserTemplateDTO.getAvatar() != null?
+                UserEntity.updateWithoutPassword(userEntity, formUserTemplateDTO) :
+                UserEntity.updateWithoutPasswordAndAvatar(userEntity, formUserTemplateDTO);
         usersRepository.save(userEntity);
     }
 
@@ -59,6 +70,7 @@ public class UsersService implements UserDetailsService {
         usersRepository.deleteByEmail(email);
     }
 
+    @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<UserEntity> optionalUser = usersRepository.findByEmail(email);
@@ -80,7 +92,7 @@ public class UsersService implements UserDetailsService {
         List<Object[]> ranking = usersRepository.getRanking();
         List<UserWithPointsDTO> userWithPointsDTOList = ranking.stream()
                 .map(objects -> {
-                    UserDTO userDTO = new UserDTO((String) objects[1], (String) objects[0]);
+                    UserDTO userDTO = new UserDTO((String) objects[1], (String) objects[0], null);
                     return UserWithPointsDTO.builder()
                             .userDTO(userDTO)
                             .points((BigInteger) objects[2])

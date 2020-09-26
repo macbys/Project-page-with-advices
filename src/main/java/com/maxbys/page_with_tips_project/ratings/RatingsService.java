@@ -6,6 +6,8 @@ import com.maxbys.page_with_tips_project.users.UserEntity;
 import com.maxbys.page_with_tips_project.users.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Optional;
 
 @Service
@@ -22,6 +24,7 @@ public class RatingsService {
         this.answersRepository = answersRepository;
     }
 
+    @Transactional
     public void addRateUp(String email, Long answerId) {
         UserAndAnswerDataReceiver userAndAnswerDataReceiver = new UserAndAnswerDataReceiver(email, answerId).invoke();
         if(userAndAnswerDataReceiver.getRatingEntityOptional().isPresent()) {
@@ -74,6 +77,7 @@ public class RatingsService {
         answerEntity.setRating(rating + 1);
     }
 
+    @Transactional
     public void addRateDown(String email, Long answerId) {
         UserAndAnswerDataReceiver userAndAnswerDataReceiver = new UserAndAnswerDataReceiver(email, answerId).invoke();
         if(userAndAnswerDataReceiver.getRatingEntityOptional().isPresent()) {
@@ -150,6 +154,7 @@ public class RatingsService {
             return ratingEntityOptional;
         }
 
+        @Transactional
         public UserAndAnswerDataReceiver invoke() {
             Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
             userEntity = userEntityOptional.orElseThrow(() ->

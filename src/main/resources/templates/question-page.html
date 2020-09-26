@@ -29,9 +29,13 @@
                         </div>
                     </div>
                     <div class="card-footer">
-                        <div class="row justify-content-between">
+                        <div class="row justify-content-between align-items-center">
                             <div class="col-lg-3">
-                                Author: <span th:text="${question.userDTO.name}"></span>
+                                <figure class="d-flex flex-column justify-content-center align-items-center mb-0">
+                                    <img height="75" width="75" th:if="${question.userDTO.avatar == null}" src="/images/user.png">
+                                    <img height="75" width="75" th:if="${question.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ question.userDTO.avatar}">
+                                    <figcaption class="text-center" th:text="${question.userDTO.name}">></figcaption>
+                                </figure>
                             </div>
                             <div class="col-lg-3">
                                 Category: <span th:text="${category.name}"></span>
@@ -44,8 +48,8 @@
                                 Answer
                             </a>
                         </div>
-                        <form class="collapse mt-3" th:classappend="${errorMsg == 'Answer must be at least 8 characters long'}? ' show' : ''" id="answerDTO-form" action="#" th:action="@{{link}/answers(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${answerForm}">
-                            <div th:if="${errorMsg == 'Answer must be at least 8 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
+                        <form class="collapse mt-3" th:classappend="${errorMsg == 'Answer must be between 8 and 1800 characters long'}? ' show' : ''" id="answerDTO-form" action="#" th:action="@{{link}/answers(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${answerForm}">
+                            <div th:if="${errorMsg == 'Answer must be between 8 and 1800 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
                             <div class="form-group">
                                 <textarea class="form-control" th:field="*{value}"></textarea>
                             </div>
@@ -84,7 +88,7 @@
                             </div>
                             <form th:object="${editedQuestionForm}" method="post" action="#" th:action="@{{link}/update(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
                             <div class="modal-body">
-                                <div th:if="${errorMsg == 'Question must be at least 8 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
+                                <div th:if="${errorMsg == 'Question must be between 8 and 1800 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
                                 <div class="form-group row">
                                     <textarea id="questionEdited" class="form-control col-12 white-space-pre-wrap" name="questionValue" th:text="${question.value}">
                                     </textarea>
@@ -145,9 +149,13 @@
 
                     </div>
                     <div class="card-footer">
-                        <div class="row justify-content-between">
+                        <div class="row justify-content-between align-items-center">
                             <div class="col-lg-3">
-                                Author: <span th:text="${answerWithCommnets.answerDTO.userDTO.name}"></span>
+                                <figure class="d-flex flex-column justify-content-center align-items-center mb-0">
+                                    <img height="75" width="75" th:if="${answerWithCommnets.answerDTO.userDTO.avatar == null}" src="/images/user.png">
+                                    <img height="75" width="75" th:if="${answerWithCommnets.answerDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ answerWithCommnets.answerDTO.userDTO.avatar}">
+                                    <figcaption class="text-center" th:text="${answerWithCommnets.answerDTO.userDTO.name}">></figcaption>
+                                </figure>
                             </div>
                             <div class="col-lg-3">
                                 Creation date: <span th:text="${answerWithCommnets.answerDTO.creationDate}"></span>
@@ -172,20 +180,28 @@
                         </div>
                         <div th:id="'comments' + ${answerWithCommnets.answerDTO.id}">
                             <div th:each="commentDTO: ${answerWithCommnets.comments}">
-                                <hr>
+                                <hr style="background-color:white; border:white 1px solid;">
                                 <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != commentDTO.userDTO.email}">
-                                    <div class="white-space-pre-wrap" th:text="${commentDTO.value}"></div>
-                                    <div th:text="' - ' + ${commentDTO.userDTO.name} +
-                                        ' created: ' + ${commentDTO.creationDate}">
+                                    <div class="row">
+                                        <img class="col-1" height="50" width="50" th:if="${commentDTO.userDTO.avatar == null}" src="/images/user.png">
+                                        <img class="col-1" height="50" width="50" th:if="${commentDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ commentDTO.userDTO.avatar}">
+                                        <div class="col-11 row">
+                                            <div class="col-3 mr-auto mb-2 font-weight-bold" th:text="${commentDTO.userDTO.name}"></div>
+                                            <div class="col-2" th:text="${commentDTO.creationDate}"></div>
+                                            <div class="col-12 white-space-pre-wrap mb-3" th:text="${commentDTO.value}"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == commentDTO.userDTO.email}" class="row">
-
-                                    <div class="col-11 white-space-pre-wrap" th:text="${commentDTO.value}">
-                                    </div>
-                                    <a th:attr="commentDTO-id = ${commentDTO.id}" class="btn btn-danger col-1 delete-commentDTO-button" role="button" type="button" data-toggle="modal" data-target="#deleteComment">Delete</a>
-                                    <div class="col-12" th:text="' - ' + ${commentDTO.userDTO.name} +
-                                        ' created: ' + ${commentDTO.creationDate}">
+                                    <img class="col-1" height="50" width="50" th:if="${commentDTO.userDTO.avatar == null}" src="/images/user.png">
+                                    <img class="col-1" height="50" width="50" th:if="${commentDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ commentDTO.userDTO.avatar}">
+                                    <div class="col-11 row">
+                                        <div class="col-10 mb-2 font-weight-bold" th:text="${commentDTO.userDTO.name}"></div>
+                                        <div class="col-2" th:text="${commentDTO.creationDate}"></div>
+                                        <div class="col-11 white-space-pre-wrap" th:text="${commentDTO.value}"></div>
+                                        <div class="col-1">
+                                            <a th:attr="comment-id = ${commentDTO.id}" class="btn btn-danger delete-comment-button" role="button" type="button" data-toggle="modal" data-target="#deleteComment">Delete</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -204,7 +220,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="deleting-commentDTO-form" method="post" action="#" th:action="@{/comment}">
+                                    <form id="deleting-comment-form" method="post" action="#" th:action="@{/comment}">
                                         <div class="row justify-content-around">
                                             <button type="button" role="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
                                             <input type="submit" class="btn btn-primary col-3" value="yes">

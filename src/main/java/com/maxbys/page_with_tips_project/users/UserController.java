@@ -1,6 +1,8 @@
 package com.maxbys.page_with_tips_project.users;
 
 import com.maxbys.page_with_tips_project.paginagtion.PaginationGenerator;
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -8,11 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import java.awt.print.Pageable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.security.Principal;
 import java.util.*;
 
@@ -34,8 +41,11 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String postRegisterData(Model model, @ModelAttribute FormUserTemplateDTO userData) {
+    public String postRegisterData(Model model, @ModelAttribute FormUserTemplateDTO userData) throws IOException {
         List<String> errorMsgs = new ArrayList<>();
+        if(userData.getAvatar().getBytes().length < 2) {
+            userData.setAvatar(null);
+        }
         checkUserParams(userData, errorMsgs);
         if(!errorMsgs.isEmpty()) {
             model.addAttribute("errorMsgs", errorMsgs);
@@ -98,17 +108,20 @@ public class UserController {
     }
 
     @PostMapping("/profile/edit")
-    public RedirectView editProfile(HttpServletRequest request, Principal principal, RedirectAttributes redirectAttributes, @ModelAttribute FormUserTemplateDTO editedUserData) {
+    public RedirectView editProfile(HttpServletRequest request, Principal principal, RedirectAttributes redirectAttributes, @ModelAttribute FormUserTemplateDTO editedUserData) throws IOException {
         UserDTO userDTO = getUser(principal);
+//        if(editedUserData.getAvatar().getBytes().length < 2) {
+//            editedUserData.setAvatar(null);
+//        }
         editedUserData.setEmail(userDTO.getEmail());
         boolean isEditProfileFormInvalid = checkFormForErrors(redirectAttributes, editedUserData);
         if (isEditProfileFormInvalid) {
             return new RedirectView("/profile/edit");
         }
-        request.setAttribute(
-                View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
         boolean isPasswordEdited = editProfileWithPassword(editedUserData, userDTO);
         if (isPasswordEdited) {
+            request.setAttribute(
+                    View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
             return new RedirectView("/logout");
         }
         return editProfileWithoutPassword(editedUserData);
@@ -142,7 +155,7 @@ public class UserController {
 
     private RedirectView editProfileWithoutPassword(FormUserTemplateDTO formUserTemplateDTO) {
         usersService.saveWithoutEncoding(formUserTemplateDTO);
-        return new RedirectView("/logout");
+        return new RedirectView("/");
     }
     
     @GetMapping("/users-ranking")

@@ -37,8 +37,8 @@ public class AnswersController {
                                   , @PathVariable Long questionId, Principal principal) {
         UserDTO userDTO = getUser(principal);
         QuestionDTO questionDTO = getQuestion(questionId);
-        if(answerDTOForm.getValue().trim().length() < 8) {
-            redirectAttributes.addFlashAttribute("errorMsg", "Answer must be at least 8 characters long");
+        if(answerDTOForm.getValue().length() < 8 || answerDTOForm.getValue().length() > 1800) {
+            redirectAttributes.addFlashAttribute("errorMsg", "Answer must be between 8 and 1800 characters long");
             return new RedirectView("/question/" + questionId + "?" + httpServletRequest.getQueryString());
         }
         saveAnswerInRepository(answerDTOForm, userDTO, questionDTO);

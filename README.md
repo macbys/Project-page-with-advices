@@ -1,7 +1,6 @@
 # Project page with advices
 Project of web page where u can ask and answer questions.
 # Possible future improvements
-- avatars for users
 - consuming some rest api 
 - make profile pages for other users
 - make admin which could delete other users and their creations

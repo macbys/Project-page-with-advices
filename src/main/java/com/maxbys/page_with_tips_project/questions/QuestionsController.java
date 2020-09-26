@@ -52,8 +52,8 @@ public class QuestionsController {
     @PostMapping("/add-question")
     public RedirectView postQuestion(RedirectAttributes redirectAttributes, @ModelAttribute FormQuestionTemplate formQuestionTemplate, Principal principal) {
         String questionValue = formQuestionTemplate.getQuestionValue();
-        boolean isQuestionShorterThan8Characters = checkQuestionsLength(questionValue);
-        if (isQuestionShorterThan8Characters) {
+        boolean isQuestionRightLength = checkQuestionsLength(questionValue);
+        if (isQuestionRightLength) {
             return getRedirectViewToAddQuestionPageWithErrorMessage(redirectAttributes);
         }
         UserDTO userDTO = findUser(principal);
@@ -62,11 +62,11 @@ public class QuestionsController {
     }
 
     private boolean checkQuestionsLength(String questionValue) {
-        return questionValue.trim().length() < 8;
+        return questionValue.length() < 8 || questionValue.length() > 1800;
     }
 
     private RedirectView getRedirectViewToAddQuestionPageWithErrorMessage(RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("errorMsg", "Question must be at least 8 characters long");
+        redirectAttributes.addFlashAttribute("errorMsg", "Question must be between 8 and 1800 characters long");
         return new RedirectView("/add-question");
     }
 
@@ -169,8 +169,8 @@ public class QuestionsController {
         throwExceptionIfThereAreAnswersToEditedQuestion(questionId);
         QuestionDTO questionDTO = findQuestion(questionId);
         String questionValue = formQuestionTemplate.getQuestionValue();
-        boolean isQuestionShorterThan8Characters = checkQuestionsLength(questionValue);
-        if(isQuestionShorterThan8Characters) {
+        boolean isQuestionRightLength = checkQuestionsLength(questionValue);
+        if(isQuestionRightLength) {
             return getRedirectView(redirectAttributes, httpServletRequest);
         }
         if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, questionDTO)) {
@@ -189,7 +189,7 @@ public class QuestionsController {
 
     private RedirectView getRedirectView(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
         RedirectView redirectView = new RedirectView(httpServletRequest.getRequestURI().replaceFirst("/update$", "") + "?" + httpServletRequest.getQueryString());
-        redirectAttributes.addFlashAttribute("errorMsg", "Question must be at least 8 characters long");
+        redirectAttributes.addFlashAttribute("errorMsg", "Question must be between 8 and 1800 characters long");
         return redirectView;
     }
 

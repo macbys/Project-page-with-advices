@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +66,7 @@ public class QuestionsService {
         questionsRepository.deleteById(id);
     }
 
+    @Transactional
     public Page<QuestionDTO> findAllByCategoryIs(String categoryId, Pageable pageable) {
         Page<QuestionEntity> allByCategoryNameIs = questionsRepository.findAllByCategoryEntityNameIs(categoryId, pageable);
         List<QuestionDTO> questionDTOList = allByCategoryNameIs.stream()
@@ -73,6 +76,7 @@ public class QuestionsService {
         return questionDTOS;
     }
 
+    @Transactional
     public List<QuestionDTO> findTop5ByOrderByIdDesc() {
         List<QuestionEntity> top5ByOrderByIdDesc = questionsRepository.findTop5ByOrderByIdDesc();
         List<QuestionDTO> questionDTOList = top5ByOrderByIdDesc.stream()
@@ -81,6 +85,7 @@ public class QuestionsService {
         return questionDTOList;
     }
 
+    @Transactional
     public Page<QuestionDTO> findAllByUserEmailIs(String email, Pageable pageable) {
         Page<QuestionEntity> allByCategoryNameIs = questionsRepository.findAllByUserEntityEmailIs(email, pageable);
         List<QuestionDTO> questionDTOList = allByCategoryNameIs.stream()

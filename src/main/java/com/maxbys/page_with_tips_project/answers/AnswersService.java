@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,6 +66,7 @@ public class AnswersService {
         answersRepository.deleteById(id);
     }
 
+    @Transactional
     public Page<AnswerDTO> findAllByQuestionId(Long id, Pageable pageable) {
         Page<AnswerEntity> allByQuestionId = answersRepository.findAllByQuestionEntityId(id, pageable);
         List<AnswerDTO> answerDTOList = allByQuestionId.stream()
@@ -72,6 +75,7 @@ public class AnswersService {
         return new PageImpl<AnswerDTO>(answerDTOList, pageable, allByQuestionId.getTotalElements());
     }
 
+    @Transactional
     public Page<AnswerDTO> findAllByUserEmail(String email, Pageable pageable) {
         Page<AnswerEntity> allByUser_email = answersRepository.findAllByUserEntityEmail(email, pageable);
         List<AnswerDTO> answerDTOList = allByUser_email.stream()

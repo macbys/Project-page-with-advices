@@ -44,7 +44,7 @@ public class CommentsController {
         UserDTO userDTO = getUser(principal);
         AnswerDTO answerDTO = getAnswer(answerId);
         Long questionId = answerDTO.getQuestionDTO().getId();
-        if(isCommentsLengthLowerThan8(commentDTOForm)) {
+        if(isCommentRightLength(commentDTOForm)) {
             addErrorMessagesToRedirectAttributes(redirectAttributes, answerId);
             return new RedirectView("/question/" + questionId + "?" + httpServletRequest.getQueryString());
         }
@@ -61,12 +61,12 @@ public class CommentsController {
         return answersService.findById(answerId);
     }
 
-    private boolean isCommentsLengthLowerThan8(CommentDTO commentDTOForm) {
-        return commentDTOForm.getValue().trim().length() < 8;
+    private boolean isCommentRightLength(CommentDTO commentDTOForm) {
+        return commentDTOForm.getValue().length() < 8 || commentDTOForm.getValue().length() > 255;
     }
 
     private void addErrorMessagesToRedirectAttributes(RedirectAttributes redirectAttributes, Long answerId) {
-        redirectAttributes.addFlashAttribute("errorMsg", "Comment must be at least 8 characters long");
+        redirectAttributes.addFlashAttribute("errorMsg", "Comment must be between 8 and 255 characters long");
         redirectAttributes.addFlashAttribute("commentAnswerIdError", answerId);
     }
 

@@ -6,8 +6,13 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +30,10 @@ public class UserEntity implements UserDetails, Serializable {
     private String name;
     @JsonIgnore
     private String password;
+    @Setter
+    @Getter
+    @Lob
+    private byte[] avatar;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -66,10 +75,22 @@ public class UserEntity implements UserDetails, Serializable {
         userEntity.email = formUserTemplateDTO.getEmail();
         userEntity.name = formUserTemplateDTO.getName();
         userEntity.password = formUserTemplateDTO.getPassword();
+        try{
+            userEntity.avatar = formUserTemplateDTO.getAvatar() == null? null : formUserTemplateDTO.getAvatar().getBytes();
+        }catch (IOException ex){}
         return userEntity;
     }
 
     public static UserEntity updateWithoutPassword(UserEntity userEntity, FormUserTemplateDTO formUserTemplateDTO) {
+        userEntity.name = formUserTemplateDTO.getName();
+        userEntity.email = formUserTemplateDTO.getEmail();
+        try{
+            userEntity.avatar = formUserTemplateDTO.getAvatar() == null? null : formUserTemplateDTO.getAvatar().getBytes();
+        }catch (IOException ex){}
+        return userEntity;
+    }
+
+    public static UserEntity updateWithoutPasswordAndAvatar(UserEntity userEntity, FormUserTemplateDTO formUserTemplateDTO) {
         userEntity.name = formUserTemplateDTO.getName();
         userEntity.email = formUserTemplateDTO.getEmail();
         return userEntity;

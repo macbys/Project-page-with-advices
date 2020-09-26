@@ -13,9 +13,15 @@
     <div class="container m-t-86 text-white">
         <h2 class="text-center mb-3">Your comments:</h2>
         <div th:each="commentDTO: ${comments}" class="row mb-4 justify-content-center">
-            <a th:href="@{/question/{questionId}(questionId=${commentDTO.answerDTO.questionDTO.id}, page=0, size=5, sort='ratingDTO,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
+            <a th:href="@{/question/{questionId}(questionId=${commentDTO.answerDTO.questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
                 <div class="white-space-pre-wrap" th:text="${commentDTO.value}"></div>
-                <div class="text-right" th:text="'Author: ' + ${commentDTO.userDTO.name}"></div>
+                <div class="d-flex justify-content-end">
+                    <figure class="d-flex flex-column justify-content-center align-items-center mb-0">
+                        <img height="75" width="75" th:if="${commentDTO.userDTO.avatar == null}" src="/images/user.png">
+                        <img height="75" width="75" th:if="${commentDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ commentDTO.userDTO.avatar}">
+                        <figcaption class="text-center" th:text="${commentDTO.userDTO.name}">></figcaption>
+                    </figure>
+                </div>
                 <div class="text-right" th:text="'Creation date: ' + ${commentDTO.creationDate}"></div>
             </a>
         </div>
