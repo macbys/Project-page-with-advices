@@ -11,9 +11,39 @@
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
-    <div class="container m-t-86">
-        <div class="row justify-content-center">
-            <div id="questions-answers-comments" class="col-10 justify-content-center">
+    <div class="container-fluid p-0 mx-0 row justify-content-center m-t-86">
+        <div class="col-md-1 row justify-content-center mx-0 ">
+            <div id="random-fact-div" class="col-12 d-none d-md-block">
+                <div class="border border-warning">
+                    <div class="h5 text-center text-white mt-2">
+                        Random fact:
+                    </div>
+                    <div class="loading d-flex justify-content-center">
+                        <div  class="spinner-border text-warning" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="random-fact question-card-link mx-1 mb-2 text-warning">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 d-block d-md-none">
+                <div class="border border-warning">
+                    <div class="h5 text-center text-white mt-2">
+                        Random fact:
+                    </div>
+                    <div class="loading d-flex justify-content-center">
+                        <div  class="spinner-border text-warning" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="random-fact question-card-link mx-1 mb-2 text-warning">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 mx-0 p-0 row justify-content-center">
+            <div id="questions-answers-comments" class="col-11 justify-content-center">
 
                 <div class="card bg-warning mb-3">
                     <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.userDTO.email}" class="card-body white-space-pre-wrap" th:text="${question.value}">
@@ -264,6 +294,7 @@
                 </nav>
             </div>
         </div>
+        <div class="col-md-1"></div>
         <input type="hidden" value="1" id="shownPagesInput">
     </div>
 </div>
@@ -280,5 +311,6 @@
 <script src="/js/script.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="/js/random-facts.js"></script>
 </body>
 </html>

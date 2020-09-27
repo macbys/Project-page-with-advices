@@ -11,3 +11,9 @@
     white-space: pre-wrap;
 }
 
+#random-fact-div {
+    position: fixed;
+    top: 50%;
+    width: 15%;
+    transform: translate(0%, -50%);
+}

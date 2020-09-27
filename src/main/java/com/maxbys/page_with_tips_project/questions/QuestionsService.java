@@ -103,6 +103,7 @@ public class QuestionsService {
         return new PageImpl<>(questionDTOList, pageable, questionEntityPage.getTotalElements());
     }
 
+    @Transactional
     public void addQuestionView(String email, Long questionId) {
         Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
         UserEntity userEntity = null;

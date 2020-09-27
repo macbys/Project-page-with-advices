@@ -36,6 +36,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers("/register").permitAll()
                 .antMatchers("/forgot-password").permitAll()
                 .antMatchers("/change-password/**").permitAll()
+                .antMatchers("/random-fact/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/categories/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/category/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/question/**").permitAll()
