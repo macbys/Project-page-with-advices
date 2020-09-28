@@ -5,8 +5,11 @@ import com.maxbys.page_with_tips_project.questions.QuestionDTO;
 import com.maxbys.page_with_tips_project.questions.QuestionsService;
 import com.maxbys.page_with_tips_project.users.UserDTO;
 import com.maxbys.page_with_tips_project.users.UsersService;
+import org.dom4j.rule.Mode;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,13 +82,28 @@ public class AnswersController {
     }
 
     @GetMapping("/profile/answers")
-    String seeAllAnswersOfLoggedUser(Model model, Principal principal, Pageable pageable) {
+    public String seeAllAnswersOfLoggedUser(Model model, Principal principal, Pageable pageable) {
         String userEmail = principal.getName();
-        Page<AnswerDTO> answersWithLinks = answersService.findAllByUserEmail(userEmail, pageable);
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5, Sort.by(Sort.Direction.DESC, "id"));
+        Page<AnswerDTO> answersWithLinks = answersService.findAllByUserEmail(userEmail, pageRequest);
         model.addAttribute("answers", answersWithLinks);
+        List<Integer> paginationNumbers;
+        paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), answersWithLinks.getTotalPages());
+        model.addAttribute("paginationNumbers", paginationNumbers);
+        return "answers-of-logged-user";
+    }
+
+    @GetMapping("/user/{userId}/answers")
+    public String seeAllAnswersOfUser(Model model, Pageable pageable, @PathVariable Long userId) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5, Sort.by(Sort.Direction.DESC, "id"));
+        Page<AnswerDTO> answersWithLinks = answersService.findAllByUserEntityIdIs(userId, pageRequest);
+        model.addAttribute("answers", answersWithLinks);
+        UserDTO userDTO = usersService.findById(userId);
+        model.addAttribute("user", userDTO);
         List<Integer> paginationNumbers;
         paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), answersWithLinks.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);
         return "answers-of-user";
     }
+
 }

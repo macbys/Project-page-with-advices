@@ -1,0 +1,46 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <title>Edit profile</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
+    <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
+</head>
+<body>
+<nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
+<nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
+<div class="wrapper bg-dark h-100 d-flex align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <div class="card bg-secondary text-white">
+                    <div class="card-header d-flex row">
+                        <div class="col-3">
+                            <img height="75" width="75" th:if="${userDTO.avatar == null}" src="/images/user.png">
+                            <img height="75" width="75" th:if="${userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ userDTO.avatar}">
+                        </div>
+                        <div class="col-9">
+                            <h3 th:text="${userDTO.name}"></h3>
+                            <div th:text="${'Points: ' + usersPointsAndRanking.points}"></div>
+                        </div>
+                    </div>
+                    <div class="list-group list-group-flush navList">
+                        <a class="nav-link list-group-item bg-secondary text-white" th:href="@{/user/{userId}/questions(userId=${userDTO.id})}">Questions</a>
+                        <a class="nav-link list-group-item bg-secondary text-white" th:href="@{/user/{userId}/answers(userId=${userDTO.id})}">Answers</a>
+                        <a class="nav-link list-group-item bg-secondary text-white" th:href="@{/user/{userId}/comments(userId=${userDTO.id})}">Comments</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script>
+    $("#upfile1").click(function () {
+        $("#file1").trigger('click');
+    });
+</script>
+</body>
+</html>

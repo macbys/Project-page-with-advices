@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head lang="en" xmlns:th="http://www.thymeleaf.org">
-    <title th:text="${user.name} + ' questions'"></title>
+    <title>Your comments</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
@@ -11,47 +11,47 @@
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-        <h2 class="text-center mb-3" th:text="${user.name} + ' questions:'"></h2>
-        <div th:each="questionDTO: ${questions}" class="row mb-4 justify-content-center">
-            <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
-                <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
+        <h2 class="text-center mb-3">Your comments:</h2>
+        <div th:each="commentDTO: ${comments}" class="row mb-4 justify-content-center">
+            <a th:href="@{/question/{questionId}(questionId=${commentDTO.answerDTO.questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
+                <div class="white-space-pre-wrap" th:text="${commentDTO.value}"></div>
                 <div class="d-flex justify-content-end">
                     <figure class="d-flex flex-column justify-content-center align-items-center mb-0">
-                        <img height="75" width="75" th:if="${questionDTO.userDTO.avatar == null}" src="/images/user.png">
-                        <img height="75" width="75" th:if="${questionDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ questionDTO.userDTO.avatar}">
-                        <figcaption class="text-center" th:text="${questionDTO.userDTO.name}">></figcaption>
+                        <img height="75" width="75" th:if="${commentDTO.userDTO.avatar == null}" src="/images/user.png">
+                        <img height="75" width="75" th:if="${commentDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ commentDTO.userDTO.avatar}">
+                        <figcaption class="text-center" th:text="${commentDTO.userDTO.name}">></figcaption>
                     </figure>
                 </div>
-                <div class="text-right" th:text="'Creation date: ' + ${questionDTO.creationDate}"></div>
+                <div class="text-right" th:text="'Creation date: ' + ${commentDTO.creationDate}"></div>
             </a>
         </div>
-        <nav  th:if="${questions.totalPages > 1}">
+        <nav  th:if="${comments.totalPages > 1}">
             <ul class="pagination  justify-content-center">
-                <li class="page-item" th:classappend="${questions.pageable.pageNumber == 0}? 'disabled': ''">
+                <li class="page-item" th:classappend="${comments.pageable.pageNumber == 0}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
                        , page=0, size=5)}">First
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${questions.pageable.pageNumber == 0}? 'disabled': ''">
+                <li class="page-item" th:classappend="${comments.pageable.pageNumber == 0}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${questions.pageable.pageNumber - 1}, size=5)}">Previous
+                       , page=${comments.pageable.pageNumber - 1}, size=5)}">Previous
                     </a>
                 </li>
                 <li th:each="paginationNumber: ${paginationNumbers}" class="page-item"
-                    th:classappend="${questions.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
+                    th:classappend="${comments.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
                     <a class="page-link" th:text="${paginationNumber}"
                        th:href="@{{link}(link=${#httpServletRequest.requestURI}
                        , page=${paginationNumber - 1}, size=5)}">
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${questions.pageable.pageNumber + 1 == questions.totalPages}? 'disabled': ''">
+                <li class="page-item" th:classappend="${comments.pageable.pageNumber + 1 == comments.totalPages}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${questions.pageable.pageNumber + 1}, size=5)}">Next
+                       , page=${comments.pageable.pageNumber + 1}, size=5)}">Next
                     </a>
                 </li>
-                <li class="page-item" th:classappend="${questions.pageable.pageNumber + 1 == questions.totalPages}? 'disabled': ''">
+                <li class="page-item" th:classappend="${comments.pageable.pageNumber + 1 == comments.totalPages}? 'disabled': ''">
                     <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${questions.totalPages - 1}, size=5)}">Last
+                       , page=${comments.totalPages - 1}, size=5)}">Last
                     </a>
                 </li>
             </ul>

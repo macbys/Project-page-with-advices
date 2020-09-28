@@ -7,10 +7,10 @@ import com.maxbys.page_with_tips_project.paginagtion.PaginationGenerator;
 import com.maxbys.page_with_tips_project.questions.QuestionsService;
 import com.maxbys.page_with_tips_project.users.UserDTO;
 import com.maxbys.page_with_tips_project.users.UsersService;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -101,72 +101,25 @@ public class CommentsController {
     }
 
     @GetMapping("/profile/comments")
-    String seeAllCommentsOfLoggedUser(Model model, Principal principal, Pageable pageable) {
+    public String seeAllCommentsOfLoggedUser(Model model, Principal principal, Pageable pageable) {
         String userEmail = principal.getName();
-        Page<CommentDTO> answersWithLinks = commentsService.findAllByUser_Email(userEmail, pageable);
-        model.addAttribute("comments", answersWithLinks);
-        List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), answersWithLinks.getTotalPages());
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5, Sort.by(Sort.Direction.DESC, "id"));
+        Page<CommentDTO> comments = commentsService.findAllByUser_Email(userEmail, pageRequest);
+        model.addAttribute("comments", comments);
+        List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), comments.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);
-        return "comments-of-user";
+        return "comments-of-logged-user";
     }
 
-    //todo wywalić to poniżej?
-
-    @EventListener(ApplicationReadyEvent.class)
-    public void addCategories() {
-
-//        QuestionDTO questionDTO = QuestionDTO.builder()
-//                .userDTO(a)
-//                .categoryDTO(sport)
-//                .value("jaki to kolor?")
-//                .build();
-
-//        questionsService.save(questionDTO);
-//        AnswerDTO answerDTO = AnswerDTO.builder()
-//                .questionDTO(questionDTO)
-//                .value("dasfdsa")
-//                .rating(0)
-//                .userDTO(a)
-//                .build();
-//        answersService.save(answerDTO);
-//        CommentDTO commentDTO = CommentDTO.builder()
-//                .userDTO(a)
-//                .value("comment")
-//                .answerDTO(answerDTO)
-//                .build();
-//        commentsService.save(commentDTO);
-//        QuestionDTO questionDTO2 = questionsService.findById(1L).get();
-//        questionViewRepository.save(QuestionView.builder()
-//                .questionDTO(questionDTO2)
-//                .build());
-//
-//        QuestionDTO questionDTO3 = QuestionDTO.builder()
-//                .userDTO(a)
-//                .categoryDTO(sport)
-//                .value("jaki to fff?")
-//                .build();
-//        questionsService.save(questionDTO3);
-//        QuestionView build = QuestionView.builder()
-//                .questionDTO(questionDTO3)
-//                .build();
-//        questionViewRepository.save(build);
-//        QuestionView build2 = QuestionView.builder()
-//                .questionDTO(questionDTO3)
-//                .build();
-//        questionViewRepository.save(build2);
-//
-//        QuestionDTO questionDTO4 = QuestionDTO.builder()
-//                .userDTO(a)
-//                .categoryDTO(sport)
-//                .value("jaki to aaaa?")
-//                .build();
-//        questionsService.save(questionDTO4);
-//        QuestionView build3 = QuestionView.builder()
-//                .questionDTO(questionDTO4)
-//                .build();
-//        questionViewRepository.save(build3);
-//        QuestionView questionView = questionViewRepository.findById(4L).get();
-//        questionView.setCreationTime(Date.valueOf(LocalDate.now().minusDays(4)));
-//        questionViewRepository.save(questionView);
+    @GetMapping("/user/{userId}/comments")
+    public String seeAllCommentsOfLoggedUser(Model model, Pageable pageable, @PathVariable Long userId) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5, Sort.by(Sort.Direction.DESC, "id"));
+        Page<CommentDTO> comments = commentsService.findAllByUserEntity_Id(userId, pageRequest);
+        model.addAttribute("comments", comments);
+        UserDTO userDTO = usersService.findById(userId);
+        model.addAttribute("user", userDTO);
+        List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), comments.getTotalPages());
+        model.addAttribute("paginationNumbers", paginationNumbers);
+        return "comments-of-user";
     }
 }

@@ -33,7 +33,16 @@ public class UsersService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDTO findByEmail(String email){
+    public UserDTO findById(Long id) {
+        Optional<UserEntity> userEntityOptional = usersRepository.findById(id);
+        UserEntity userEntity = userEntityOptional.orElseThrow(() ->
+                new RuntimeException("User with id " + id + " doesn't exist"));
+        UserDTO userDTO = UserDTO.apply(userEntity);
+        return userDTO;
+    }
+
+    @Transactional
+    public UserDTO findByEmail(String email) {
         Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
         UserEntity userEntity = userEntityOptional.orElseThrow(() ->
                 new RuntimeException("User with email " + email + " doesn't exist"));
@@ -92,7 +101,7 @@ public class UsersService implements UserDetailsService {
         List<Object[]> ranking = usersRepository.getRanking();
         List<UserWithPointsDTO> userWithPointsDTOList = ranking.stream()
                 .map(objects -> {
-                    UserDTO userDTO = new UserDTO((String) objects[1], (String) objects[0], null);
+                    UserDTO userDTO = new UserDTO(null, (String) objects[1], (String) objects[0], null);
                     return UserWithPointsDTO.builder()
                             .userDTO(userDTO)
                             .points((BigInteger) objects[2])
@@ -102,5 +111,14 @@ public class UsersService implements UserDetailsService {
                 .collect(Collectors.toList());
         PageImpl<UserWithPointsDTO> rankedUsersPage = new PageImpl<>(userWithPointsDTOList, PageRequest.of(0, 100), userWithPointsDTOList.size());
         return rankedUsersPage;
+    }
+
+    public UserWithPointsDTO getUsersPointsAndRanking(Long id) {
+        Object[] objects = usersRepository.getUsersPointsAndRanking(id);
+        Object[] object = (Object[]) objects[0];
+        UserWithPointsDTO userWithPointsDTO = UserWithPointsDTO.builder()
+                .points((BigInteger) object[1])
+                .build();
+        return userWithPointsDTO;
     }
 }

@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head lang="en" xmlns:th="http://www.thymeleaf.org">
-    <title th:text="${user.name} + ' questions'"></title>
+<head lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+    <title>Your questions</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
@@ -11,7 +11,7 @@
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-        <h2 class="text-center mb-3" th:text="${user.name} + ' questions:'"></h2>
+        <h2 class="text-center mb-3">Your questions:</h2>
         <div th:each="questionDTO: ${questions}" class="row mb-4 justify-content-center">
             <a th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
                 <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>

@@ -6,12 +6,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
+import javax.persistence.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
@@ -25,6 +20,9 @@ public class UserEntity implements UserDetails, Serializable {
 
     @Getter
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Getter
     private String email;
     @Getter
     private String name;
@@ -72,6 +70,7 @@ public class UserEntity implements UserDetails, Serializable {
 
     public static UserEntity apply(FormUserTemplateDTO formUserTemplateDTO) {
         UserEntity userEntity = new UserEntity();
+        userEntity.id = formUserTemplateDTO.getId();
         userEntity.email = formUserTemplateDTO.getEmail();
         userEntity.name = formUserTemplateDTO.getName();
         userEntity.password = formUserTemplateDTO.getPassword();

@@ -19,7 +19,7 @@
                         Random fact:
                     </div>
                     <div class="loading d-flex justify-content-center">
-                        <div  class="spinner-border text-warning" role="status">
+                        <div class="spinner-border text-warning" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
@@ -33,7 +33,7 @@
                         Random fact:
                     </div>
                     <div class="loading d-flex justify-content-center">
-                        <div  class="spinner-border text-warning" role="status">
+                        <div class="spinner-border text-warning" role="status">
                             <span class="sr-only">Loading...</span>
                         </div>
                     </div>
@@ -46,15 +46,24 @@
             <div id="questions-answers-comments" class="col-11 justify-content-center">
 
                 <div class="card bg-warning mb-3">
-                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.userDTO.email}" class="card-body white-space-pre-wrap" th:text="${question.value}">
+                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.userDTO.email}"
+                         class="card-body white-space-pre-wrap" th:text="${question.value}">
                     </div>
-                    <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == question.userDTO.email}" class="card-body row justify-content-between" >
-                        <div th:text="${question.value}" class="col-md-11 white-space-pre-wrap" ></div>
-                        <div  class="col-md-1 row mr-0 justify-content-end">
+                    <div sec:authorize="isAuthenticated()"
+                         th:if="${#authentication.getPrincipal().email == question.userDTO.email}"
+                         class="card-body row justify-content-between">
+                        <div th:text="${question.value}" class="col-md-11 white-space-pre-wrap"></div>
+                        <div class="col-md-1 row mr-0 justify-content-end">
                             <div>
-                                <a class="d-block btn btn-danger w-100 text-white" role="button" type="button" data-toggle="modal" data-target="#deleteQuestion">Delete</a>
-                                <a th:if="${answersWithComments.size() == 0}" class="d-block btn btn-info w-100 text-white" role="button" type="button" data-toggle="modal" data-target="#editQuestion">Edit</a>
-                                <a th:if="${answersWithComments.size() != 0}" class="d-block btn btn-info w-100 text-white popover-dismiss" type="button" title="" role="button" data-toggle="popover" data-trigger="focus"  href="#" data-placement="top" data-content="Question must have zero answers to be editable">Edit</a>
+                                <a class="d-block btn btn-danger w-100 text-white" role="button" type="button"
+                                   data-toggle="modal" data-target="#deleteQuestion">Delete</a>
+                                <a th:if="${answersWithComments.size() == 0}"
+                                   class="d-block btn btn-info w-100 text-white" role="button" type="button"
+                                   data-toggle="modal" data-target="#editQuestion">Edit</a>
+                                <a th:if="${answersWithComments.size() != 0}"
+                                   class="d-block btn btn-info w-100 text-white popover-dismiss" type="button" title=""
+                                   role="button" data-toggle="popover" data-trigger="focus" href="#"
+                                   data-placement="top" data-content="Question must have zero answers to be editable">Edit</a>
                             </div>
                         </div>
                     </div>
@@ -62,28 +71,42 @@
                         <div class="row justify-content-between align-items-center">
                             <div class="col-lg-3">
                                 <figure class="d-flex flex-column justify-content-center align-items-center mb-0">
-                                    <img height="75" width="75" th:if="${question.userDTO.avatar == null}" src="/images/user.png">
-                                    <img height="75" width="75" th:if="${question.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ question.userDTO.avatar}">
-                                    <figcaption class="text-center" th:text="${question.userDTO.name}">></figcaption>
+                                    <a class="d-flex justify-content-center flex-column align-items-center"
+                                       th:href="@{/user/{userId}(userId=${question.userDTO.id})}">
+                                        <img height="75" width="75" th:if="${question.userDTO.avatar == null}"
+                                             src="/images/user.png">
+                                        <img height="75" width="75" th:if="${question.userDTO.avatar != null}"
+                                             th:src="*{'data:image/png;base64,'+ question.userDTO.avatar}">
+                                        <figcaption class="text-center font-weight-bold"
+                                                    th:text="${question.userDTO.name}"></figcaption>
+                                    </a>
                                 </figure>
                             </div>
-                            <div class="col-lg-3">
-                                Category: <span th:text="${category.name}"></span>
+                            <div class="col-lg-3 ">
+                                Category: <a class="font-weight-bold"
+                                             th:href="@{/category/{categoryName}/questions(categoryName=${category.name}, page=0)}"
+                                             th:text="${category.name}"></a>
                             </div>
                             <div class="col-lg-3">
                                 Creation date: <span th:text="${question.creationDate}"></span>
                             </div>
                             <a class="col-lg-3 btn btn-primary" data-toggle="collapse"
-                            href="#answerDTO-form" role="button" type="button" aria-expanded="false" aria-controls="answerDTO-form">
+                               href="#answerDTO-form" role="button" type="button" aria-expanded="false"
+                               aria-controls="answerDTO-form">
                                 Answer
                             </a>
                         </div>
-                        <form class="collapse mt-3" th:classappend="${errorMsg == 'Answer must be between 8 and 1800 characters long'}? ' show' : ''" id="answerDTO-form" action="#" th:action="@{{link}/answers(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${answerForm}">
-                            <div th:if="${errorMsg == 'Answer must be between 8 and 1800 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
+                        <form class="collapse mt-3"
+                              th:classappend="${errorMsg == 'Answer must be between 8 and 1800 characters long'}? ' show' : ''"
+                              id="answerDTO-form" action="#"
+                              th:action="@{{link}/answers(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}"
+                              method="post" th:object="${answerForm}">
+                            <div th:if="${errorMsg == 'Answer must be between 8 and 1800 characters long'}"
+                                 th:text="${errorMsg}" class="alert alert-danger"></div>
                             <div class="form-group">
                                 <textarea class="form-control" th:field="*{value}"></textarea>
                             </div>
-                            <input type="submit"  class="btn btn-primary float-right" value="Answer">
+                            <input type="submit" class="btn btn-primary float-right" value="Answer">
                         </form>
                     </div>
                 </div>
@@ -97,9 +120,11 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form method="post" action="#" th:action="@{{link}/delete(link=${#httpServletRequest.requestURI})}" >
+                                <form method="post" action="#"
+                                      th:action="@{{link}/delete(link=${#httpServletRequest.requestURI})}">
                                     <div class="row justify-content-around">
-                                        <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
+                                        <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No
+                                        </button>
                                         <input type="submit" class="btn btn-primary col-3" value="yes">
                                     </div>
                                 </form>
@@ -116,40 +141,56 @@
                                     <span class="text-white" aria-hidden="true">×</span>
                                 </button>
                             </div>
-                            <form th:object="${editedQuestionForm}" method="post" action="#" th:action="@{{link}/update(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
-                            <div class="modal-body">
-                                <div th:if="${errorMsg == 'Question must be between 8 and 1800 characters long'}" th:text="${errorMsg}" class="alert alert-danger"></div>
-                                <div class="form-group row">
-                                    <textarea id="questionEdited" class="form-control col-12 white-space-pre-wrap" name="questionValue" th:text="${question.value}">
+                            <form th:object="${editedQuestionForm}" method="post" action="#"
+                                  th:action="@{{link}/update(link=${#httpServletRequest.requestURI}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
+                                <div class="modal-body">
+                                    <div th:if="${errorMsg == 'Question must be between 8 and 1800 characters long'}"
+                                         th:text="${errorMsg}" class="alert alert-danger"></div>
+                                    <div class="form-group row">
+                                    <textarea id="questionEdited" class="form-control col-12 white-space-pre-wrap"
+                                              name="questionValue" th:text="${question.value}">
                                     </textarea>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="modal-footer">
+                                <div class="modal-footer">
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                                     <input type="submit" class="btn btn-primary" value="Edit">
-                            </div>
+                                </div>
                             </form>
                         </div>
                     </div>
                 </div>
                 <div th:each="answerWithCommnets: ${answersWithComments}" class="card bg-secondary text-white mb-3">
-                    <div class="card-body row justify-content-between" >
+                    <div class="card-body row justify-content-between">
                         <div class="col-1 d-flex flex-column align-items-center justify-content-center">
-                            <form class="mb-0" action="#" method="post" th:action="@{/answer/{answerId}/rateUp(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
-                                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-up-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="this.closest('form').submit();return false;">
-                                    <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 8.354a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 6.207V11a.5.5 0 0 1-1 0V6.207L5.354 8.354z"/>
+                            <form class="mb-0" action="#" method="post"
+                                  th:action="@{/answer/{answerId}/rateUp(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
+                                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-up-square-fill"
+                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+                                     onclick="this.closest('form').submit();return false;">
+                                    <path fill-rule="evenodd"
+                                          d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 8.354a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 6.207V11a.5.5 0 0 1-1 0V6.207L5.354 8.354z"/>
                                 </svg>
                             </form>
                             <div class="my-1" th:text="${answerWithCommnets.answerDTO.rating}"></div>
-                            <form class="mb-0" action="#" method="post" th:action="@{/answer/{answerId}/rateDown(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
-                                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-down-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="this.closest('form').submit();return false;">
-                                    <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 5a.5.5 0 0 0-1 0v4.793L5.354 7.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 9.793V5z"/>
+                            <form class="mb-0" action="#" method="post"
+                                  th:action="@{/answer/{answerId}/rateDown(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}">
+                                <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-arrow-down-square-fill"
+                                     fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+                                     onclick="this.closest('form').submit();return false;">
+                                    <path fill-rule="evenodd"
+                                          d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm6.5 5a.5.5 0 0 0-1 0v4.793L5.354 7.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 9.793V5z"/>
                                 </svg>
                             </form>
                         </div>
-                        <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != answerWithCommnets.answerDTO.userDTO.email}" class="col-lg-11 white-space-pre-wrap"  th:text="${answerWithCommnets.answerDTO.value}"></div>
-                        <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == answerWithCommnets.answerDTO.userDTO.email}" class="ml-0 col-lg-11 row justify-content-between">
-                            <div class="col-lg-10 white-space-pre-wrap" th:text="${answerWithCommnets.answerDTO.value}"></div>
+                        <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != answerWithCommnets.answerDTO.userDTO.email}"
+                             class="col-lg-11 white-space-pre-wrap"
+                             th:text="${answerWithCommnets.answerDTO.value}"></div>
+                        <div sec:authorize="isAuthenticated()"
+                             th:if="${#authentication.getPrincipal().email == answerWithCommnets.answerDTO.userDTO.email}"
+                             class="ml-0 col-lg-11 row justify-content-between">
+                            <div class="col-lg-10 white-space-pre-wrap"
+                                 th:text="${answerWithCommnets.answerDTO.value}"></div>
                             <div class="modal " id="deleteAnswer" tabindex="-1" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content bg-secondary">
@@ -160,9 +201,12 @@
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <form method="post" action="#" th:action="@{/answer/{answerId}/delete(answerId=${answerWithCommnets.answerDTO.id})}">
+                                            <form method="post" action="#"
+                                                  th:action="@{/answer/{answerId}/delete(answerId=${answerWithCommnets.answerDTO.id})}">
                                                 <div class="row justify-content-around">
-                                                    <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
+                                                    <button type="button" class="btn btn-danger col-3"
+                                                            data-dismiss="modal">No
+                                                    </button>
                                                     <input type="submit" class="btn btn-primary col-3" value="yes">
                                                 </div>
                                             </form>
@@ -172,7 +216,8 @@
                             </div>
                             <div class="col-lg-2">
                                 <div>
-                                    <a class="btn-danger btn" role="button" type="button" data-toggle="modal" data-target="#deleteAnswer">Delete</a>
+                                    <a class="btn-danger btn" role="button" type="button" data-toggle="modal"
+                                       data-target="#deleteAnswer">Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -182,24 +227,38 @@
                         <div class="row justify-content-between align-items-center">
                             <div class="col-lg-3">
                                 <figure class="d-flex flex-column justify-content-center align-items-center mb-0">
-                                    <img height="75" width="75" th:if="${answerWithCommnets.answerDTO.userDTO.avatar == null}" src="/images/user.png">
-                                    <img height="75" width="75" th:if="${answerWithCommnets.answerDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ answerWithCommnets.answerDTO.userDTO.avatar}">
-                                    <figcaption class="text-center" th:text="${answerWithCommnets.answerDTO.userDTO.name}">></figcaption>
+                                    <a class="d-flex justify-content-center flex-column align-items-center"
+                                       th:href="@{/user/{userId}(userId=${answerWithCommnets.answerDTO.userDTO.id})}">
+                                        <img height="75" width="75"
+                                             th:if="${answerWithCommnets.answerDTO.userDTO.avatar == null}"
+                                             src="/images/user.png">
+                                        <img height="75" width="75"
+                                             th:if="${answerWithCommnets.answerDTO.userDTO.avatar != null}"
+                                             th:src="*{'data:image/png;base64,'+ answerWithCommnets.answerDTO.userDTO.avatar}">
+                                        <figcaption class="text-center font-weight-bold"
+                                                    th:text="${answerWithCommnets.answerDTO.userDTO.name}">>
+                                        </figcaption>
+                                    </a>
                                 </figure>
                             </div>
                             <div class="col-lg-3">
                                 Creation date: <span th:text="${answerWithCommnets.answerDTO.creationDate}"></span>
                             </div>
                             <a class="col-lg-3 btn btn-primary" data-toggle="collapse" type="button"
-                               th:href="'#commentDTO-form' + ${answerWithCommnets.answerDTO.id}" th:attr="aria-controls='commentDTO-form' + ${answerWithCommnets.answerDTO.id}"
+                               th:href="'#commentDTO-form' + ${answerWithCommnets.answerDTO.id}"
+                               th:attr="aria-controls='commentDTO-form' + ${answerWithCommnets.answerDTO.id}"
                                aria-expanded="false">
                                 Comment
                             </a>
                         </div>
                         <div>
-                            <form th:id="'commentDTO-form' + ${answerWithCommnets.answerDTO.id}" class="collapse mt-3" th:classappend="${commentAnswerIdError == answerWithCommnets.answerDTO.id}? ' show' : ''"
-                                  id="commentDTO-form" action="#" th:action="@{/answer/{answerId}/comments(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}" method="post" th:object="${commentForm}">
-                                <div th:if="${commentAnswerIdError == answerWithCommnets.answerDTO.id}" th:text="${errorMsg}" class="alert alert-danger"></div>
+                            <form th:id="'commentDTO-form' + ${answerWithCommnets.answerDTO.id}" class="collapse mt-3"
+                                  th:classappend="${commentAnswerIdError == answerWithCommnets.answerDTO.id}? ' show' : ''"
+                                  id="commentDTO-form" action="#"
+                                  th:action="@{/answer/{answerId}/comments(answerId=${answerWithCommnets.answerDTO.id}, page=${param.page}, size=${param.size}, sort=${param.sort})}"
+                                  method="post" th:object="${commentForm}">
+                                <div th:if="${commentAnswerIdError == answerWithCommnets.answerDTO.id}"
+                                     th:text="${errorMsg}" class="alert alert-danger"></div>
                                 <div class="form-group">
                                     <textarea class="form-control" th:field="*{value}"></textarea>
                                 </div>
@@ -213,30 +272,61 @@
                                 <hr style="background-color:white; border:white 1px solid;">
                                 <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != commentDTO.userDTO.email}">
                                     <div class="row">
-                                        <img class="col-1" height="50" width="50" th:if="${commentDTO.userDTO.avatar == null}" src="/images/user.png">
-                                        <img class="col-1" height="50" width="50" th:if="${commentDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ commentDTO.userDTO.avatar}">
+                                        <div class="col-auto">
+                                            <a th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}">
+                                                <img height="50" width="50" th:if="${commentDTO.userDTO.avatar == null}"
+                                                     src="/images/user.png">
+                                                <img height="50" width="50" th:if="${commentDTO.userDTO.avatar != null}"
+                                                     th:src="*{'data:image/png;base64,'+ commentDTO.userDTO.avatar}">
+                                            </a>
+                                        </div>
                                         <div class="col-11 row">
-                                            <div class="col-3 mr-auto mb-2 font-weight-bold" th:text="${commentDTO.userDTO.name}"></div>
+                                            <div class="col-3 mr-auto mb-2 font-weight-bold">
+                                                <a th:text="${commentDTO.userDTO.name}"
+                                                   th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}"></a>
+                                            </div>
+
                                             <div class="col-2" th:text="${commentDTO.creationDate}"></div>
-                                            <div class="col-12 white-space-pre-wrap mb-3" th:text="${commentDTO.value}"></div>
+                                            <div class="col-12 white-space-pre-wrap mb-3"
+                                                 th:text="${commentDTO.value}"></div>
                                         </div>
                                     </div>
                                 </div>
-                                <div sec:authorize="isAuthenticated()" th:if="${#authentication.getPrincipal().email == commentDTO.userDTO.email}" class="row">
-                                    <img class="col-1" height="50" width="50" th:if="${commentDTO.userDTO.avatar == null}" src="/images/user.png">
-                                    <img class="col-1" height="50" width="50" th:if="${commentDTO.userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ commentDTO.userDTO.avatar}">
-                                    <div class="col-11 row">
-                                        <div class="col-10 mb-2 font-weight-bold" th:text="${commentDTO.userDTO.name}"></div>
-                                        <div class="col-2" th:text="${commentDTO.creationDate}"></div>
-                                        <div class="col-11 white-space-pre-wrap" th:text="${commentDTO.value}"></div>
-                                        <div class="col-1">
-                                            <a th:attr="comment-id = ${commentDTO.id}" class="btn btn-danger delete-comment-button" role="button" type="button" data-toggle="modal" data-target="#deleteComment">Delete</a>
-                                        </div>
+                                <div sec:authorize="isAuthenticated()"
+                                     th:if="${#authentication.getPrincipal().email == commentDTO.userDTO.email}"
+                                     class="row">
+                                    <div class="col-auto">
+                                        <a th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}">
+                                            <img height="50" width="50" th:if="${commentDTO.userDTO.avatar == null}"
+                                                 src="/images/user.png">
+                                            <img height="50" width="50" th:if="${commentDTO.userDTO.avatar != null}"
+                                                 th:src="*{'data:image/png;base64,'+ commentDTO.userDTO.avatar}">
+                                        </a>
                                     </div>
+                                    <div class="col-10 row">
+                                        <div class="col-3 mr-auto mb-2 font-weight-bold">
+                                            <a th:text="${commentDTO.userDTO.name}"
+                                               th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}"></a>
+                                        </div>
+
+                                        <div class="col-2" th:text="${commentDTO.creationDate}"></div>
+                                        <div class="col-12 white-space-pre-wrap mb-3"
+                                             th:text="${commentDTO.value}"></div>
+                                    </div>
+                                    <div class="col-1">
+                                        <a th:attr="comment-id = ${commentDTO.id}"
+                                           class="btn btn-danger delete-comment-button" role="button" type="button"
+                                           data-toggle="modal" data-target="#deleteComment">Delete</a>
+                                    </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
-                        <a class="text-primary d-flex justify-content-center" th:if="${answerWithCommnets.comments.totalPages > 1}" th:id="'clickToGetMoreComments' + ${answerWithCommnets.answerDTO.id}" th:value="${answerWithCommnets.answerDTO.id}"
+                        <a class="text-primary d-flex justify-content-center"
+                           th:if="${answerWithCommnets.comments.totalPages > 1}"
+                           th:id="'clickToGetMoreComments' + ${answerWithCommnets.answerDTO.id}"
+                           th:value="${answerWithCommnets.answerDTO.id}"
                            page="1">Show more comments</a>
                     </div>
 
@@ -252,7 +342,9 @@
                                 <div class="modal-body">
                                     <form id="deleting-comment-form" method="post" action="#" th:action="@{/comment}">
                                         <div class="row justify-content-around">
-                                            <button type="button" role="button" class="btn btn-danger col-3" data-dismiss="modal">No</button>
+                                            <button type="button" role="button" class="btn btn-danger col-3"
+                                                    data-dismiss="modal">No
+                                            </button>
                                             <input type="submit" class="btn btn-primary col-3" value="yes">
                                         </div>
                                     </form>
@@ -280,12 +372,14 @@
                        , page=${paginationNumber - 1}, size=5, sort=${param.sort})}">
                             </a>
                         </li>
-                        <li class="page-item" th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
+                        <li class="page-item"
+                            th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
                             <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
                        , page=${answers.pageable.pageNumber + 1}, size=5, sort=${param.sort})}">Next
                             </a>
                         </li>
-                        <li class="page-item" th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
+                        <li class="page-item"
+                            th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
                             <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
                        , page=${answers.totalPages - 1}, size=5, sort=${param.sort})}">Last
                             </a>
@@ -309,8 +403,12 @@
     /*]]>*/
 </script>
 <script src="/js/script.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"
+        integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T"
+        crossorigin="anonymous"></script>
 <script src="/js/random-facts.js"></script>
 </body>
 </html>

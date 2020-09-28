@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,6 +62,15 @@ public class CommentsService {
     @Transactional
     public Page<CommentDTO> findAllByUser_Email(String email, Pageable pageable) {
         Page<CommentEntity> commentEntityPage = commentsRepository.findAllByUserEntity_Email(email, pageable);
+        List<CommentDTO> commentDTOList = commentEntityPage.stream()
+                .map(ce -> CommentDTO.apply(ce))
+                .collect(Collectors.toList());
+        return new PageImpl<>(commentDTOList, pageable, commentEntityPage.getTotalElements());
+    }
+
+    @Transactional
+    public Page<CommentDTO> findAllByUserEntity_Id(Long userId, Pageable pageable) {
+        Page<CommentEntity> commentEntityPage = commentsRepository.findAllByUserEntity_Id(userId, pageable);
         List<CommentDTO> commentDTOList = commentEntityPage.stream()
                 .map(ce -> CommentDTO.apply(ce))
                 .collect(Collectors.toList());

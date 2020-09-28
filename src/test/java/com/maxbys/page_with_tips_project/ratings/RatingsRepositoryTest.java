@@ -50,7 +50,7 @@ class RatingsRepositoryTest {
 
     @BeforeEach
     public void fillUpRatingsDataBase() throws IOException, SQLException {
-        DbTestUtil.resetAutoIncrementColumns(applicationContext, "question_entity", "answer_entity");
+        DbTestUtil.resetAutoIncrementColumns(applicationContext, "question_entity", "answer_entity", "user_entity");
         File dataJsonUsers = Paths.get("src", "test", "resources", "users.json").toFile();
         UserEntity[] users = new ObjectMapper().readValue(dataJsonUsers, UserEntity[].class);
         Arrays.stream(users).forEach(usersRepository::save);

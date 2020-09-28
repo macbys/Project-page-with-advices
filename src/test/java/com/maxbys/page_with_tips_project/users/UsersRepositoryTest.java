@@ -1,11 +1,13 @@
 package com.maxbys.page_with_tips_project.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.maxbys.page_with_tips_project.DbTestUtil;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -26,9 +29,12 @@ class UsersRepositoryTest {
 
     @Autowired
     private UsersRepository usersRepository;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @BeforeEach
-    public void fillUpDatabase() throws IOException {
+    public void fillUpDatabase() throws IOException, SQLException {
+        DbTestUtil.resetAutoIncrementColumns(applicationContext, "user_entity");
         File dataJson = Paths.get("src", "test", "resources", "users.json").toFile();
         UserEntity[] users = new ObjectMapper().readValue(dataJson, UserEntity[].class);
         Arrays.stream(users).forEach(usersRepository::save);
@@ -90,6 +96,7 @@ class UsersRepositoryTest {
     public void testUpdateExistingUser() {
         //Given
         FormUserTemplateDTO editedUser = FormUserTemplateDTO.builder()
+                .id(1L)
                 .name("editedUser")
                 .email("testEmail1")
                 .password("editedPassword")

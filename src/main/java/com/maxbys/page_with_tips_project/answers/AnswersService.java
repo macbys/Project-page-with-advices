@@ -83,4 +83,13 @@ public class AnswersService {
                 .collect(Collectors.toList());
         return new PageImpl<AnswerDTO>(answerDTOList, pageable, allByUser_email.getTotalElements());
     }
+
+    @Transactional
+    public Page<AnswerDTO> findAllByUserEntityIdIs(Long userId, Pageable pageable) {
+        Page<AnswerEntity> answerEntities = answersRepository.findAllByUserEntityIdIs(userId, pageable);
+        List<AnswerDTO> answerDTOList = answerEntities.stream()
+                .map(ae -> AnswerDTO.apply(ae))
+                .collect(Collectors.toList());
+        return new PageImpl<AnswerDTO>(answerDTOList, pageable, answerEntities.getTotalElements());
+    }
 }

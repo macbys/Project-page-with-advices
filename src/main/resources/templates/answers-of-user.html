@@ -1,18 +1,17 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head lang="en" xmlns:th="http://www.thymeleaf.org">
-    <title>Your answers</title>
+    <title th:text="${user.name} + ' answers'"></title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
     <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
-
 </head>
 <body class="bg-dark">
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
     <div class="container m-t-86 text-white">
-        <h2 class="text-center mb-3">Your answers:</h2>
+        <h2 class="text-center mb-3" th:text="${user.name} + ' answers:'"></h2>
         <div th:each="answerDTO: ${answers}" class="row mb-4 justify-content-center">
             <a th:href="@{/question/{questionId}(questionId=${answerDTO.questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}" role="button" class="btn btn-warning col-md-8 text-left p-2 d-block question-card-link">
                 <div class="white-space-pre-wrap" th:text="${answerDTO.value}"></div>

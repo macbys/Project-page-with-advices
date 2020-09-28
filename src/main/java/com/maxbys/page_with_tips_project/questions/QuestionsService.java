@@ -87,14 +87,25 @@ public class QuestionsService {
 
     @Transactional
     public Page<QuestionDTO> findAllByUserEmailIs(String email, Pageable pageable) {
-        Page<QuestionEntity> allByCategoryNameIs = questionsRepository.findAllByUserEntityEmailIs(email, pageable);
-        List<QuestionDTO> questionDTOList = allByCategoryNameIs.stream()
+        Page<QuestionEntity> questionEntities = questionsRepository.findAllByUserEntityEmailIs(email, pageable);
+        List<QuestionDTO> questionDTOList = questionEntities.stream()
                 .map(qe -> QuestionDTO.apply(qe))
                 .collect(Collectors.toList());
-        PageImpl<QuestionDTO> questionDTOS = new PageImpl<>(questionDTOList, pageable, allByCategoryNameIs.getTotalPages());
+        PageImpl<QuestionDTO> questionDTOS = new PageImpl<>(questionDTOList, pageable, questionEntities.getTotalPages());
         return questionDTOS;
     }
 
+    @Transactional
+    public Page<QuestionDTO> findAllByUserEntityIdIs(Long userId, Pageable pageable) {
+        Page<QuestionEntity> questionEntities = questionsRepository.findAllByUserEntityIdIs(userId, pageable);
+        List<QuestionDTO> questionDTOList = questionEntities.stream()
+                .map(qe -> QuestionDTO.apply(qe))
+                .collect(Collectors.toList());
+        PageImpl<QuestionDTO> questionDTOS = new PageImpl<>(questionDTOList, pageable, questionEntities.getTotalPages());
+        return questionDTOS;
+    }
+
+    @Transactional
     public Page<QuestionDTO> findQuestionsContainingString(String searchedString, Pageable pageable) {
         Page<QuestionEntity> questionEntityPage = questionsRepository.findQuestionsContainingString(searchedString, pageable);
         List<QuestionDTO> questionDTOList = questionEntityPage.stream()
@@ -123,18 +134,22 @@ public class QuestionsService {
         questionViewService.save(questionView);
     }
 
+    @Transactional
     public Page<QuestionDTO> getMostPopularQuestionsToday() {
         return questionViewService.getMostPopularQuestionsToday();
     }
 
+    @Transactional
     public Page<QuestionDTO> getMostPopularQuestionsInSevenDays() {
         return questionViewService.getMostPopularQuestionsInSevenDays();
     }
 
+    @Transactional
     public Page<QuestionDTO> getMostPopularQuestionsInThirtyDays() {
         return questionViewService.getMostPopularQuestionsInThirtyDays();
     }
 
+    @Transactional
     public List<QuestionDTO> findTop5MostPopularQuestionsSincePageExists() {
         List<QuestionEntity> questionEntities = questionsRepository.findTop5ByOrderByAllViewsOfThisQuestionDesc();
         List<QuestionDTO> questionDTOS = questionEntities.stream()

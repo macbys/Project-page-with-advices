@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -77,7 +78,7 @@ public class QuestionsController {
 
     @GetMapping("/category/{categoryName}/questions")
     public String showQuestionsOfThisCategory(@PathVariable String categoryName, Model model, Pageable pageable) {
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5);
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5, Sort.by(Sort.Direction.DESC, "id"));
         Page<QuestionDTO> questions = questionsService.findAllByCategoryIs(categoryName, pageRequest);
         model.addAttribute("questions", questions);
         List<Integer> paginationNumbers = getPaginationNumbers(model, pageable, questions);
@@ -201,11 +202,12 @@ public class QuestionsController {
     @GetMapping("/profile/questions")
     public String seeAllQuestionsOfLoggedUser(Model model, Principal principal, Pageable pageable) {
         String userEmail = principal.getName();
-        Page<QuestionDTO> questions = questionsService.findAllByUserEmailIs(userEmail, pageable);
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5, Sort.by(Sort.Direction.DESC, "id"));
+        Page<QuestionDTO> questions = questionsService.findAllByUserEmailIs(userEmail, pageRequest);
         model.addAttribute("questions", questions);
         List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), questions.getTotalPages());
         model.addAttribute("paginationNumbers", paginationNumbers);
-        return "questions-of-user";
+        return "questions-of-logged-user";
     }
 
     @GetMapping("/questions")
@@ -215,5 +217,17 @@ public class QuestionsController {
         List<Integer> paginationList = PaginationGenerator.createPaginationList(pageable.getPageNumber(), questionsContainingString.getTotalPages());
         model.addAttribute("paginationNumbers", paginationList);
         return "questions-with-specified-string";
+    }
+
+    @GetMapping("/user/{userId}/questions")
+    public String seeUserQuestions(@PathVariable Long userId, Model model, Pageable pageable) {
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), 5, Sort.by(Sort.Direction.DESC, "id"));
+        Page<QuestionDTO> questions = questionsService.findAllByUserEntityIdIs(userId, pageRequest);
+        UserDTO userDTO = usersService.findById(userId);
+        model.addAttribute("user", userDTO);
+        model.addAttribute("questions", questions);
+        List<Integer> paginationNumbers = PaginationGenerator.createPaginationList(pageable.getPageNumber(), questions.getTotalPages());
+        model.addAttribute("paginationNumbers", paginationNumbers);
+        return "questions-of-user";
     }
 }

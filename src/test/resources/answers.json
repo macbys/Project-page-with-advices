@@ -2,6 +2,7 @@
   {
     "id": 1,
     "userEntity": {
+      "id": 1,
       "email": "testEmail1",
       "name": "testName1",
       "password": "testPassword1"
@@ -11,6 +12,7 @@
       "id": 1,
       "value": "testValue1",
       "userEntity": {
+        "id": 2,
         "email": "testEmail2",
         "name": "testName2",
         "password": "testPassword2"
@@ -25,6 +27,7 @@
   {
     "id": 2,
     "userEntity": {
+      "id": 2,
       "email": "testEmail2",
       "name": "testName2",
       "password": "testPassword2"
@@ -34,6 +37,7 @@
       "id": 2,
       "value": "testValue2",
       "userEntity": {
+        "id": 1,
         "email": "testEmail1",
         "name": "testName1",
         "password": "testPassword1"

@@ -43,6 +43,7 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/questions/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/answer/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/users-ranking").permitAll()
+                .antMatchers(HttpMethod.GET, "/user/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

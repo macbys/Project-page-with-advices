@@ -11,12 +11,14 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 public class UserDTO{
 
+    private Long id;
     private String email;
     private String name;
     private String avatar;
 
     public static UserDTO apply(UserEntity userEntity) {
         UserDTO userDTO = UserDTO.builder()
+                .id(userEntity.getId())
                 .email(userEntity.getEmail())
                 .name(userEntity.getName())
                 .avatar(Base64.encodeBase64String(userEntity.getAvatar()))

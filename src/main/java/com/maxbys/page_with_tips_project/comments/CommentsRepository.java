@@ -8,4 +8,5 @@ import org.springframework.data.repository.query.Param;
 public interface CommentsRepository extends JpaRepository<CommentEntity, Long> {
     Page<CommentEntity> findAllByAnswerEntityId(Long id, Pageable pageable);
     Page<CommentEntity> findAllByUserEntity_Email(@Param("email") String email, Pageable pageable);
+    Page<CommentEntity> findAllByUserEntity_Id(Long id, Pageable pageable);
 }

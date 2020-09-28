@@ -1,25 +1,16 @@
 package com.maxbys.page_with_tips_project.users;
 
-import com.maxbys.page_with_tips_project.paginagtion.PaginationGenerator;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.print.Pageable;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.security.Principal;
 import java.util.*;
 
@@ -97,6 +88,7 @@ public class UserController {
         UserDTO userDTO = getUser(principal);
         FormUserTemplateDTO formUserTemplateDTO = new FormUserTemplateDTO();
         formUserTemplateDTO.setName(userDTO.getName());
+        formUserTemplateDTO.setId(userDTO.getId());
         model.addAttribute("formUser", formUserTemplateDTO);
         return "edit-profile";
     }
@@ -110,9 +102,6 @@ public class UserController {
     @PostMapping("/profile/edit")
     public RedirectView editProfile(HttpServletRequest request, Principal principal, RedirectAttributes redirectAttributes, @ModelAttribute FormUserTemplateDTO editedUserData) throws IOException {
         UserDTO userDTO = getUser(principal);
-//        if(editedUserData.getAvatar().getBytes().length < 2) {
-//            editedUserData.setAvatar(null);
-//        }
         editedUserData.setEmail(userDTO.getEmail());
         boolean isEditProfileFormInvalid = checkFormForErrors(redirectAttributes, editedUserData);
         if (isEditProfileFormInvalid) {
@@ -163,5 +152,14 @@ public class UserController {
         Page<UserWithPointsDTO> ranking = usersService.getRanking();
         model.addAttribute("rankedUsers", ranking);
         return "users-ranking";
+    }
+
+    @GetMapping("/user/{userId}")
+    public String goToUserProfilePage(Model model, @PathVariable Long userId) {
+        UserDTO userDTO = usersService.findById(userId);
+        model.addAttribute("userDTO", userDTO);
+        UserWithPointsDTO usersPointsAndRanking = usersService.getUsersPointsAndRanking(userId);
+        model.addAttribute("usersPointsAndRanking", usersPointsAndRanking);
+        return "profile-page";
     }
 }
