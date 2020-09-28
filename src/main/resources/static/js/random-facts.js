@@ -4,7 +4,7 @@ $(document).ready(function () {
     }
 
     $.ajax({
-        url: "http://localhost:8080/random-fact"
+        url: "https://project-page-with-advices.herokuapp.com/random-fact"
     }).then(function (data) {
             $(".random-fact").append(data);
             hideLoading();
