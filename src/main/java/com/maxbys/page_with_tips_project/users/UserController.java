@@ -34,9 +34,7 @@ public class UserController {
     @PostMapping("/register")
     public String postRegisterData(Model model, @ModelAttribute FormUserTemplateDTO userData) throws IOException {
         List<String> errorMsgs = new ArrayList<>();
-        if(userData.getAvatar().getBytes().length < 2) {
-            userData.setAvatar(null);
-        }
+        checkIfAvatarWasChosen(userData);
         checkUserParams(userData, errorMsgs);
         if(!errorMsgs.isEmpty()) {
             model.addAttribute("errorMsgs", errorMsgs);
@@ -44,6 +42,12 @@ public class UserController {
         }
         usersService.save(userData);
         return "/login";
+    }
+
+    private void checkIfAvatarWasChosen(@ModelAttribute FormUserTemplateDTO userData) throws IOException {
+        if (userData.getAvatar().getBytes().length < 2) {
+            userData.setAvatar(null);
+        }
     }
 
     private void checkUserParams(FormUserTemplateDTO userData, List<String> errorMsg) {
@@ -103,6 +107,7 @@ public class UserController {
     public RedirectView editProfile(HttpServletRequest request, Principal principal, RedirectAttributes redirectAttributes, @ModelAttribute FormUserTemplateDTO editedUserData) throws IOException {
         UserDTO userDTO = getUser(principal);
         editedUserData.setEmail(userDTO.getEmail());
+        checkIfAvatarWasChosen(editedUserData);
         boolean isEditProfileFormInvalid = checkFormForErrors(redirectAttributes, editedUserData);
         if (isEditProfileFormInvalid) {
             return new RedirectView("/profile/edit");

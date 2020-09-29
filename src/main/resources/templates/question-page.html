@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="col-md-9 mx-0 p-0 row justify-content-center">
-            <div id="questions-answers-comments" class="col-11 justify-content-center">
+            <div id="questions-answers-comments" class="col-11 p-0 justify-content-center">
 
                 <div class="card bg-warning mb-3">
                     <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.userDTO.email}"
@@ -308,7 +308,6 @@
                                             <a th:text="${commentDTO.userDTO.name}"
                                                th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}"></a>
                                         </div>
-
                                         <div class="col-2" th:text="${commentDTO.creationDate}"></div>
                                         <div class="col-12 white-space-pre-wrap mb-3"
                                              th:text="${commentDTO.value}"></div>
@@ -318,79 +317,79 @@
                                            class="btn btn-danger delete-comment-button" role="button" type="button"
                                            data-toggle="modal" data-target="#deleteComment">Delete</a>
                                     </div>
-                                    </div>
-
                                 </div>
+
                             </div>
                         </div>
-                        <a class="text-primary d-flex justify-content-center"
-                           th:if="${answerWithCommnets.comments.totalPages > 1}"
-                           th:id="'clickToGetMoreComments' + ${answerWithCommnets.answerDTO.id}"
-                           th:value="${answerWithCommnets.answerDTO.id}"
-                           page="1">Show more comments</a>
                     </div>
+                    <a class="text-primary d-flex justify-content-center"
+                       th:if="${answerWithCommnets.comments.totalPages > 1}"
+                       th:id="'clickToGetMoreComments' + ${answerWithCommnets.answerDTO.id}"
+                       th:value="${answerWithCommnets.answerDTO.id}"
+                       page="1">Show more comments</a>
+                </div>
 
-                    <div class="modal" id="deleteComment" tabindex="-1" role="dialog">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content bg-secondary">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Are u sure?</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span class="text-white" aria-hidden="true">×</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <form id="deleting-comment-form" method="post" action="#" th:action="@{/comment}">
-                                        <div class="row justify-content-around">
-                                            <button type="button" role="button" class="btn btn-danger col-3"
-                                                    data-dismiss="modal">No
-                                            </button>
-                                            <input type="submit" class="btn btn-primary col-3" value="yes">
-                                        </div>
-                                    </form>
-                                </div>
+                <div class="modal" id="deleteComment" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content bg-secondary">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-white">Are u sure?</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span class="text-white" aria-hidden="true">×</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="deleting-comment-form" method="post" action="#" th:action="@{/comment}">
+                                    <div class="row justify-content-around">
+                                        <button type="button" role="button" class="btn btn-danger col-3"
+                                                data-dismiss="modal">No
+                                        </button>
+                                        <input type="submit" class="btn btn-primary col-3" value="yes">
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-                <nav>
-                    <ul class="pagination  justify-content-center" th:if="${answers.totalPages > 1}">
-                        <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
-                            <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=0, size=5, sort=${param.sort})}">First
-                            </a>
-                        </li>
-                        <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
-                            <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answers.pageable.pageNumber - 1}, size=5, sort=${param.sort})}">Previous
-                            </a>
-                        </li>
-                        <li th:each="paginationNumber: ${paginationNumbers}" class="page-item"
-                            th:classappend="${answers.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
-                            <a class="page-link" th:text="${paginationNumber}"
-                               th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${paginationNumber - 1}, size=5, sort=${param.sort})}">
-                            </a>
-                        </li>
-                        <li class="page-item"
-                            th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
-                            <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answers.pageable.pageNumber + 1}, size=5, sort=${param.sort})}">Next
-                            </a>
-                        </li>
-                        <li class="page-item"
-                            th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
-                            <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
-                       , page=${answers.totalPages - 1}, size=5, sort=${param.sort})}">Last
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
             </div>
+            <nav>
+                <ul class="pagination  justify-content-center" th:if="${answers.totalPages > 1}">
+                    <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
+                        <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=0, size=5, sort=${param.sort})}">First
+                        </a>
+                    </li>
+                    <li class="page-item" th:classappend="${answers.pageable.pageNumber == 0}? 'disabled': ''">
+                        <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answers.pageable.pageNumber - 1}, size=5, sort=${param.sort})}">Previous
+                        </a>
+                    </li>
+                    <li th:each="paginationNumber: ${paginationNumbers}" class="page-item"
+                        th:classappend="${answers.pageable.pageNumber + 1 == paginationNumber}? 'active' : ''">
+                        <a class="page-link" th:text="${paginationNumber}"
+                           th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${paginationNumber - 1}, size=5, sort=${param.sort})}">
+                        </a>
+                    </li>
+                    <li class="page-item"
+                        th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
+                        <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answers.pageable.pageNumber + 1}, size=5, sort=${param.sort})}">Next
+                        </a>
+                    </li>
+                    <li class="page-item"
+                        th:classappend="${answers.pageable.pageNumber + 1 == answers.totalPages}? 'disabled': ''">
+                        <a class="page-link" th:href="@{{link}(link=${#httpServletRequest.requestURI}
+                       , page=${answers.totalPages - 1}, size=5, sort=${param.sort})}">Last
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
         <div class="col-md-1"></div>
-        <input type="hidden" value="1" id="shownPagesInput">
     </div>
+    <input type="hidden" value="1" id="shownPagesInput">
+</div>
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/

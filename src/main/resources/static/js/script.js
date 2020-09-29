@@ -52,28 +52,46 @@ $(document).ready(function() {
                 let regex = /</g;
                 comment.value = comment.value.replace(regex, " &lt;");
                 if(principal == 'anonymousUser' || principal.email != comment.userDTO.email) {
-                    $("#comments" + answerId).append("<hr style=\"background-color:white; border:white 1px solid;\">\n" +
-                        "                                <div>\n" +
-                        "                                    <div class=\"row\">\n" +
-                        "                                        <img class=\"col-1\" height=\"50\" width=\"50\" th:src='" + image + "'>\n" +
-                        "                                        <div class=\"col-11 row\">\n" +
-                        "                                            <div class=\"col-3 mr-auto mb-2 font-weight-bold\" >" + comment.userDTO.name + "</div>\n" +
-                        "                                            <div class=\"col-2\" >" + comment.creationDate + "</div>\n" +
-                        "                                            <div class=\"col-12 white-space-pre-wrap mb-3\" th:text=\"${commentDTO.value}\">" + comment.value +"</div>\n" +
+                    $("#comments" + answerId).append("<hr style=\"background-color:white; border:white 1px solid;\">" +
+                        "                                <div \n" +
+                        "                                     class=\"row\">\n" +
+                        "                                    <div class=\"col-auto\">\n" +
+                        "                                        <a href=\"/user/" + comment.userDTO.id + "\">\n" +
+                        "                                           <img height=\"50\" width=\"50\" src='" + image + "'>\n" +
+                        "                                        </a>\n" +
+                        "                                    </div>\n" +
+                        "                                    <div class=\"col-11 row\">\n" +
+                        "                                        <div class=\"col-3 mr-auto mb-2 font-weight-bold\">\n" +
+                        "                                            <a \n" +
+                        "                                               href=\"/user/" + comment.userDTO.id + "\">" + comment.userDTO.name + "</a>\n" +
                         "                                        </div>\n" +
+                        "                                        <div class=\"col-2\" >" + comment.creationDate + "</div>\n" +
+                        "                                        <div class=\"col-12 white-space-pre-wrap mb-3\"\n" +
+                        "                                             >" + comment.value + "</div>\n" +
                         "                                    </div>\n" +
                         "                                </div>");
                 } else {
-                    $("#comments" + answerId).append("<hr style=\"background-color:white; border:white 1px solid;\">\n" +
-                        "<div class=\"row\">\n" +
-                        "                                    <img class=\"col-1\" height=\"50\" width=\"50\" src='" + image + "'>\n" +
-                        "                                    <div class=\"col-11 row\">\n" +
-                        "                                        <div class=\"col-10 mb-2 font-weight-bold\" >" + comment.userDTO.name + "</div>\n" +
-                        "                                        <div class=\"col-2\" >" + comment.creationDate + "</div>\n" +
-                        "                                        <div class=\"col-11 white-space-pre-wrap\" >" + comment.value + "</div>\n" +
-                        "                                        <div class=\"col-1\">\n" +
-                        "                                            <a comment-id = '" + comment.id + "' class=\"btn btn-danger delete-comment-button\" role=\"button\" type=\"button\" data-toggle=\"modal\" data-target=\"#deleteComment\">Delete</a>\n" +
+                    $("#comments" + answerId).append("<hr style=\"background-color:white; border:white 1px solid;\">" +
+                        "                                <div \n" +
+                        "                                     class=\"row\">\n" +
+                        "                                    <div class=\"col-auto\">\n" +
+                        "                                        <a href=\"/user/" + comment.userDTO.id + "\">\n" +
+                        "                                           <img height=\"50\" width=\"50\" src='" + image + "'>\n" +
+                        "                                        </a>\n" +
+                        "                                    </div>\n" +
+                        "                                    <div class=\"col-10 row\">\n" +
+                        "                                        <div class=\"col-3 mr-auto mb-2 font-weight-bold\">\n" +
+                        "                                            <a \n" +
+                        "                                               href=\"/user/" + comment.userDTO.id + "\">" + comment.userDTO.name + "</a>\n" +
                         "                                        </div>\n" +
+                        "                                        <div class=\"col-2\" >" + comment.creationDate + "</div>\n" +
+                        "                                        <div class=\"col-12 white-space-pre-wrap mb-3\"\n" +
+                        "                                             >" + comment.value + "</div>\n" +
+                        "                                    </div>\n" +
+                        "                                    <div class=\"col-1\">\n" +
+                        "                                        <a comment-id = "+ comment.id + "\n" +
+                        "                                           class=\"btn btn-danger delete-comment-button\" role=\"button\" type=\"button\"\n" +
+                        "                                           data-toggle=\"modal\" data-target=\"#deleteComment\">Delete</a>\n" +
                         "                                    </div>\n" +
                         "                                </div>");
                 }
