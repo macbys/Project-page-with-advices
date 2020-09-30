@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -53,8 +55,8 @@ public class QuestionsController {
     @PostMapping("/add-question")
     public RedirectView postQuestion(RedirectAttributes redirectAttributes, @ModelAttribute FormQuestionTemplate formQuestionTemplate, Principal principal) {
         String questionValue = formQuestionTemplate.getQuestionValue();
-        boolean isQuestionRightLength = checkQuestionsLength(questionValue);
-        if (isQuestionRightLength) {
+        boolean isQuestionBadLength = checkQuestionsLength(questionValue);
+        if (isQuestionBadLength) {
             return getRedirectViewToAddQuestionPageWithErrorMessage(redirectAttributes);
         }
         UserDTO userDTO = findUser(principal);
@@ -115,6 +117,8 @@ public class QuestionsController {
         model.addAttribute("answerForm", new AnswerDTO());
         model.addAttribute("commentForm", new CommentDTO());
         model.addAttribute("editedQuestionForm", new FormQuestionTemplate());
+        List<CategoryDTO> categories = categoriesService.findAllByOrOrderByName();
+        model.addAttribute("categories", categories);
     }
 
     private QuestionDTO findQuestion(Long questionId) {
@@ -152,43 +156,48 @@ public class QuestionsController {
     }
 
     @PostMapping("/question/{questionId}/delete")
-    public RedirectView deleteQuestion(Principal principal, @PathVariable Long questionId) {
+    public RedirectView deleteQuestion(Authentication authentication, @PathVariable Long questionId) {
         QuestionDTO questionDTO = findQuestion(questionId);
-        if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, questionDTO)) {
+        if(checkIfLoggedUserIsAllowedToEditThisQuestion(authentication, questionDTO)) {
             questionsService.deleteById(questionId);
             return new RedirectView("/");
         }
-        throw new RuntimeException("User with email " + principal.getName() + " isn't allowed to delete question with " + questionId + " id");
+        throw new RuntimeException("User with email " + authentication.getName() + " isn't allowed to delete question with " + questionId + " id");
     }
 
-    private boolean checkIfLoggedUserIsAllowedToEditThisQuestion(Principal principal, QuestionDTO questionDTO) {
-        return questionDTO.getUserDTO().getEmail().equals(principal.getName());
+    private boolean checkIfLoggedUserIsAllowedToEditThisQuestion(Authentication authentication, QuestionDTO questionDTO) {
+        return checkIfAdmin(authentication) || questionDTO.getUserDTO().getEmail().equals(authentication.getName());
+    }
+
+    private boolean checkIfAdmin(Authentication authentication) {
+        return authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"));
     }
 
     @PostMapping("/question/{questionId}/update")
-    public RedirectView updateQuestion(RedirectAttributes redirectAttributes, @ModelAttribute FormQuestionTemplate formQuestionTemplate, Principal principal, @PathVariable Long questionId, HttpServletRequest httpServletRequest) {
-        throwExceptionIfThereAreAnswersToEditedQuestion(questionId);
+    public RedirectView updateQuestion(RedirectAttributes redirectAttributes, @ModelAttribute FormQuestionTemplate formQuestionTemplate, Authentication authentication, @PathVariable Long questionId, HttpServletRequest httpServletRequest) {
+        throwExceptionIfThereAreAnswersToEditedQuestion(questionId, authentication);
         QuestionDTO questionDTO = findQuestion(questionId);
         String questionValue = formQuestionTemplate.getQuestionValue();
-        boolean isQuestionRightLength = checkQuestionsLength(questionValue);
-        if(isQuestionRightLength) {
-            return getRedirectView(redirectAttributes, httpServletRequest);
+        boolean isQuestionBadLength = checkQuestionsLength(questionValue);
+        if(isQuestionBadLength) {
+            return getRedirectViewWithErrorMessage(redirectAttributes, httpServletRequest);
         }
-        if(checkIfLoggedUserIsAllowedToEditThisQuestion(principal, questionDTO)) {
+        if(checkIfLoggedUserIsAllowedToEditThisQuestion(authentication, questionDTO)) {
             questionsService.update(formQuestionTemplate, questionId);
             return new RedirectView(httpServletRequest.getRequestURI().replaceFirst("/update$", "") + "?" + httpServletRequest.getQueryString());
         }
-        return throwExceptionUserIsNotAllowedToEditThisQuestion(principal, questionId);
+        return throwExceptionUserIsNotAllowedToEditThisQuestion(authentication, questionId);
     }
 
-    private void throwExceptionIfThereAreAnswersToEditedQuestion(Long questionId) {
+    private void throwExceptionIfThereAreAnswersToEditedQuestion(Long questionId, Authentication authentication) {
+        boolean isNotAdmin = !checkIfAdmin(authentication);
         boolean areThereAnswersForQuestion = !answersService.findAllByQuestionId(questionId, PageRequest.of(0, 1)).isEmpty();
-        if(areThereAnswersForQuestion) {
+        if(isNotAdmin && areThereAnswersForQuestion) {
             throw new RuntimeException();
         }
     }
 
-    private RedirectView getRedirectView(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
+    private RedirectView getRedirectViewWithErrorMessage(RedirectAttributes redirectAttributes, HttpServletRequest httpServletRequest) {
         RedirectView redirectView = new RedirectView(httpServletRequest.getRequestURI().replaceFirst("/update$", "") + "?" + httpServletRequest.getQueryString());
         redirectAttributes.addFlashAttribute("errorMsg", "Question must be between 8 and 1800 characters long");
         return redirectView;

@@ -5,15 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +48,7 @@ public class UsersService implements UserDetailsService {
     }
 
     public void save(FormUserTemplateDTO formUserTemplateDTO) {
+        formUserTemplateDTO.setId(null);
         formUserTemplateDTO.setPassword(passwordEncoder.encode(formUserTemplateDTO.getPassword()));
         UserEntity userEntity = UserEntity.apply(formUserTemplateDTO);
         Optional<UserEntity> existingUserOptional = usersRepository.findByEmail(formUserTemplateDTO.getEmail());
@@ -75,8 +73,8 @@ public class UsersService implements UserDetailsService {
         usersRepository.save(userEntity);
     }
 
-    public void deleteByName(String email){
-        usersRepository.deleteByEmail(email);
+    public void deleteById(Long userId){
+        usersRepository.deleteById(userId);
     }
 
     @Transactional
@@ -101,11 +99,13 @@ public class UsersService implements UserDetailsService {
         List<Object[]> ranking = usersRepository.getRanking();
         List<UserWithPointsDTO> userWithPointsDTOList = ranking.stream()
                 .map(objects -> {
-                    UserDTO userDTO = new UserDTO(null, (String) objects[1], (String) objects[0], null);
+                    BigInteger idBigInteger = (BigInteger) objects[0];
+                    Long id = Long.valueOf(idBigInteger.toString());
+                    UserDTO userDTO = new UserDTO(id, (String) objects[2], (String) objects[1], null, null);
                     return UserWithPointsDTO.builder()
                             .userDTO(userDTO)
-                            .points((BigInteger) objects[2])
-                            .rank((BigInteger) objects[3])
+                            .points((BigInteger) objects[3])
+                            .rank((BigInteger) objects[4])
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -120,5 +120,10 @@ public class UsersService implements UserDetailsService {
                 .points((BigInteger) object[1])
                 .build();
         return userWithPointsDTO;
+    }
+
+    @Transactional
+    public void deleteUserByEmail(String email) {
+        usersRepository.deleteByEmail(email);
     }
 }

@@ -5,12 +5,13 @@ import com.maxbys.page_with_tips_project.questions.FormQuestionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
 import java.util.List;
 
 @Controller
@@ -109,5 +110,14 @@ public class CategoriesController {
             return true;
         }
         return false;
+    }
+
+    @PostMapping("/category/{categoryName}/delete")
+    public RedirectView deleteCategory(@RequestParam String redirect, @PathVariable String categoryName, Authentication authentication) {
+        if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+            categoriesService.deleteById(categoryName);
+            return new RedirectView(redirect);
+        }
+        throw new RuntimeException("User with email " + authentication.getName() + " isn't allowed to delete category " + categoryName);
     }
 }

@@ -58,8 +58,20 @@ public class QuestionsService {
         Optional<QuestionEntity> questionEntityOptional = questionsRepository.findById(questionId);
         QuestionEntity questionEntity = questionEntityOptional.orElseThrow(() ->
                 new RuntimeException("Question with id " + questionId + " doesn't exist"));
-        questionEntity = QuestionEntity.update(formQuestionTemplate, questionEntity);
+        String category = formQuestionTemplate.getCategory();
+        if(isCategoryDifferentThanBefore(category, questionEntity)) {
+            CategoryEntity categoryEntity = categoriesRepository.findById(category).orElseThrow(() ->
+                    new RuntimeException("Category with name " + category + " doesn't exist"));
+            QuestionEntity.update(formQuestionTemplate, questionEntity, categoryEntity);
+        }
+        else {
+            questionEntity = QuestionEntity.updateWithoutCategory(formQuestionTemplate, questionEntity);
+        }
         questionsRepository.save(questionEntity);
+    }
+
+    private boolean isCategoryDifferentThanBefore(String newCategoryCandidate, QuestionEntity questionEntity) {
+        return !questionEntity.getCategoryEntity().getName().equals(newCategoryCandidate);
     }
 
     public void deleteById(Long id){

@@ -32,10 +32,11 @@ public class UserEntity implements UserDetails, Serializable {
     @Getter
     @Lob
     private byte[] avatar;
-
+    @Getter
+    private String role;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("USER"));
+        return Collections.singleton(new SimpleGrantedAuthority(role));
     }
 
     @Override
@@ -77,6 +78,7 @@ public class UserEntity implements UserDetails, Serializable {
         try{
             userEntity.avatar = formUserTemplateDTO.getAvatar() == null? null : formUserTemplateDTO.getAvatar().getBytes();
         }catch (IOException ex){}
+        userEntity.role = formUserTemplateDTO.getRole();
         return userEntity;
     }
 

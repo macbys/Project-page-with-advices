@@ -3,6 +3,8 @@ package com.maxbys.page_with_tips_project.users;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,8 @@ public class UserController {
 
     @PostMapping("/register")
     public String postRegisterData(Model model, @ModelAttribute FormUserTemplateDTO userData) throws IOException {
+        userData.setRole("USER");
+        userData.setId(null);
         List<String> errorMsgs = new ArrayList<>();
         checkIfAvatarWasChosen(userData);
         checkUserParams(userData, errorMsgs);
@@ -92,7 +96,8 @@ public class UserController {
         UserDTO userDTO = getUser(principal);
         FormUserTemplateDTO formUserTemplateDTO = new FormUserTemplateDTO();
         formUserTemplateDTO.setName(userDTO.getName());
-        formUserTemplateDTO.setId(userDTO.getId());
+        Long id = userDTO.getId();
+        formUserTemplateDTO.setId(id);
         model.addAttribute("formUser", formUserTemplateDTO);
         return "edit-profile";
     }
@@ -166,5 +171,28 @@ public class UserController {
         UserWithPointsDTO usersPointsAndRanking = usersService.getUsersPointsAndRanking(userId);
         model.addAttribute("usersPointsAndRanking", usersPointsAndRanking);
         return "profile-page";
+    }
+
+    @PostMapping("/user/{userId}/delete")
+    public RedirectView deleteUser(@PathVariable Long userId, Authentication authentication) {
+        UserDTO userDTO = usersService.findById(userId);
+        boolean isUserAllowedToDeleteThatUser = isLoggedUserAdminOrUserBeingDeleted(authentication, userDTO);
+        if (isUserAllowedToDeleteThatUser){
+            usersService.deleteById(userId);
+            return new RedirectView("/");
+        }
+        throw new RuntimeException("User with email " + authentication.getName() + " isn't allowed to delete user with " + userId + " id");
+    }
+
+    @PostMapping("/profile/delete")
+    public RedirectView deleteLoggedUser(Principal principal, HttpServletRequest request) {
+        usersService.deleteUserByEmail(principal.getName());
+        request.setAttribute(
+                View.RESPONSE_STATUS_ATTRIBUTE, HttpStatus.TEMPORARY_REDIRECT);
+        return new RedirectView("/logout");
+    }
+
+    private boolean isLoggedUserAdminOrUserBeingDeleted(Authentication authentication, UserDTO userDTO) {
+        return authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")) || userDTO.getEmail().equals(authentication.getName());
     }
 }

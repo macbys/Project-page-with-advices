@@ -15,6 +15,7 @@ public class UserDTO{
     private String email;
     private String name;
     private String avatar;
+    private String role;
 
     public static UserDTO apply(UserEntity userEntity) {
         UserDTO userDTO = UserDTO.builder()
@@ -22,6 +23,7 @@ public class UserDTO{
                 .email(userEntity.getEmail())
                 .name(userEntity.getName())
                 .avatar(Base64.encodeBase64String(userEntity.getAvatar()))
+                .role(userEntity.getRole())
                 .build();
         return userDTO;
     }

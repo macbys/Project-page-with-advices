@@ -39,8 +39,14 @@ public class QuestionEntity {
         return questionEntity;
     }
 
-    public static QuestionEntity update(FormQuestionTemplate formQuestionTemplate, QuestionEntity questionEntity) {
+    public static QuestionEntity updateWithoutCategory(FormQuestionTemplate formQuestionTemplate, QuestionEntity questionEntity) {
         questionEntity.value = formQuestionTemplate.getQuestionValue();
+        return questionEntity;
+    }
+
+    public static QuestionEntity update(FormQuestionTemplate formQuestionTemplate, QuestionEntity questionEntity, CategoryEntity categoryEntity) {
+        questionEntity.value = formQuestionTemplate.getQuestionValue();
+        questionEntity.categoryEntity = categoryEntity;
         return questionEntity;
     }
 

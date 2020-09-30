@@ -8,7 +8,8 @@ import java.util.Optional;
 public interface UsersRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
     void deleteByEmail(String email);
-    @Query(value="SELECT u.name,\n" +
+    @Query(value="SELECT u.id,\n" +
+            "       u.name,\n" +
             "       u.email,\n" +
             "       CASE\n" +
             "           WHEN (sum(a.rating) IS NULL)\n" +

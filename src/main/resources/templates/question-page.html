@@ -46,21 +46,21 @@
             <div id="questions-answers-comments" class="col-11 p-0 justify-content-center">
 
                 <div class="card bg-warning mb-3">
-                    <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.userDTO.email}"
+                    <div th:if="${#authentication.getAuthorities().toArray()[0].toString() != 'ADMIN' && (#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != question.userDTO.email)}"
                          class="card-body white-space-pre-wrap" th:text="${question.value}">
                     </div>
                     <div sec:authorize="isAuthenticated()"
-                         th:if="${#authentication.getPrincipal().email == question.userDTO.email}"
+                         th:if="${#authentication.getPrincipal().email == question.userDTO.email || #authentication.getAuthorities().toArray()[0].toString() == 'ADMIN'}"
                          class="card-body row justify-content-between">
                         <div th:text="${question.value}" class="col-md-11 white-space-pre-wrap"></div>
                         <div class="col-md-1 row mr-0 justify-content-end">
                             <div>
                                 <a class="d-block btn btn-danger w-100 text-white" role="button" type="button"
                                    data-toggle="modal" data-target="#deleteQuestion">Delete</a>
-                                <a th:if="${answersWithComments.size() == 0}"
+                                <a th:if="${#authentication.getAuthorities().toArray()[0].toString() == 'ADMIN' || answersWithComments.size() == 0}"
                                    class="d-block btn btn-info w-100 text-white" role="button" type="button"
                                    data-toggle="modal" data-target="#editQuestion">Edit</a>
-                                <a th:if="${answersWithComments.size() != 0}"
+                                <a th:if="${#authentication.getAuthorities().toArray()[0].toString() != 'ADMIN' && answersWithComments.size() != 0}"
                                    class="d-block btn btn-info w-100 text-white popover-dismiss" type="button" title=""
                                    role="button" data-toggle="popover" data-trigger="focus" href="#"
                                    data-placement="top" data-content="Question must have zero answers to be editable">Edit</a>
@@ -147,6 +147,14 @@
                                     <div th:if="${errorMsg == 'Question must be between 8 and 1800 characters long'}"
                                          th:text="${errorMsg}" class="alert alert-danger"></div>
                                     <div class="form-group row">
+                                        <label for="change-category-input" class="col-form-label text-white mr-3">Change Category</label>
+                                        <select id="change-category-input" name="category" class="form-control col-5">
+                                            <option th:each="categorySelect: ${categories}" th:value="${categorySelect.name}"
+                                                    th:text="${categorySelect.name}" th:selected="${categorySelect.name eq question.categoryDTO.name}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group row">
                                     <textarea id="questionEdited" class="form-control col-12 white-space-pre-wrap"
                                               name="questionValue" th:text="${question.value}">
                                     </textarea>
@@ -183,15 +191,15 @@
                                 </svg>
                             </form>
                         </div>
-                        <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != answerWithCommnets.answerDTO.userDTO.email}"
+                        <div th:if="${#authentication.getAuthorities().toArray()[0].toString() != 'ADMIN' && (#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != answerWithCommnets.answerDTO.userDTO.email)}"
                              class="col-lg-11 white-space-pre-wrap"
                              th:text="${answerWithCommnets.answerDTO.value}"></div>
                         <div sec:authorize="isAuthenticated()"
-                             th:if="${#authentication.getPrincipal().email == answerWithCommnets.answerDTO.userDTO.email}"
+                             th:if="${#authentication.getPrincipal().email == answerWithCommnets.answerDTO.userDTO.email || #authentication.getAuthorities().toArray()[0].toString() == 'ADMIN'}"
                              class="ml-0 col-lg-11 row justify-content-between">
                             <div class="col-lg-10 white-space-pre-wrap"
                                  th:text="${answerWithCommnets.answerDTO.value}"></div>
-                            <div class="modal " id="deleteAnswer" tabindex="-1" role="dialog">
+                            <div class="modal" th:id="'deleteAnswer' + ${answerWithCommnets.answerDTO.id}" tabindex="-1" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content bg-secondary">
                                         <div class="modal-header">
@@ -217,7 +225,7 @@
                             <div class="col-lg-2">
                                 <div>
                                     <a class="btn-danger btn" role="button" type="button" data-toggle="modal"
-                                       data-target="#deleteAnswer">Delete</a>
+                                       th:attr="data-target='#deleteAnswer' + ${answerWithCommnets.answerDTO.id}" >Delete</a>
                                 </div>
                             </div>
                         </div>
@@ -270,7 +278,7 @@
                         <div th:id="'comments' + ${answerWithCommnets.answerDTO.id}">
                             <div th:each="commentDTO: ${answerWithCommnets.comments}">
                                 <hr style="background-color:white; border:white 1px solid;">
-                                <div th:if="${#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != commentDTO.userDTO.email}">
+                                <div th:if="${#authentication.getAuthorities().toArray()[0].toString() != 'ADMIN' && (#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != commentDTO.userDTO.email)}">
                                     <div class="row">
                                         <div class="col-auto">
                                             <a th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}">
@@ -293,7 +301,7 @@
                                     </div>
                                 </div>
                                 <div sec:authorize="isAuthenticated()"
-                                     th:if="${#authentication.getPrincipal().email == commentDTO.userDTO.email}"
+                                     th:if="${#authentication.getPrincipal().email == commentDTO.userDTO.email || #authentication.getAuthorities().toArray()[0].toString() == 'ADMIN'}"
                                      class="row">
                                     <div class="col-auto">
                                         <a th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}">

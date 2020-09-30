@@ -12,10 +12,37 @@
 <div class="wrapper">
     <div class="container m-t-86 justify-content-center">
         <div th:each="categoryDTO: ${categories}" class="row mb-2">
-            <div th:text="${categoryDTO.name}" class="h3 col-md-8 bg-primary m-0 p-2 text-center text-white">
+            <div th:unless="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" th:text="${categoryDTO.name}" class="h3 col-md-8 bg-primary m-0 p-2 d-flex align-items-center justify-content-center text-white">
+            </div>
+            <div th:if="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" th:text="${categoryDTO.name}" class="h3 col-md-6 bg-primary m-0 p-2 d-flex align-items-center justify-content-center text-white">
             </div>
             <a th:href="@{/category/{id}(id=${categoryDTO.name})}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-warning rounded-0"><b>See sub-categories</b></a>
             <a th:href="@{/category/{id}/questions(id=${categoryDTO.name}, page=0, size=5, sort=name)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0"><b>See questions</b></a>
+            <div th:if="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-md-2 row">
+                <a data-toggle="modal" th:attr="data-target='#deleteCategory-' + ${categoryDTO.name}" class="btn btn-danger w-100">Delete</a>
+            </div>
+            <div class="modal " th:id="${'deleteCategory-' + categoryDTO.name}" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content bg-secondary">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-white">Are u sure?</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span class="text-white" aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="post" action="#"
+                                  th:action="@{/category/{categoryName}/delete(categoryName=${categoryDTO.name}, redirect=${#httpServletRequest.requestURI})}">
+                                <div class="row justify-content-around">
+                                    <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No
+                                    </button>
+                                    <input type="submit" class="btn btn-primary col-3" value="yes">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <nav  th:if="${categories.totalPages > 1}">
             <ul class="pagination justify-content-center" >

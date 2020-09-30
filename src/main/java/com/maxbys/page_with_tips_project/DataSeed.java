@@ -56,17 +56,20 @@ public class DataSeed implements InitializingBean {
                 .password("")
                 .name("emptyUser")
                 .email("")
+                .role("USER")
                 .build();
         usersService.save(emptyUser);
         FormUserTemplateDTO roloUser = FormUserTemplateDTO.builder()
                 .name("rolo")
                 .email("maxbys@gmail.com")
                 .password("redo")
+                .role("USER")
                 .build();
         usersService.save(roloUser);
         UserDTO roloUserDTO = UserDTO.builder()
                 .email(roloUser.getEmail())
                 .name(roloUser.getName())
+                .role("USER")
                 .build();
         FormQuestionTemplate fibonacciQuestion = FormQuestionTemplate.builder()
                 .category(javaCategory.getName())
@@ -77,6 +80,7 @@ public class DataSeed implements InitializingBean {
         UserDTO emptyUserDTO = UserDTO.builder()
                 .email(emptyUser.getEmail())
                 .name(emptyUser.getName())
+                .role("ADMIN")
                 .build();
         AnswerDTO fibonacciAnswer1 = AnswerDTO.builder()
                 .questionDTO(fibonacciQuestionDTO)
@@ -97,11 +101,13 @@ public class DataSeed implements InitializingBean {
                 .password("Hdsfw32ssdfga")
                 .name("GwennewG")
                 .email("gwen")
+                .role("USER")
                 .build();
         usersService.save(gwenUser);
         UserDTO gwenUserDTO = UserDTO.builder()
                 .email(gwenUser.getEmail())
                 .name(gwenUser.getName())
+                .role("USER")
                 .build();
         AnswerDTO fibonacciAnswer2 = AnswerDTO.builder()
                 .userDTO(gwenUserDTO)
@@ -134,5 +140,12 @@ public class DataSeed implements InitializingBean {
                 .value("Thank you.")
                 .build();
         commentsService.save(fibonacciComment, 2L, roloUser.getEmail());
+        FormUserTemplateDTO admin = FormUserTemplateDTO.builder()
+                .password("h$a5sZs3^^")
+                .name("Admin")
+                .email("adminCodeA$32z@aaQ6")
+                .role("ADMIN")
+                .build();
+        usersService.save(admin);
     }
 }

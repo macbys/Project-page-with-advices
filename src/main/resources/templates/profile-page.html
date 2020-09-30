@@ -19,9 +19,40 @@
                             <img height="75" width="75" th:if="${userDTO.avatar == null}" src="/images/user.png">
                             <img height="75" width="75" th:if="${userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ userDTO.avatar}">
                         </div>
-                        <div class="col-9">
+                        <div th:unless="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-9">
                             <h3 th:text="${userDTO.name}"></h3>
                             <div th:text="${'Points: ' + usersPointsAndRanking.points}"></div>
+                        </div>
+                        <div th:if="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-9 d-flex row">
+                            <div class="col-10">
+                                <h3 th:text="${userDTO.name}"></h3>
+                                <div th:text="${'Points: ' + usersPointsAndRanking.points}"></div>
+                            </div>
+                            <div class="col-2">
+                                <a class="btn btn-danger" data-toggle="modal" data-target="#deleteLoggedUser">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal " id="deleteLoggedUser" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content bg-secondary">
+                                <div class="modal-header">
+                                    <h5 class="modal-title text-white">Are u sure?</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span class="text-white" aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form method="post" action="#"
+                                          th:action="@{{link}/delete(link=${#httpServletRequest.requestURI})}">
+                                        <div class="row justify-content-around">
+                                            <button type="button" class="btn btn-danger col-3" data-dismiss="modal">No
+                                            </button>
+                                            <input type="submit" class="btn btn-primary col-3" value="yes">
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="list-group list-group-flush navList">

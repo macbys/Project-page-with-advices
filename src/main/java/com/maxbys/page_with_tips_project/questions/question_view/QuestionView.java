@@ -25,6 +25,7 @@ public class QuestionView {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne
     private QuestionEntity question;
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne
     private UserEntity userEntity;
 }

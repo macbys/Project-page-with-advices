@@ -18,4 +18,5 @@ public class FormUserTemplateDTO {
     private String password;
     private String password_repeated;
     private MultipartFile avatar;
+    private String role;
 }

@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -75,22 +77,22 @@ public class CommentsController {
     }
 
     @PostMapping("/comment/{commentId}/delete")
-    public RedirectView deleteComment(Principal principal
+    public RedirectView deleteComment(Authentication authentication
             , @PathVariable Long commentId) {
         CommentDTO commentDTO = getComment(commentId);
-        if(checkIfUserIsAllowedToDeleteComment(principal, commentDTO)){
+        if(checkIfUserIsAllowedToDeleteComment(authentication, commentDTO)){
             commentsService.deleteById(commentId);
             return new RedirectView("/");
         }
-        throw new RuntimeException("User with email " + principal.getName() + " isn't allowed to delete comment with " + commentId + " id");
+        throw new RuntimeException("User with email " + authentication.getName() + " isn't allowed to delete comment with " + commentId + " id");
     }
 
     private CommentDTO getComment(Long commentId) {
         return commentsService.findById(commentId);
     }
 
-    private boolean checkIfUserIsAllowedToDeleteComment(Principal principal, CommentDTO commentDTO) {
-        return commentDTO.getUserDTO().getEmail().equals(principal.getName());
+    private boolean checkIfUserIsAllowedToDeleteComment(Authentication authentication, CommentDTO commentDTO) {
+        return authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")) || commentDTO.getUserDTO().getEmail().equals(authentication.getName());
     }
 
     @ResponseBody

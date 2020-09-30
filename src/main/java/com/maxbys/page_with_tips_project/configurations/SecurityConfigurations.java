@@ -7,31 +7,35 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
     private final UsersService usersService;
-
+    private final PasswordEncoder passwordEncoder;
     @Autowired
-    public SecurityConfigurations(UsersService usersService) {
+    public SecurityConfigurations(UsersService usersService, PasswordEncoder passwordEncoder) {
         this.usersService = usersService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        String encodedPassword = passwordEncoder.encode("h$a5s&7tA2u");
+        auth.inMemoryAuthentication()
+                .withUser("adminCodeA$32z@aaQ6").roles("ADMIN").password(encodedPassword);
         auth.userDetailsService(usersService);
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+//                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/css/**").permitAll()
                 .antMatchers("/js/**").permitAll()
                 .antMatchers("/images/**").permitAll()
-                .antMatchers("/static/**").permitAll()
                 .antMatchers("/").permitAll()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/forgot-password").permitAll()
@@ -53,6 +57,6 @@ public class SecurityConfigurations extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .logout().permitAll();
-        http.headers().frameOptions().disable();
+//        http.headers().frameOptions().disable();
     }
 }

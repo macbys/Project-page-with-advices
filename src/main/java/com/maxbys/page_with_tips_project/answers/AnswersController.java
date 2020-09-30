@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,13 +70,13 @@ public class AnswersController {
     }
 
     @PostMapping("/answer/{answerId}/delete")
-    public RedirectView deleteAnswer(Principal principal,  @PathVariable Long answerId) {
+    public RedirectView deleteAnswer(Authentication authentication, @PathVariable Long answerId) {
         AnswerDTO answerDTO = getAnswer(answerId);
-        if(answerDTO.getUserDTO().getEmail().equals(principal.getName())){
+        if(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")) || answerDTO.getUserDTO().getEmail().equals(authentication.getName())){
             answersService.deleteById(answerId);
             return new RedirectView("/");
         }
-        throw new RuntimeException("User with email " + principal.getName() + " isn't allowed to delete answer with " + answerId + " id");
+        throw new RuntimeException("User with email " + authentication.getName() + " isn't allowed to delete answer with " + answerId + " id");
     }
 
     private AnswerDTO getAnswer(Long answerId) {
