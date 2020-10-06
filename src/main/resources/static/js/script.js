@@ -27,14 +27,7 @@ $(document).ready(function() {
     });
 
     $("a[id^='clickToGetMoreComments']").click(function () {
-        let answerWithComments;
         let answerId = $(this).attr("value");
-        for (i = 0; i < answersWithComments.length; i++) {
-            if(answersWithComments[i].answerDTO.id == answerId) {
-                answerWithComments = answersWithComments[i];
-                break;
-            }
-        }
         let pageNumber = Number($(this).attr("page"));
         $(this).attr("page", pageNumber + 1);
         $.ajax({
@@ -51,14 +44,18 @@ $(document).ready(function() {
                 }
                 let regex = /</g;
                 comment.value = comment.value.replace(regex, " &lt;");
-                if(principal == 'anonymousUser' || principal.email != comment.userDTO.email) {
+                if((principal === 'anonymousUser' || principal.email !== comment.userDTO.email) && principal.authorities[0].authority !== 'ADMIN') {
                     $("#comments" + answerId).append("<hr style=\"background-color:white; border:white 1px solid;\">" +
                     "                                        <div class=\"row justify-content-between\">\n" +
-                        "                                        <div class=\"col-auto\">\n" +
+                        "                                        <div class=\"col-auto pr-0\">\n" +
                         "                                            <a href=\"/user/" + comment.userDTO.id + "\">\n" +
                         "                                                <img height=\"50\" width=\"50\" \n" +
                         "                                                     src='" + image + "'>\n" +
                         "                                            </a>\n" +
+                        "                                        </div>\n" +
+                        "                                        <div class=\"col d-none d-sm-block font-weight-bold\">\n" +
+                        "                                            <a \n" +
+                        "                                               href=\"/user/" + comment.userDTO.id + "\">" + comment.userDTO.name + "</a>\n" +
                         "                                        </div>\n" +
                         "                                        <div class=\"col-5 col-sm-4 col-lg-2 text-right px-0 pr-3\"\n" +
                         "                                             >" + comment.creationDate + "</div>\n" +
@@ -97,22 +94,26 @@ $(document).ready(function() {
                 } else {
                     $("#comments" + answerId).append("<hr style=\"background-color:white; border:white 1px solid;\">" +
                     "                                        <div class=\"row justify-content-between\">\n" +
-                        "                                        <div class=\"col-auto\">\n" +
+                        "                                        <div class=\"col-auto pr-0\">\n" +
                         "                                            <a href=\"/user/" + comment.userDTO.id + "\">\n" +
                         "                                                <img height=\"50\" width=\"50\"" +
                         "                                                     src='" + image + "'>\n" +
                         "                                            </a>\n" +
                         "                                        </div>\n" +
-                        "                                        <div class=\"col-5 col-sm-4 col-lg-2 text-right px-0 pr-3\"\n" +
+                        "                                        <div class=\"col d-none d-md-block font-weight-bold\">\n" +
+                        "                                            <a \n" +
+                        "                                               href=\"/user/" + comment.userDTO.id + "\">" + comment.userDTO.name + "</a>\n" +
+                        "                                        </div>\n" +
+                        "                                        <div class=\"col-5 col-sm-4 col-lg-2 text-right px-0\"\n" +
                         "                                            >" + comment.creationDate + "</div>\n" +
-                        "                                        <div class=\"col-3 col-md-2\">\n" +
+                        "                                        <div class=\"col-4 px-0 col-md-2 text-right\">\n" +
                         "                                            <a comment-id = "+ comment.id + "\n" +
                         "                                               class=\"btn btn-danger delete-comment-button\" role=\"button\" type=\"button\"\n" +
                         "                                               data-toggle=\"modal\" data-target=\"#deleteComment\">Delete</a>\n" +
                         "                                        </div>\n" +
                         "                                        <div class=\"col-sm-12 justify-content-center\">\n" +
                         "                                            <div class=\"col-sm-12 px-0 row justify-content-end m-0\">\n" +
-                        "                                                <div class=\"col-12 px-0 font-weight-bold\">\n" +
+                        "                                                <div class=\"col-12 px-0 d-md-none font-weight-bold\">\n" +
                         "                                                    <a \n" +
                         "                                                       href=\"/user/" + comment.userDTO.id + "\">" + comment.userDTO.name + "</a>\n" +
                         "                                                </div>\n" +

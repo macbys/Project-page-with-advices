@@ -272,7 +272,7 @@
                                 <hr style="background-color:white; border:white 1px solid;">
                                 <div th:if="${#authentication.getAuthorities().toArray()[0].toString() != 'ADMIN' && (#authentication.getPrincipal() == 'anonymousUser' || #authentication.getPrincipal().email != commentDTO.userDTO.email)}">
                                     <div class="row justify-content-between">
-                                        <div class="col-auto">
+                                        <div class="col-auto pr-0">
                                             <a th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}">
                                                 <img height="50" width="50" th:if="${commentDTO.userDTO.avatar == null}"
                                                      src="/images/user.png">
@@ -301,7 +301,7 @@
                                 <div sec:authorize="isAuthenticated()"
                                      th:if="${#authentication.getPrincipal().email == commentDTO.userDTO.email || #authentication.getAuthorities().toArray()[0].toString() == 'ADMIN'}">
                                     <div class="row justify-content-between">
-                                        <div class="col-auto">
+                                        <div class="col-auto pr-0">
                                             <a th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}">
                                                 <img height="50" width="50" th:if="${commentDTO.userDTO.avatar == null}"
                                                      src="/images/user.png">
@@ -313,11 +313,11 @@
                                             <a th:text="${commentDTO.userDTO.name}"
                                                th:href="@{/user/{userId}(userId=${commentDTO.userDTO.id})}"></a>
                                         </div>
-                                        <div class="col-5 col-sm-4 col-lg-2 text-right px-0 pr-3"
+                                        <div class="col-5 col-sm-4 col-lg-2 text-right px-0 "
                                              th:text="${commentDTO.creationDate}"></div>
-                                        <div class="col-3 px-0 col-md-2">
+                                        <div class="col-4 px-0 col-md-2 text-right">
                                             <a th:attr="comment-id = ${commentDTO.id}"
-                                               class="btn btn-danger delete-comment-button" role="button" type="button"
+                                               class=" btn btn-danger delete-comment-button" role="button" type="button"
                                                data-toggle="modal" data-target="#deleteComment">Delete</a>
                                         </div>
                                         <div class="col-sm-12 justify-content-center">
@@ -438,12 +438,8 @@
 </div>
 <script th:inline="javascript">
     /*<![CDATA[*/
-
-    let answersWithComments = /*[[${answersWithComments}]]*/ "Test";
-    let question = /*[[${question}]]*/ "Test";
     let principal = /*[[${#authentication.getPrincipal()}]]*/ "Test";
     let errorMsg = /*[[${errorMsg}]]*/ "Test";
-
     /*]]>*/
 </script>
 <script src="/js/script.js"></script>

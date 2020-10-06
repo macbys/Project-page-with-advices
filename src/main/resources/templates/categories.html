@@ -18,9 +18,7 @@
             </div>
             <a th:href="@{/category/{id}(id=${categoryDTO.name})}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-warning rounded-0"><b>See sub-categories</b></a>
             <a th:href="@{/category/{id}/questions(id=${categoryDTO.name}, page=0, size=5, sort=name)}" role="button" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-success rounded-0"><b>See questions</b></a>
-            <div th:if="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-md-2 row">
-                <a data-toggle="modal" th:attr="data-target='#deleteCategory-' + ${categoryDTO.name}" class="btn btn-danger w-100">Delete</a>
-            </div>
+            <a th:if="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" data-toggle="modal" th:attr="data-target='#deleteCategory-' + ${categoryDTO.name}" class="col-md-2 d-flex justify-content-center align-items-center p-2 btn btn-danger rounded-0">Delete</a>
             <div class="modal " th:id="${'deleteCategory-' + categoryDTO.name}" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content bg-secondary">

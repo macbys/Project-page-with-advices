@@ -12,7 +12,7 @@
 <div class="wrapper bg-dark h-100 d-flex align-items-center">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-6">
+            <div class="col-lg-6">
                 <div class="card bg-secondary text-white">
                     <div class="card-header d-flex row">
                         <div class="col-sm-3">
@@ -24,11 +24,11 @@
                             <div th:text="${'Points: ' + usersPointsAndRanking.points}"></div>
                         </div>
                         <div th:if="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-sm-9 d-flex row">
-                            <div class="col-10">
+                            <div class="col-9 col-sm-10">
                                 <h5 th:text="${userDTO.name}"></h5>
                                 <div th:text="${'Points: ' + usersPointsAndRanking.points}"></div>
                             </div>
-                            <div class="col-2">
+                            <div class="col-3 col-sm-2">
                                 <a class="btn btn-danger" data-toggle="modal" data-target="#deleteLoggedUser">Delete</a>
                             </div>
                         </div>

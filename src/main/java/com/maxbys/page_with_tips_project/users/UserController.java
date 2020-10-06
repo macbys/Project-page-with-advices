@@ -96,6 +96,8 @@ public class UserController {
         UserDTO userDTO = getUser(principal);
         FormUserTemplateDTO formUserTemplateDTO = new FormUserTemplateDTO();
         formUserTemplateDTO.setName(userDTO.getName());
+        String avatar = userDTO.getAvatar();
+        model.addAttribute("avatar", avatar);
         Long id = userDTO.getId();
         formUserTemplateDTO.setId(id);
         model.addAttribute("formUser", formUserTemplateDTO);

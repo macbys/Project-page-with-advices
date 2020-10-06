@@ -67,7 +67,7 @@ public class DataSeed implements InitializingBean {
                 .build();
         usersService.save(roloUser);
         UserDTO roloUserDTO = UserDTO.builder()
-                .id(roloUser.getId())
+                .email(roloUser.getEmail())
                 .name(roloUser.getName())
                 .role("USER")
                 .build();
@@ -78,7 +78,7 @@ public class DataSeed implements InitializingBean {
         questionsService.save(fibonacciQuestion, roloUserDTO);
         QuestionDTO fibonacciQuestionDTO = questionsService.findById(1L);
         UserDTO emptyUserDTO = UserDTO.builder()
-                .id(emptyUser.getId())
+                .email(emptyUser.getEmail())
                 .name(emptyUser.getName())
                 .role("ADMIN")
                 .build();
@@ -105,7 +105,7 @@ public class DataSeed implements InitializingBean {
                 .build();
         usersService.save(gwenUser);
         UserDTO gwenUserDTO = UserDTO.builder()
-                .id(gwenUser.getId())
+                .email(gwenUser.getEmail())
                 .name(gwenUser.getName())
                 .role("USER")
                 .build();

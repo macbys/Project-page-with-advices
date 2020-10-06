@@ -10,6 +10,7 @@ public interface UsersRepository extends JpaRepository<UserEntity, Long> {
     void deleteByEmail(String email);
     @Query(value="SELECT u.id,\n" +
             "       u.name,\n" +
+            "       u.email,\n" +
             "       CASE\n" +
             "           WHEN (sum(a.rating) IS NULL)\n" +
             "                AND (sum(q.all_views_of_this_question) IS NULL) THEN 0\n" +
