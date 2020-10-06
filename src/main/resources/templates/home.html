@@ -13,44 +13,25 @@
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
 <div class="wrapper">
-    <div class="container-fluid p-0 mx-0 row justify-content-center m-t-86 text-white">
-        <div class="col-md-2 row justify-content-center">
-            <div id="random-fact-div" class="col-12 d-none d-md-block">
-                <div class="border border-warning">
-                    <div class="h5 text-center mt-2">
-                        Random fact:
-                    </div>
-                    <div class="loading d-flex justify-content-center">
-                        <div  class="spinner-border text-warning" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
-                    <div class="random-fact question-card-link mx-1 mb-2 text-warning">
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 d-block d-md-none">
-                <div class="border border-warning">
-                    <div class="h5 text-center mt-2">
-                        Random fact:
-                    </div>
-                    <div class="loading d-flex justify-content-center">
-                        <div  class="spinner-border text-warning" role="status">
-                            <span class="sr-only">Loading...</span>
-                        </div>
-                    </div>
-                    <div class="random-fact question-card-link mx-1 mb-2 text-warning">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8">
+    <div class="container-fluid p-0 mx-0 row m-t-86 text-white">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-8">
             <div class="row mb-3 justify-content-center">
                 <div class="col-md-12 d-flex justify-content-end align-items-center">
-                    <div class="h4">
+                    <div class="h4 d-none d-md-block">
                         Show questions based on:&nbsp;
                     </div>
-                    <select id="based-on" class="col-md-4 custom-select custom-select-lg bg-dark text-white">
+                    <select class="based-on d-none d-md-block col-md-4 custom-select custom-select-lg bg-dark text-white">
+                        <option value="creation-date">creation date</option>
+                        <option value="popularity-today">popularity of today</option>
+                        <option value="popularity-in-7-days">popularity of 7 days</option>
+                        <option value="popularity-in-30-days">popularity of 30 days</option>
+                        <option value="popularity-in-all-time">popularity of all time</option>
+                    </select>
+                    <div class="font-weight-bold d-md-none">
+                        Show questions based on:&nbsp;
+                    </div>
+                    <select class="based-on d-md-none col-md-4 custom-select custom-select bg-dark text-white">
                         <option value="creation-date">creation date</option>
                         <option value="popularity-today">popularity of today</option>
                         <option value="popularity-in-7-days">popularity of 7 days</option>
@@ -60,7 +41,7 @@
                 </div>
             </div>
             <div id="creation-date"
-                 class="row mb-4 justify-content-center hidden">
+                 class="row justify-content-center hidden">
                 <a th:each="questionDTO: ${newestQuestions}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
                    role="button" class="btn btn-warning col-md-12 text-left p-2 question-card-link mb-4">
                     <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
@@ -75,7 +56,7 @@
                 </a>
             </div>
             <div style="display: none;" id="popularity-today"
-                 class="row mb-4 justify-content-center hidden">
+                 class="row justify-content-center hidden">
                 <a th:each="questionDTO: ${mostPopularQuestionsToday}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
                    role="button" class="btn btn-warning col-md-12 text-left p-2 question-card-link mb-4">
                     <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
@@ -90,7 +71,7 @@
                 </a>
             </div>
             <div style="display: none;" id="popularity-in-7-days"
-                 class="row mb-4 justify-content-center hidden">
+                 class="row justify-content-center hidden">
                 <a th:each="questionDTO: ${mostPopularQuestionsInSevenDays}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
                    role="button" class="btn btn-warning col-md-12 text-left p-2 question-card-link mb-4">
                     <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
@@ -105,7 +86,7 @@
                 </a>
             </div>
             <div style="display: none;"  id="popularity-in-30-days"
-                 class="row mb-4 justify-content-center hidden">
+                 class="row justify-content-center hidden">
                 <a th:each="questionDTO: ${mostPopularQuestionsInThirtyDays}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
                    role="button" class="btn btn-warning col-md-12 text-left p-2 question-card-link mb-4">
                     <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
@@ -120,7 +101,7 @@
                 </a>
             </div>
             <div style="display: none;"  id="popularity-in-all-time"
-                 class="row mb-4 justify-content-center hidden">
+                 class="row justify-content-center hidden">
                 <a th:each="questionDTO: ${mostPopularQuestions}" th:href="@{/question/{questionId}(questionId=${questionDTO.id}, page=0, size=5, sort='rating,desc', sort='id')}"
                    role="button" class="btn btn-warning col-md-12 text-left p-2 question-card-link mb-4">
                     <div class="white-space-pre-wrap" th:text="${questionDTO.value}"></div>
@@ -135,7 +116,36 @@
                 </a>
             </div>
         </div>
-        <div class="col-2"></div>
+        <div class="col-lg-2 row">
+            <div id="random-fact-div" class="col-12 d-none d-lg-block">
+                <div class="border border-warning">
+                    <div class="h5 text-center mt-2">
+                        Random fact:
+                    </div>
+                    <div class="loading d-flex justify-content-center">
+                        <div  class="spinner-border text-warning" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="random-fact question-card-link mx-1 mb-2 text-warning">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-100 d-lg-none mx-1 mb-1">
+            <div class="border border-warning">
+                <div class="h5 text-center mt-2">
+                    Random fact:
+                </div>
+                <div class="loading d-flex justify-content-center">
+                    <div  class="spinner-border text-warning" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <div class="random-fact question-card-link mx-1 mb-2 text-warning">
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
@@ -149,7 +159,7 @@
         function hideAll() {
             $(".hidden").hide();
         };
-        $("#based-on").change(function () {
+        $(".based-on").change(function () {
             hideAll();
             let value = $(this).val();
             $(`#${value}`).show();

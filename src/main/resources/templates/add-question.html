@@ -20,15 +20,15 @@
                 <form action="#" th:action="@{/add-question}" method="post" th:object="${question}">
                     <div class="alert alert-danger" th:if="${errorMsg}" th:text="${errorMsg}"></div>
                     <div class="form-group row">
-                        <label for="questionDTO" class="col-form-label col-2">Question:</label>
+                        <label for="questionDTO" class="col-form-label col-sm-2">Question:</label>
 
-                        <textarea id="questionDTO" class="form-control col-10 white-space-pre-wrap"  th:field="*{questionValue}">
+                        <textarea id="questionDTO" class="form-control col-sm-10 white-space-pre-wrap"  th:field="*{questionValue}">
                         </textarea>
 
                     </div>
                     <div class="form-group row d-flex align-items-center">
-                        <label for="questionDTO" class="col-form-label col-2">Choose category or create new :</label>
-                        <select th:field="*{category}" class="form-control col-3">
+                        <label for="questionDTO" class="col-form-label col-sm-2">Choose category or create new :</label>
+                        <select th:field="*{category}" class="form-control col-sm-3">
                             <option th:each="categorySelect: ${categories}" th:value="${categorySelect.name}"
                                     th:text="${categorySelect.name}">
                             </option>
@@ -49,8 +49,8 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="form-group row d-flex align-items-center">
-                                        <label for="questionDTO" class="col-form-label col-3">Choose sub-category:</label>
-                                        <select th:field="*{superiorCategory}" class="form-control col-8">
+                                        <label for="questionDTO" class="col-form-label col-sm-3">Choose sub-category:</label>
+                                        <select th:field="*{superiorCategory}" class="form-control col-sm-8">
                                             <option th:value="''"></option>
                                             <option th:each="categorySelect: ${categories}" th:value="${categorySelect.name}"
                                                     th:text="${categorySelect.name}">
@@ -58,8 +58,8 @@
                                         </select>
                                     </div>
                                     <div class="form-group row">
-                                        <label for="questionDTO" class="col-form-label col-3">Category name:</label>
-                                        <input th:field="*{createdCategory}" class="form-control col-8">
+                                        <label for="questionDTO" class="col-form-label col-sm-3">Category name:</label>
+                                        <input th:field="*{createdCategory}" class="form-control col-sm-8">
                                     </div>
                                 </div>
                                 <div class="modal-footer">

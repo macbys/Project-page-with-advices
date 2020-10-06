@@ -101,11 +101,11 @@ public class UsersService implements UserDetailsService {
                 .map(objects -> {
                     BigInteger idBigInteger = (BigInteger) objects[0];
                     Long id = Long.valueOf(idBigInteger.toString());
-                    UserDTO userDTO = new UserDTO(id, (String) objects[2], (String) objects[1], null, null);
+                    UserDTO userDTO = new UserDTO(id, (String) objects[1], null, null);
                     return UserWithPointsDTO.builder()
                             .userDTO(userDTO)
-                            .points((BigInteger) objects[3])
-                            .rank((BigInteger) objects[4])
+                            .points((BigInteger) objects[2])
+                            .rank((BigInteger) objects[3])
                             .build();
                 })
                 .collect(Collectors.toList());

@@ -6,13 +6,13 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" type="text/css">
     <link rel="stylesheet" th:href="@{/css/style.css}" type="text/css">
 </head>
-<body>
+<body class="bg-dark">
 <nav sec:authorize="!isAuthenticated()" th:replace="navbars :: 'navbar'"></nav>
 <nav sec:authorize="isAuthenticated()" th:replace="navbars :: 'navbar-userDTO'"></nav>
-<div class="wrapper bg-dark h-100 d-flex align-items-center">
+<div class="wrapper m-t-86  d-flex align-items-center">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-8">
+            <div class="col-sm-8">
                 <div class="card bg-secondary text-white">
                     <div class="card-header">
                         <h3>Register</h3>
@@ -29,20 +29,20 @@
                                 <input type="file" id="file1" accept="image/*" class="d-none" name="avatar"/>
                             </div>
                             <div class="form-group row">
-                                <label for="name" class="col-form-label col-3">Nickname: </label>
-                                <input id="name" type="text" th:field="*{name}" class="form-control col-9">
+                                <label for="name" class="col-form-label col-sm-3">Nickname: </label>
+                                <input id="name" type="text" th:field="*{name}" class="form-control col-sm-9">
                             </div>
                             <div class="form-group row">
-                                <label for="email" class="col-form-label col-3">Email: </label>
-                                <input id="email" type="email" th:field="*{email}" class="form-control col-9">
+                                <label for="email" class="col-form-label col-sm-3">Email: </label>
+                                <input id="email" type="email" th:field="*{email}" class="form-control col-sm-9">
                             </div>
                             <div class="form-group row">
-                                <label for="password" class="col-form-label col-3">Password: </label>
-                                <input id="password" type="password" th:field="*{password}" class="form-control col-9">
+                                <label for="password" class="col-form-label col-sm-3">Password: </label>
+                                <input id="password" type="password" th:field="*{password}" class="form-control col-sm-9">
                             </div>
                             <div class="form-group row">
-                                <label for="password-r" class="col-form-label col-3">Password (again): </label>
-                                <input id="password-r" type="password" th:field="*{password_repeated}" class="form-control col-9">
+                                <label for="password-r" class="col-form-label col-sm-3">Password (again): </label>
+                                <input id="password-r" type="password" th:field="*{password_repeated}" class="form-control col-sm-9">
                             </div>
                             <div class="form-group">
                                 <input type="submit" value="Register" class="btn btn-primary float-right login_btn">
@@ -51,6 +51,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

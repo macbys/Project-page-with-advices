@@ -15,17 +15,17 @@
             <div class="col-6">
                 <div class="card bg-secondary text-white">
                     <div class="card-header d-flex row">
-                        <div class="col-3">
+                        <div class="col-sm-3">
                             <img height="75" width="75" th:if="${userDTO.avatar == null}" src="/images/user.png">
                             <img height="75" width="75" th:if="${userDTO.avatar != null}" th:src="*{'data:image/png;base64,'+ userDTO.avatar}">
                         </div>
-                        <div th:unless="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-9">
-                            <h3 th:text="${userDTO.name}"></h3>
+                        <div th:unless="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-sm-9">
+                            <h5 th:text="${userDTO.name}"></h5>
                             <div th:text="${'Points: ' + usersPointsAndRanking.points}"></div>
                         </div>
-                        <div th:if="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-9 d-flex row">
+                        <div th:if="${#authentication.getAuthorities().toArray()[0].toString() eq 'ADMIN'}" class="col-sm-9 d-flex row">
                             <div class="col-10">
-                                <h3 th:text="${userDTO.name}"></h3>
+                                <h5 th:text="${userDTO.name}"></h5>
                                 <div th:text="${'Points: ' + usersPointsAndRanking.points}"></div>
                             </div>
                             <div class="col-2">

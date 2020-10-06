@@ -56,10 +56,10 @@ public class AnswersService {
 
     private UserEntity getUserEntity(AnswerDTO answerDTO) {
         UserDTO userDTO = answerDTO.getUserDTO();
-        String email = userDTO.getEmail();
-        Optional<UserEntity> userEntityOptional = usersRepository.findByEmail(email);
+        Long id = userDTO.getId();
+        Optional<UserEntity> userEntityOptional = usersRepository.findById(id);
         return userEntityOptional.orElseThrow(() ->
-                new RuntimeException("User with email " + email + "doesn't exist"));
+                new RuntimeException("User with id " + id + "doesn't exist"));
     }
 
     public void deleteById(Long id){
